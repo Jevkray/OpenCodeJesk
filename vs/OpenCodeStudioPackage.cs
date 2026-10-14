@@ -27,7 +27,7 @@ namespace OpenCodeStudio
         private SolutionEvents _solutionEvents;
 
         /// <summary>
-        /// Shared server controller вЂ” survives across tool window open/close.
+        /// Общий контроллер сервера: переживает открытие/закрытие панели.
         /// </summary>
         private ServerController _serverController;
         private bool _configuredV2;
