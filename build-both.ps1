@@ -1,4 +1,4 @@
-﻿# Собирает оба бренда из одной кодовой базы: OpenCode Studio (без флага) и
+# Собирает оба бренда из одной кодовой базы: OpenCode Studio (без флага) и
 # OpenCode Jesk (-p:Brand=Jesk). В рабочем дереве остаётся Jesk-манифест.
 $ErrorActionPreference = 'Stop'
 
@@ -21,9 +21,9 @@ if (-not (Test-Path -LiteralPath $jesk)) {
 function Build-Brand([string]$brand, [string]$manifestSource, [string]$destName) {
     Copy-Item -LiteralPath $manifestSource -Destination $manifest -Force
     if ($brand) {
-        dotnet build $project -c Release -p:Brand=$brand | Out-Host
+        dotnet build $project -c Release -t:Rebuild -p:Brand=$brand | Out-Host
     } else {
-        dotnet build $project -c Release | Out-Host
+        dotnet build $project -c Release -t:Rebuild | Out-Host
     }
     if ($LASTEXITCODE -ne 0) { throw "Сборка ($brand) не удалась (код $LASTEXITCODE)" }
 
