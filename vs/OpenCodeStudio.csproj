@@ -31,6 +31,10 @@
   <!-- Бренд Jesk: -p:Brand=Jesk включает отдельные GUID/строки (см. Brand.cs). -->
   <PropertyGroup Condition="'$(Brand)'=='Jesk'">
     <DefineConstants>$(DefineConstants);JESK</DefineConstants>
+    <VsctFile>OpenCodeStudioPackage.jesk.vsct</VsctFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Brand)'!='Jesk'">
+    <VsctFile>OpenCodeStudioPackage.vsct</VsctFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -45,7 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <VSCTCompile Include="OpenCodeStudioPackage.vsct">
+    <VSCTCompile Include="$(VsctFile)">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
   </ItemGroup>

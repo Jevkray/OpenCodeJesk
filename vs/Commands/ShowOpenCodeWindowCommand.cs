@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.Design;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Shell;
@@ -8,7 +8,7 @@ namespace OpenCodeStudio.Commands
     internal sealed class ShowOpenCodeWindowCommand
     {
         public const int CommandId = 0x0100;
-        public static readonly Guid CommandSet = new Guid("D91F3A72-6C40-4E8B-B25D-8A47F0C63E15");
+        public static readonly Guid CommandSet = new Guid(Brand.CommandSetGuid);
 
         private readonly OpenCodeStudioPackage _package;
 

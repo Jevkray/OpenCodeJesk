@@ -73,11 +73,13 @@ namespace OpenCodeStudio
                 _solutionEvents.Opened += OnSolutionOpened;
             }
 
-            // First run (or fresh reinstall): offer to bring in settings, themes,
-            // credentials and chat history from any detected OpenCode environment.
-            if (!Onboarding.IsCompleted() && !_firstRunShown)
+            // Первый запуск после установки или обновления (по версии расширения).
+            if (Onboarding.ShouldShow() && !_firstRunShown)
             {
                 _firstRunShown = true;
+                // Помечаем сразу: окно больше не появится до следующего обновления,
+                // даже если пользователь закроет его крестиком.
+                Onboarding.MarkCompleted();
                 _ = JoinableTaskFactory.RunAsync(async () =>
                 {
                     try
