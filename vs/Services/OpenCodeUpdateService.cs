@@ -81,7 +81,8 @@ namespace OpenCodeStudio.Services
                 var psi = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
-                    Arguments = "/c npm i -g " + target + " --no-fund --no-audit --loglevel=info",
+                    Arguments = "/c npm i -g " + target + " --no-fund --no-audit --loglevel=info < NUL",
+                    RedirectStandardInput = true,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -90,6 +91,9 @@ namespace OpenCodeStudio.Services
                 using (var p = Process.Start(psi))
                 {
                     if (p == null) return false;
+                    // Процесс, запущенный из Visual Studio, не имеет консольного ввода:
+                    // без закрытого stdin npm может ждать ввода и зависать.
+                    try { p.StandardInput.Close(); } catch { }
                     // Запоминаем PID: убивать нужно всё дерево (cmd -> node -> ...),
                     // иначе дочерний node остаётся жив и держит блокировку npm.
                     var pid = p.Id;
