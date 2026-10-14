@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
@@ -65,11 +66,15 @@ namespace OpenCodeStudio.Services
             return await RunNpmAsync(target, onLog);
         }
 
-        /// <summary>Ставит/обновляет стабильный opencode-ai@latest (кнопка Install).</summary>
-        public Task<bool> InstallLatestAsync(Action<string> onLog = null)
-            => RunNpmAsync("opencode-ai@latest", onLog);
+        /// <summary>Ставит/обновляет произвольный npm-пакет (кнопки Install v1/v2).</summary>
+        public Task<bool> InstallAsync(string packageSpec, Action<string> onLog = null, CancellationToken ct = default)
+            => RunNpmAsync(packageSpec, onLog, ct);
 
-        private static async Task<bool> RunNpmAsync(string target, Action<string> onLog)
+        /// <summary>Ставит/обновляет стабильный opencode-ai@latest (кнопка Install v1).</summary>
+        public Task<bool> InstallLatestAsync(Action<string> onLog = null)
+            => InstallAsync("opencode-ai@latest", onLog);
+
+        private static async Task<bool> RunNpmAsync(string target, Action<string> onLog, CancellationToken ct = default)
         {
             try
             {
@@ -83,6 +88,7 @@ namespace OpenCodeStudio.Services
                     CreateNoWindow = true
                 };
                 using (var p = Process.Start(psi))
+                using (ct.Register(() => { try { p.Kill(); } catch { } }))
                 {
                     p.OutputDataReceived += (_, e) => { if (e.Data != null) onLog?.Invoke(e.Data); };
                     p.ErrorDataReceived += (_, e) => { if (e.Data != null) onLog?.Invoke(e.Data); };

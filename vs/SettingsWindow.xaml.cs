@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -63,7 +64,9 @@ namespace OpenCodeStudio
             { "install.guide.v1", "Stable (v1):" },
             { "install.guide.v2", "v2:" },
             { "install.guide.docs", "Documentation:" },
-            { "install.button", "Install latest OpenCode CLI" },
+            { "install.button.v1", "Install v1" },
+            { "install.button.v2", "Install v2" },
+            { "install.note", "v2 installs both opencode and opencode2 and overwrites opencode from v1. To run both versions side by side, install v2 first, then v1 — then opencode = v1 and opencode2 = v2." },
             { "install.running", "Installing OpenCode CLI…" },
             { "install.done", "OpenCode CLI installed. Status updated." },
             { "install.failed", "Installation failed:" },
@@ -282,7 +285,9 @@ namespace OpenCodeStudio
             { "install.guide.v1", "Стабильная (v1):" },
             { "install.guide.v2", "v2:" },
             { "install.guide.docs", "Документация:" },
-            { "install.button", "Установить последний OpenCode CLI" },
+            { "install.button.v1", "Установить v1" },
+            { "install.button.v2", "Установить v2" },
+            { "install.note", "v2 ставит и opencode, и opencode2 и перекрывает opencode у v1. Чтобы обе версии работали рядом, установите сначала v2, затем v1 — тогда opencode = v1, а opencode2 = v2." },
             { "install.running", "Установка OpenCode CLI…" },
             { "install.done", "OpenCode CLI установлен. Статус обновлён." },
             { "install.failed", "Установка не удалась:" },
@@ -726,21 +731,33 @@ namespace OpenCodeStudio
             e.Handled = true;
         }
 
-        /// <summary>Кнопка Install: ставит opencode-ai@latest и обновляет статус.</summary>
+        /// <summary>Кнопка Install v1: ставит opencode-ai@latest и обновляет статус.</summary>
         private async void OnInstallOpenCodeClick(object sender, RoutedEventArgs e)
+            => await InstallCliAsync("opencode-ai@latest");
+
+        /// <summary>Кнопка Install v2: ставит @opencode/cli и обновляет статус.</summary>
+        private async void OnInstallV2Click(object sender, RoutedEventArgs e)
+            => await InstallCliAsync("@opencode/cli");
+
+        /// <summary>Ставит указанный npm-пакет, сбрасывает кэши и обновляет статус.</summary>
+        private async Task InstallCliAsync(string packageSpec)
         {
-            if (installButton != null) installButton.IsEnabled = false;
+            // На время установки блокируем все действия вкладки Install.
+            if (panelInstall != null) panelInstall.IsEnabled = false;
+            if (installProgress != null) installProgress.Visibility = Visibility.Visible;
             if (installResult != null) installResult.Text = Loc("install.running");
             try
             {
                 var log = new List<string>();
-                var ok = await new OpenCodeUpdateService().InstallLatestAsync(line =>
+                var ok = await new OpenCodeUpdateService().InstallAsync(packageSpec, line =>
                 {
                     lock (log) { log.Add(line); if (log.Count > 200) log.RemoveAt(0); }
                 });
                 DetectInstalledVersions();
+                CliCommand.ResetVersionCache();
                 OpenCodeServerService.ResetWebSupportCache();
                 RefreshInstallStatus();
+                Log.Info("OpenCode install (" + packageSpec + ") " + (ok ? "succeeded" : "failed"));
                 if (installResult != null)
                     installResult.Text = ok
                         ? Loc("install.done")
@@ -749,11 +766,13 @@ namespace OpenCodeStudio
             }
             catch (Exception ex)
             {
+                Log.Error("OpenCode install (" + packageSpec + ") failed", ex);
                 if (installResult != null) installResult.Text = Loc("install.failed") + " " + ex.Message;
             }
             finally
             {
-                if (installButton != null) installButton.IsEnabled = true;
+                if (installProgress != null) installProgress.Visibility = Visibility.Collapsed;
+                if (panelInstall != null) panelInstall.IsEnabled = true;
             }
         }
 
