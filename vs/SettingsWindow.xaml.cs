@@ -32,6 +32,7 @@ namespace OpenCodeStudio
         private DispatcherTimer _installTimer;
         private DateTime _installStartedAt;
         private string _lastNpmLine;
+        private readonly CliInstallService _cliInstall = new CliInstallService();
 
         private static readonly SolidColorBrush TextBrush = Brush(0xf1, 0xf1, 0xf1);
         private static readonly SolidColorBrush MutedBrush = Brush(0x9a, 0x9a, 0x9a);
@@ -873,7 +874,7 @@ namespace OpenCodeStudio
         private async void OnInstallV2Click(object sender, RoutedEventArgs e)
             => await InstallCliAsync("@opencode/cli");
 
-        /// <summary>Ставит указанный npm-пакет, сбрасывает кэши и обновляет статус.</summary>
+        /// <summary>Ставит указанный npm-пакет через CliInstallService и обновляет статус.</summary>
         private async Task InstallCliAsync(string packageSpec)
         {
             // На время установки блокируем кнопки установки и ссылки; Cancel доступен.
@@ -884,13 +885,8 @@ namespace OpenCodeStudio
             _installCts = new System.Threading.CancellationTokenSource();
             try
             {
-                // Просим расширение остановить свои процессы и службу opencode,
-                // чтобы npm мог перезаписать shim-файлы в %APPDATA%\npm.
-                Services.SpendSettings.RaiseCliInstallStarting();
-                await Task.Delay(2000);
-
                 var log = new List<string>();
-                var ok = await new OpenCodeUpdateService().InstallAsync(packageSpec, line =>
+                var ok = await _cliInstall.InstallAsync(packageSpec, line =>
                 {
                     lock (log) { log.Add(line); if (log.Count > 200) log.RemoveAt(0); }
                     // Живой вывод: последняя строка npm на UI-потоке.
@@ -909,8 +905,6 @@ namespace OpenCodeStudio
                     return;
                 }
 
-                CliCommand.ResetVersionCache();
-                OpenCodeServerService.ResetWebSupportCache();
                 await DetectInstalledVersionsAsync();
                 await RefreshInstallStatusAsync();
                 Log.Info("OpenCode install (" + packageSpec + ") " + (ok ? "succeeded" : "failed"));
