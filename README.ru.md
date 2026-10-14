@@ -164,13 +164,6 @@ dotnet build vs/OpenCodeStudio.csproj -c Release
 
 VSIX появится в `vs/bin/Release/net472/OpenCodeStudio.vsix`. Для сборки обоих брендов сразу (Studio и Jesk) запустите `build-both.ps1`. Для отладки откройте `OpenCodeStudio.sln` и нажмите **F5** (экспериментальный экземпляр). 🧪
 
-## 🛡️ Приватность
-
-- 🖧 сервер слушает только `127.0.0.1`
-- 🔑 ключи хранит сам OpenCode в вашем окружении
-- 🚫 нет телеметрии и аналитики
-- 📈 оверлей использования входит в OpenCode Console и читает расход и лимиты с `opencode.ai` по вашей сессионной cookie (хранится зашифрованной через DPAPI) — другие данные наружу не уходят.
-
 ## ⚙️ Настройки
 
 ![OpenCode Jesk — Настройки: Общие](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png)
@@ -187,6 +180,13 @@ VSIX появится в `vs/bin/Release/net472/OpenCodeStudio.vsix`. Для с�
 
 ![OpenCode Jesk — Настройки: Импорт](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png)
 *Импорт: найденные источники OpenCode, добавление папки и импорт с бэкапами.*
+
+## 🛡️ Приватность
+
+- 🖧 сервер слушает только `127.0.0.1`
+- 🔑 ключи хранит сам OpenCode в вашем окружении
+- 🚫 нет телеметрии и аналитики
+- 📈 оверлей использования входит в OpenCode Console и читает расход и лимиты с `opencode.ai` по вашей сессионной cookie (хранится зашифрованной через DPAPI) — другие данные наружу не уходят.
 
 ## 💬 Контакты и поддержка
 

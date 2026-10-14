@@ -164,13 +164,6 @@ dotnet build vs/OpenCodeStudio.csproj -c Release
 
 The VSIX is produced at `vs/bin/Release/net472/OpenCodeStudio.vsix`. To build both brands (Studio and Jesk) at once, run `build-both.ps1`. For a debug run, open `OpenCodeStudio.sln` and press **F5** to launch the experimental instance. 🧪
 
-## 🛡️ Privacy
-
-- 🖧 the server binds to `127.0.0.1` only
-- 🔑 credentials are stored by OpenCode itself in your own environment
-- 🚫 no telemetry, no analytics
-- 📈 the usage overlay signs in to the OpenCode Console and reads your usage and limits from `opencode.ai` using your own session cookie (stored encrypted with DPAPI) — no other data leaves your machine.
-
 ## ⚙️ Settings
 
 ![OpenCode Jesk — Settings: General](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png)
@@ -187,6 +180,13 @@ The VSIX is produced at `vs/bin/Release/net472/OpenCodeStudio.vsix`. To build bo
 
 ![OpenCode Jesk — Settings: Import](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png)
 *Import: detected OpenCode sources, add folder and import selected (with backups).*
+
+## 🛡️ Privacy
+
+- 🖧 the server binds to `127.0.0.1` only
+- 🔑 credentials are stored by OpenCode itself in your own environment
+- 🚫 no telemetry, no analytics
+- 📈 the usage overlay signs in to the OpenCode Console and reads your usage and limits from `opencode.ai` using your own session cookie (stored encrypted with DPAPI) — no other data leaves your machine.
 
 ## 💬 Contacts & Support
 

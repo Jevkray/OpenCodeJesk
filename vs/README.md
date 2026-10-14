@@ -79,13 +79,6 @@ Once the paths match, all chats sync between the CLI, the desktop app and every 
 
 Statistics are not part of this release yet. Use the statistics button in the OpenCode panel to open the OpenCode Console (usage and limits) directly.
 
-## 🛡️ Privacy
-
-- 🖧 the server binds to `127.0.0.1` only
-- 🔑 credentials are stored by OpenCode itself in your own environment
-- 🚫 no telemetry, no analytics
-- 📈 the usage overlay signs in to the OpenCode Console and reads your usage and limits from `opencode.ai` using your own session cookie (stored encrypted with DPAPI) — no other data leaves your machine.
-
 ## ⚙️ Settings
 
 ![OpenCode Jesk — Settings: General](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png)
@@ -102,6 +95,13 @@ Statistics are not part of this release yet. Use the statistics button in the Op
 
 ![OpenCode Jesk — Settings: Import](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png)
 *Settings — Import: detected OpenCode sources, add folder and import selected (with backups).*
+## 🛡️ Privacy
+
+- 🖧 the server binds to `127.0.0.1` only
+- 🔑 credentials are stored by OpenCode itself in your own environment
+- 🚫 no telemetry, no analytics
+- 📈 the usage overlay signs in to the OpenCode Console and reads your usage and limits from `opencode.ai` using your own session cookie (stored encrypted with DPAPI) — no other data leaves your machine.
+
 ## 💬 Contacts & Support
 
 - 📨 Telegram: https://t.me/eugenekray
