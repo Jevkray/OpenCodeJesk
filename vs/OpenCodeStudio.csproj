@@ -92,6 +92,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="..\CHANGELOG.md" LogicalName="Changelog.md" />
     <EmbeddedResource Include="Resources\ErrorPage.html" />
     <EmbeddedResource Include="Resources\LoadingPage.html" />
     <EmbeddedResource Include="Resources\StatsPage.html" />

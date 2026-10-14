@@ -869,16 +869,12 @@
                         </Border>
                         <Border Style="{StaticResource Card}">
                             <StackPanel>
-                                <TextBlock Uid="updates.log.title" Text="Update log" Style="{StaticResource CardTitle}" />
-                                <TextBlock Uid="updates.log.hint" Style="{StaticResource CardHint}"
-                                           Text="Recent update checks and installs." />
-                                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="260" Margin="0,8,0,0">
-                                    <TextBox x:Name="updateLogBox" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True"
-                                             Background="#1b1b1b" Foreground="#d0d0d0" BorderBrush="#3a3a3a"
-                                             FontFamily="Consolas" FontSize="12" Padding="8" MinHeight="120" />
+                                <TextBlock Uid="updates.whatsnew.title" Text="What's new" Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="updates.whatsnew.hint" Style="{StaticResource CardHint}"
+                                           Text="Release notes: what changed and what was fixed in each version." />
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="460" Margin="0,10,0,0">
+                                    <StackPanel x:Name="changelogPanel" />
                                 </ScrollViewer>
-                                <Button Uid="updates.log.refresh" Content="Refresh" HorizontalAlignment="Left"
-                                        Style="{StaticResource GhostButton}" Click="OnRefreshUpdateLogClick" />
                             </StackPanel>
                         </Border>
                     </StackPanel>

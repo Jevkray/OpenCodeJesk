@@ -36,14 +36,13 @@ namespace OpenCodeStudio.Services
                 {
                     var text = (await p.StandardOutput.ReadToEndAsync()).Trim();
                     p.WaitForExit(10000);
-                    if (string.IsNullOrEmpty(text)) { UpdateLog.Write("installed version: unknown"); return null; }
+                    if (string.IsNullOrEmpty(text)) return null;
                     var lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
                     var version = lines.Length > 0 ? lines[0].Trim() : null;
-                    UpdateLog.Write("installed version: " + (version ?? "unknown"));
                     return version;
                 }
             }
-            catch { UpdateLog.Write("installed version check failed"); return null; }
+            catch { return null; }
         }
 
         /// <summary>Последняя версия из npm-реестра или null при ошибке.</summary>
@@ -56,11 +55,10 @@ namespace OpenCodeStudio.Services
                     var url = Channel == UpdateChannel.Beta ? NpmBetaUrl : NpmLatestUrl;
                     var json = await client.GetStringAsync(url);
                     var version = (string)JObject.Parse(json)["version"];
-                    UpdateLog.Write("latest version: " + (version ?? "unknown"));
                     return version;
                 }
             }
-            catch { UpdateLog.Write("latest version check failed"); return null; }
+            catch { return null; }
         }
 
         /// <summary>Запускает обновление opencode; true при коде выхода 0.</summary>
@@ -83,7 +81,6 @@ namespace OpenCodeStudio.Services
             try
             {
                 CleanupStaleInstallDirs(onLog);
-                UpdateLog.Write("install start: " + target);
                 var psi = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
@@ -117,17 +114,14 @@ namespace OpenCodeStudio.Services
                             // Бинарь мог смениться — сбрасываем кэши определения.
                             CliCommand.ResetVersionCache();
                             OpenCodeServerService.ResetWebSupportCache();
-                            UpdateLog.Write("install ok: " + target);
                             return true;
                         }
-                        UpdateLog.Write("install failed: " + target);
                         return false;
                     }
                 }
             }
             catch (Exception ex)
             {
-                UpdateLog.Write("install error: " + target + " :: " + ex.Message);
                 onLog?.Invoke(ex.Message);
                 return false;
             }

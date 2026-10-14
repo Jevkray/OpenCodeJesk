@@ -167,9 +167,8 @@ namespace OpenCodeStudio
             { "updates.review.btn", "Leave a review" },
             { "updates.rating.show", "Show the review reminder" },
             { "updates.rating.show.hint", "Occasionally, after a couple of hours of use, a small window asks you to rate the extension." },
-            { "updates.log.title", "Update log" },
-            { "updates.log.hint", "Recent update checks and installs." },
-            { "updates.log.refresh", "Refresh" },
+            { "updates.whatsnew.title", "What's new" },
+            { "updates.whatsnew.hint", "Release notes: what changed and what was fixed in each version." },
 
             { "import.title", "Import OpenCode data" },
             { "import.hint", "Bring in settings, commands, themes, credentials and chat history from a detected OpenCode environment." },
@@ -284,9 +283,8 @@ namespace OpenCodeStudio
             { "updates.review.btn", "Оставить отзыв" },
             { "updates.rating.show", "Показывать напоминание об отзыве" },
             { "updates.rating.show.hint", "Иногда, после пары часов работы, появляется небольшое окно с просьбой оценить расширение." },
-            { "updates.log.title", "Журнал обновлений" },
-            { "updates.log.hint", "Последние проверки и установки обновлений." },
-            { "updates.log.refresh", "Обновить" },
+            { "updates.whatsnew.title", "Что нового" },
+            { "updates.whatsnew.hint", "Список изменений: что добавлено и исправлено в каждой версии." },
 
             { "import.title", "Импорт данных OpenCode" },
             { "import.hint", "Перенести настройки, команды, темы, учётные данные и историю чатов из обнаруженного окружения OpenCode." },
@@ -360,6 +358,7 @@ namespace OpenCodeStudio
             SetVersionText();
             ApplyLanguage();
             menuList.SelectedIndex = Math.Max(0, Math.Min(menuList.Items.Count - 1, initialTab));
+            RenderChangelog();
             Loaded += (_, __) => RebuildImport();
 
             // Детекция версий и статуса установки — в фоне, чтобы открытие окна
@@ -712,8 +711,7 @@ namespace OpenCodeStudio
             panelServer.Visibility = index == 3 ? Visibility.Visible : Visibility.Collapsed;
             panelUpdates.Visibility = index == 4 ? Visibility.Visible : Visibility.Collapsed;
             panelImport.Visibility = index == 5 ? Visibility.Visible : Visibility.Collapsed;
-            if (index == 4 && updateLogBox != null)
-                updateLogBox.Text = UpdateLog.ReadTail(200);
+            if (index == 4) RenderChangelog();
         }
 
         /// <summary>Кнопка «Оставить отзыв»: открывает форму отзыва в браузере.</summary>
@@ -723,9 +721,64 @@ namespace OpenCodeStudio
             catch (Exception ex) { Log.Error("Open review link failed", ex); }
         }
 
-        /// <summary>Кнопка Refresh: перечитывает хвост журнала обновлений.</summary>
-        private void OnRefreshUpdateLogClick(object sender, RoutedEventArgs e)
-            => updateLogBox.Text = UpdateLog.ReadTail(200);
+        /// <summary>
+        /// Рендерит changelog во вкладке Updates: разбирает встроенный
+        /// CHANGELOG.md и строит элементы с inline **жирным**.
+        /// </summary>
+        private void RenderChangelog()
+        {
+            if (changelogPanel == null) return;
+            changelogPanel.Children.Clear();
+
+            foreach (var block in ChangelogService.Parse(ChangelogService.ReadAll()))
+            {
+                switch (block.Kind)
+                {
+                    case ChangelogBlockKind.Title:
+                        changelogPanel.Children.Add(Text(block.Text, 16, FontWeights.Bold, TextBrush, new Thickness(0, 0, 0, 10)));
+                        break;
+                    case ChangelogBlockKind.Version:
+                        changelogPanel.Children.Add(new Border
+                        {
+                            Height = 1,
+                            Background = Brush(0x3a, 0x3a, 0x3a),
+                            Margin = new Thickness(0, 6, 0, 0)
+                        });
+                        changelogPanel.Children.Add(Text(block.Text, 14, FontWeights.SemiBold,
+                            Brush(0x5E, 0xAC, 0xFC), new Thickness(0, 16, 0, 6)));
+                        break;
+                    case ChangelogBlockKind.Category:
+                        changelogPanel.Children.Add(Text(block.Text, 12, FontWeights.SemiBold,
+                            Brush(0xcf, 0xcf, 0xcf), new Thickness(0, 8, 0, 2)));
+                        break;
+                    case ChangelogBlockKind.Bullet:
+                        changelogPanel.Children.Add(Text("•  " + block.Text, 12, FontWeights.Normal,
+                            MutedBrush, new Thickness(8, 2, 0, 2)));
+                        break;
+                    default:
+                        changelogPanel.Children.Add(Text(block.Text, 12, FontWeights.Normal,
+                            MutedBrush, new Thickness(0, 2, 0, 2)));
+                        break;
+                }
+            }
+        }
+
+        /// <summary>TextBlock с поддержкой inline **жирного** (чётные Run — обычные, нечётные — жирные).</summary>
+        private static TextBlock Text(string text, double fontSize, FontWeight weight, Brush brush, Thickness margin)
+        {
+            var tb = new TextBlock
+            {
+                FontSize = fontSize,
+                FontWeight = weight,
+                Foreground = brush,
+                Margin = margin,
+                TextWrapping = TextWrapping.Wrap
+            };
+            var parts = (text ?? "").Split(new[] { "**" }, StringSplitOptions.None);
+            for (var i = 0; i < parts.Length; i++)
+                tb.Inlines.Add(new Run(parts[i]) { FontWeight = i % 2 == 1 ? FontWeights.Bold : weight });
+            return tb;
+        }
 
         private void OnWebZoomChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
