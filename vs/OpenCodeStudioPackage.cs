@@ -456,34 +456,14 @@ namespace OpenCodeStudio
                 await JoinableTaskFactory.SwitchToMainThreadAsync();
                 try { _serverController?.Stop(); } catch { }
                 try { _toolWindowControl?.StopCli(); } catch { }
-                StopOpenCodeService("opencode");
-                StopOpenCodeService("opencode2");
+                // «opencode service stop» здесь не вызываем: у v1 такой команды нет,
+                // процесс зависал и держал opencode.exe (из-за этого npm падал с EPERM).
                 Services.Log.Info("OpenCode stopped before CLI install");
             }
             catch (Exception ex)
             {
                 Services.Log.Warn("OnCliInstallStarting failed: " + ex.Message);
             }
-        }
-
-        /// <summary>Best-effort остановка фоновой службы opencode (таймаут 5 c).</summary>
-        private static void StopOpenCodeService(string command)
-        {
-            try
-            {
-                var psi = new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = "cmd.exe",
-                    Arguments = "/c " + command + " service stop < NUL",
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true
-                };
-                using (var p = System.Diagnostics.Process.Start(psi))
-                    p?.WaitForExit(5000);
-            }
-            catch { }
         }
 
         private void OnSpendSettingsApplied()

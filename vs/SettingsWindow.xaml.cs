@@ -799,7 +799,7 @@ namespace OpenCodeStudio
                 // Просим расширение остановить свои процессы и службу opencode,
                 // чтобы npm мог перезаписать shim-файлы в %APPDATA%\npm.
                 Services.SpendSettings.RaiseCliInstallStarting();
-                await Task.Delay(1500);
+                await Task.Delay(2000);
 
                 var log = new List<string>();
                 var ok = await new OpenCodeUpdateService().InstallAsync(packageSpec, line =>

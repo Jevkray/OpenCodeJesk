@@ -78,10 +78,11 @@ namespace OpenCodeStudio.Services
         {
             try
             {
+                CleanupStaleInstallDirs(onLog);
                 var psi = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
-                    Arguments = "/c npm i -g " + target + " --no-fund --no-audit --prefer-offline --loglevel=info",
+                    Arguments = "/c npm i -g " + target + " --force --no-fund --no-audit --loglevel=info",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -122,6 +123,36 @@ namespace OpenCodeStudio.Services
                 onLog?.Invoke(ex.Message);
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Best-effort удаляет временные каталоги неудачных npm-установок в
+        /// %APPDATA%\npm\node_modules (.имя содержит opencode или cli). Они
+        /// остаются от прерванных установок и приводят к EPERM/EEXIST.
+        /// </summary>
+        private static void CleanupStaleInstallDirs(Action<string> onLog)
+        {
+            try
+            {
+                var root = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "npm", "node_modules");
+                if (!System.IO.Directory.Exists(root)) return;
+                foreach (var path in System.IO.Directory.GetDirectories(root))
+                {
+                    var name = System.IO.Path.GetFileName(path);
+                    if (!name.StartsWith(".", StringComparison.Ordinal)) continue;
+                    if (name.IndexOf("opencode", StringComparison.OrdinalIgnoreCase) < 0 &&
+                        name.IndexOf("cli", StringComparison.OrdinalIgnoreCase) < 0) continue;
+                    try
+                    {
+                        System.IO.Directory.Delete(path, true);
+                        onLog?.Invoke("Removed stale npm dir: " + name);
+                    }
+                    catch { }
+                }
+            }
+            catch { }
         }
 
         /// <summary>Убивает процесс вместе со всеми дочерними (taskkill /T).</summary>
