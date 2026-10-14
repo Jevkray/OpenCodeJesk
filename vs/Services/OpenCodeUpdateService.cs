@@ -72,10 +72,6 @@ namespace OpenCodeStudio.Services
         public Task<bool> InstallAsync(string packageSpec, Action<string> onLog = null, CancellationToken ct = default)
             => RunNpmAsync(packageSpec, onLog, ct);
 
-        /// <summary>Ставит/обновляет стабильный opencode-ai@latest (кнопка Install v1).</summary>
-        public Task<bool> InstallLatestAsync(Action<string> onLog = null)
-            => InstallAsync("opencode-ai@latest", onLog);
-
         private static async Task<bool> RunNpmAsync(string target, Action<string> onLog, CancellationToken ct = default)
         {
             try

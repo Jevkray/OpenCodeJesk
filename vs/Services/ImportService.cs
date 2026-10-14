@@ -385,28 +385,6 @@ namespace OpenCodeStudio.Services
             return null;
         }
 
-        private string DetectCliVersion()
-        {
-            try
-            {
-                var psi = new ProcessStartInfo
-                {
-                    FileName = "cmd.exe",
-                    Arguments = "/c opencode --version 2>nul",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-                using (var p = Process.Start(psi))
-                {
-                    var outText = p.StandardOutput.ReadToEnd().Trim();
-                    p.WaitForExit(3000);
-                    return string.IsNullOrEmpty(outText) ? null : outText;
-                }
-            }
-            catch { return null; }
-        }
-
         private static string FindDesktopExe()
         {
             var candidates = new[]

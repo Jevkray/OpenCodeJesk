@@ -104,16 +104,4 @@ namespace OpenCodeStudio.Models
         [JsonProperty("diff")]
         public string Diff { get; set; }
     }
-
-    /// <summary>
-    /// Request body for creating a new session.
-    /// </summary>
-    public class CreateSessionRequest
-    {
-        [JsonProperty("parentID")]
-        public string ParentId { get; set; }
-
-        [JsonProperty("title")]
-        public string Title { get; set; }
-    }
 }

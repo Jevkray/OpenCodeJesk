@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="OpenCodeStudio.7e4a9c31-2b6d-4f58-9a10-3c8e7b5d1f20" Version="1.2.0.19" Language="en-US" Publisher="jevkray" />
+    <Identity Id="OpenCodeStudio.7e4a9c31-2b6d-4f58-9a10-3c8e7b5d1f20" Version="1.2.0.20" Language="en-US" Publisher="jevkray" />
     <DisplayName>OpenCode Studio</DisplayName>
     <Description xml:space="preserve">The OpenCode AI coding agent, natively inside Visual Studio. Full OpenCode web UI in a tool window, shared chat history with the CLI and desktop app, a usage dashboard (cost, tokens, requests) and a first-run import wizard. Everything runs locally. Supports VS 2022 and VS 2026. Adds a usage overlay with remaining Go limits and today's spend, plus a usage dashboard window.</Description>
     <Icon>Resources\Icon.png</Icon>

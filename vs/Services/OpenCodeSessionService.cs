@@ -17,11 +17,6 @@ namespace OpenCodeStudio.Services
     {
         private readonly IOpenCodeServerService _serverService;
 
-        private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
-        {
-            NullValueHandling = NullValueHandling.Ignore
-        };
-
         public OpenCodeSessionService(IOpenCodeServerService serverService)
         {
             _serverService = serverService;

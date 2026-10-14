@@ -20,7 +20,6 @@ namespace OpenCodeStudio
         private static readonly System.Drawing.Color _bg = System.Drawing.Color.FromArgb(0x1e, 0x1e, 0x1e);
         private static readonly System.Drawing.Color _panel = System.Drawing.Color.FromArgb(0x25, 0x25, 0x26);
         private static readonly System.Drawing.Color _text = System.Drawing.Color.FromArgb(0xf1, 0xf1, 0xf1);
-        private static readonly System.Drawing.Color _muted = System.Drawing.Color.FromArgb(0x9a, 0x9a, 0x9a);
         private static readonly System.Drawing.Color _border = System.Drawing.Color.FromArgb(0x3a, 0x3a, 0x3a);
 
         private static SolidColorBrush Brush(System.Drawing.Color c)

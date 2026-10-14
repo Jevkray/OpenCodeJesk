@@ -636,13 +636,6 @@ namespace OpenCodeStudio
             }
         }
 
-        internal async Task ShowUsageWindowAsync()
-        {
-            await JoinableTaskFactory.SwitchToMainThreadAsync();
-            var w = new UsageWindow(_toolWindowControl, true);
-            w.Show();
-        }
-
         /// <summary>
         /// Единственный экземпляр окна Settings. Повторные вызовы активируют уже
         /// открытое окно вместо создания нового.

@@ -736,32 +736,6 @@ namespace OpenCodeStudio.Services
         }
 
         /// <summary>
-        /// Поддерживает ли бинарь opencode веб-интерфейс: запускает
-        /// "&lt;cliPath&gt; --help" (скрытно, таймаут 2 c) и ищет "web" в выводе.
-        /// Результат кэшируется по пути. С UI-потока использовать SupportsWebAsync.
-        /// </summary>
-        public static bool SupportsWeb(string cliPath)
-        {
-            if (string.IsNullOrWhiteSpace(cliPath)) return false;
-            if (_webSupportPath != null &&
-                string.Equals(_webSupportPath, cliPath, StringComparison.OrdinalIgnoreCase))
-                return _webSupportResult;
-
-            bool result;
-            try
-            {
-                var output = RunCaptureAsync("/c \"" + cliPath + "\" --help")
-                    .GetAwaiter().GetResult();
-                result = output.IndexOf("web", StringComparison.OrdinalIgnoreCase) >= 0;
-            }
-            catch { result = false; }
-
-            _webSupportPath = cliPath;
-            _webSupportResult = result;
-            return result;
-        }
-
-        /// <summary>
         /// Асинхронная обёртка: запуск уходит в Task.Run, UI-поток не блокируется.
         /// Результат кладётся в тот же кэш, что и у SupportsWeb.
         /// </summary>

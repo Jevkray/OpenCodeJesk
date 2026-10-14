@@ -71,9 +71,6 @@ namespace OpenCodeStudio
         // Токен жизни окна: отменяет длительные операции (ожидание логина) при закрытии.
         private readonly System.Threading.CancellationTokenSource _lifetimeCts = new System.Threading.CancellationTokenSource();
 
-        /// <summary>Обновление снапшота расходов (на UI-потоке).</summary>
-        public event Action<SpendSnapshot> SnapshotUpdated;
-
         /// <summary>Последний полученный снапшот расходов.</summary>
         public SpendSnapshot LatestSnapshot { get; private set; }
 
@@ -763,7 +760,6 @@ namespace OpenCodeStudio
                     var core = webView?.CoreWebView2;
                     if (core == null) return;
                     LatestSnapshot = s;
-                    SnapshotUpdated?.Invoke(s);
                     PushUsageState();
                 }
                 catch (Exception ex)

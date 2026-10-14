@@ -95,8 +95,6 @@
     <EmbeddedResource Include="..\CHANGELOG.md" LogicalName="Changelog.md" />
     <EmbeddedResource Include="Resources\ErrorPage.html" />
     <EmbeddedResource Include="Resources\LoadingPage.html" />
-    <EmbeddedResource Include="Resources\StatsPage.html" />
-    <EmbeddedResource Include="Resources\UsagePage.html" />
     <EmbeddedResource Include="Resources\UsageInjector.js" />
     <EmbeddedResource Include="Resources\Terminal.html" />
     <EmbeddedResource Include="Resources\xterm.js" />

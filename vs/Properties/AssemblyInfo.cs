@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("OpenCode Studio")]
@@ -12,5 +12,5 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 
-[assembly: AssemblyVersion("1.2.0.19")]
-[assembly: AssemblyFileVersion("1.2.0.19")]
+[assembly: AssemblyVersion("1.2.0.20")]
+[assembly: AssemblyFileVersion("1.2.0.20")]

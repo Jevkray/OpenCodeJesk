@@ -20,9 +20,7 @@ namespace OpenCodeStudio.Services
         private IOpenCodeSessionService _sessionService;
 
         private string _currentProjectRoot;
-        private string _currentProjectDirectory;
         private string _currentSessionId;
-        private string _currentSessionDirectory;
 
         private CancellationTokenSource _shutdownCts;
         private CancellationTokenSource _workspaceCheckCts;
@@ -41,7 +39,6 @@ namespace OpenCodeStudio.Services
             if (!string.Equals(newRoot, _currentProjectRoot, StringComparison.OrdinalIgnoreCase))
             {
                 _currentProjectRoot = newRoot;
-                _currentProjectDirectory = System.IO.Path.GetFullPath(newRoot);
             }
         }
 
@@ -64,7 +61,6 @@ namespace OpenCodeStudio.Services
         {
             CancelShutdown();
             _currentProjectRoot = projectRoot;
-            _currentProjectDirectory = System.IO.Path.GetFullPath(projectRoot);
 
             _serverService.PreferV2 = _useV2?.Invoke() ?? false;
             bool wantV2 = _serverService.PreferV2;
@@ -96,17 +92,6 @@ namespace OpenCodeStudio.Services
                     return false;
             }
 
-            try
-            {
-                var path = await _sessionService.GetPathAsync(projectRoot);
-                if (!string.IsNullOrEmpty(path?.Directory))
-                    _currentProjectDirectory = path.Directory;
-            }
-            catch (Exception ex)
-            {
-                Log.Info("Project directory lookup failed: " + ex.Message);
-            }
-
             // Find an existing session for this project. We deliberately do NOT
             // create one here: the OpenCode web UI does that on demand, and
             // auto-creating an empty session on every project change only adds
@@ -130,10 +115,6 @@ namespace OpenCodeStudio.Services
             catch { }
 
             _currentSessionId = curSession?.Id;
-            // Keep the directory exactly as OpenCode reports it (Windows path
-            // with backslashes). The web client encodes this value into the URL,
-            // so a normalized (forward-slash) path would not match the project.
-            _currentSessionDirectory = curSession?.Directory;
 
             // Start connection monitoring
             if (_connectionMonitor == null)
@@ -153,27 +134,6 @@ namespace OpenCodeStudio.Services
             return true;
         }
 
-
-        /// <summary>
-        /// Get the navigation URL for the current project/session.
-        /// Points straight at the OpenCode server's own web UI
-        /// (http://127.0.0.1:port/{encoded-dir}/session/{id}). The directory
-        /// segment uses the same UTF-8 base64url encoding as the OpenCode web
-        /// client (its <c>cn()</c> helper), so the app resolves the right
-        /// project without any proxying.
-        /// </summary>
-        public string GetSessionUrl()
-        {
-            if (_serverService.ServerInfo == null || string.IsNullOrEmpty(_currentSessionId))
-                return null;
-
-            var baseUrl = _serverService.ServerInfo.BaseUrl;
-            var dir = !string.IsNullOrEmpty(_currentSessionDirectory)
-                ? _currentSessionDirectory
-                : (_currentProjectRoot ?? "");
-            var encoded = ToUrlSafeBase64(dir);
-            return $"{baseUrl}/{encoded}/session/{_currentSessionId}";
-        }
 
         /// <summary>
         /// Открывает черновик чата текущего проекта; остальные проекты доступны
@@ -220,20 +180,6 @@ namespace OpenCodeStudio.Services
             }
         }
 
-
-        /// <summary>
-        /// URL конкретного чата в веб-интерфейсе — используется при возврате
-        /// из CLI, чтобы открыть тот же чат.
-        /// </summary>
-        public string GetSessionUrl(string directory, string sessionId)
-        {
-            if (_serverService.ServerInfo == null || string.IsNullOrEmpty(sessionId))
-                return null;
-            var dir = !string.IsNullOrEmpty(directory)
-                ? directory
-                : (_currentProjectDirectory ?? _currentProjectRoot ?? "");
-            return $"{_serverService.ServerInfo.BaseUrl}/{ToUrlSafeBase64(dir)}/session/{sessionId}";
-        }
 
         /// <summary>
         /// Активный чат папки — тот, где отправлено последнее сообщение.
@@ -395,15 +341,6 @@ namespace OpenCodeStudio.Services
             {
                 return false;
             }
-        }
-
-        private static string ToUrlSafeBase64(string text)
-        {
-            var bytes = System.Text.Encoding.UTF8.GetBytes(text);
-            return Convert.ToBase64String(bytes)
-                .Replace('+', '-')
-                .Replace('/', '_')
-                .TrimEnd('=');
         }
 
         public void Dispose()

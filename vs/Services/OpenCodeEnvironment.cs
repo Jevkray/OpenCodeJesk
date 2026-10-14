@@ -11,9 +11,6 @@ namespace OpenCodeStudio.Services
     /// <list type="bullet">
     ///   <item><see cref="Global"/> - the default CLI/desktop environment
     ///   (~/.config/opencode, ~/.local/share/opencode, ...).</item>
-    ///   <item><see cref="ForStudio"/> - OpenCode Studio's own isolated
-    ///   environment under %LOCALAPPDATA%\OpenCodeStudio\opencode, so the
-    ///   extension never mutates the user's CLI setup.</item>
     /// </list>
     /// </summary>
     public sealed class OpenCodeEnvironment
@@ -45,48 +42,15 @@ namespace OpenCodeStudio.Services
                 Path.Combine(home, ".cache", "opencode")) { Name = "Global (CLI / Desktop)" };
         }
 
-        /// <summary>OpenCode Studio's private environment.</summary>
-        public static OpenCodeEnvironment ForStudio()
-        {
-            var root = StudioRoot;
-            return new OpenCodeEnvironment(
-                Path.Combine(root, "config"),
-                Path.Combine(root, "data"),
-                Path.Combine(root, "state"),
-                Path.Combine(root, "cache")) { Name = Brand.Name };
-        }
-
         public static string StudioDir => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "OpenCodeStudio");
 
-        public static string StudioRoot => Path.Combine(StudioDir, "opencode");
-
         public string ConfigFile => Path.Combine(ConfigDir, "opencode.json");
         public string TuiFile => Path.Combine(ConfigDir, "tui.json");
         public string CommandsDir => Path.Combine(ConfigDir, "command");
-        public string ThemesDir => Path.Combine(ConfigDir, "themes");
         public string AuthFile => Path.Combine(DataDir, "auth.json");
         public string DatabaseFile => Path.Combine(DataDir, "opencode.db");
-
-        // XDG base directories (the parents of the opencode-specific folders).
-        public string XdgConfigHome => Path.GetDirectoryName(ConfigDir);
-        public string XdgDataHome => Path.GetDirectoryName(DataDir);
-        public string XdgStateHome => Path.GetDirectoryName(StateDir);
-        public string XdgCacheHome => Path.GetDirectoryName(CacheDir);
-
-        /// <summary>Applies this environment's XDG variables to a child process.</summary>
-        public void ApplyTo(System.Diagnostics.ProcessStartInfo psi)
-        {
-            try
-            {
-                psi.EnvironmentVariables["XDG_CONFIG_HOME"] = XdgConfigHome;
-                psi.EnvironmentVariables["XDG_DATA_HOME"] = XdgDataHome;
-                psi.EnvironmentVariables["XDG_STATE_HOME"] = XdgStateHome;
-                psi.EnvironmentVariables["XDG_CACHE_HOME"] = XdgCacheHome;
-            }
-            catch { }
-        }
 
         /// <summary>Directory of the currently running extension assembly.</summary>
         public static string ExtensionDir
