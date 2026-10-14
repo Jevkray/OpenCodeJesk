@@ -25,9 +25,11 @@ namespace OpenCodeStudio
     /// own theming. This removes an entire, fragile translation layer.
     /// </para>
     /// </summary>
-    public partial class OpenCodeToolWindowControl : UserControl, IDisposable
+    public partial class OpenCodeToolWindowControl : UserControl, IDisposable, IConsoleWebHost
     {
         private IServiceProvider _serviceProvider;
+
+        private ConsoleCoordinator _console;
 
         private CoreWebView2Environment _environment;
         private IProjectRootResolver _projectRootResolver;
@@ -39,7 +41,6 @@ namespace OpenCodeStudio
         private bool _retryDisabled;
         private System.Threading.Timer _projRootTimer;
 
-        private SpendMonitor _spendMonitor;
         private SpendSettings _spendSettings;
         private CliTerminalControl _cliTerminal;
         private string _activeSessionId;
@@ -59,17 +60,12 @@ namespace OpenCodeStudio
                 s?.CliArguments ?? "");
         }
         private string _pendingWebUrl;
-        private bool _loginInProgress;
-        private bool _loginMode;
-        private bool _loginReturned;
-        private bool _autoOpenAfterLogin;
-        private System.Threading.Tasks.TaskCompletionSource<bool> _loginTcs;
 
         // Токен жизни окна: отменяет длительные операции (ожидание логина) при закрытии.
         private readonly System.Threading.CancellationTokenSource _lifetimeCts = new System.Threading.CancellationTokenSource();
 
-        /// <summary>Последний полученный снапшот расходов.</summary>
-        public SpendSnapshot LatestSnapshot { get; private set; }
+        /// <summary>Последний полученный снапшот расходов (из координатора консоли).</summary>
+        public SpendSnapshot LatestSnapshot => _console?.LatestSnapshot;
 
         private bool _isReconnecting;
         private System.Threading.CancellationTokenSource _reconnectCts;
@@ -79,9 +75,18 @@ namespace OpenCodeStudio
         public OpenCodeToolWindowControl()
         {
             InitializeComponent();
+            _console = new ConsoleCoordinator(this);
             _ = InitWebViewCoreAsync()
                 .ContinueWith(_ => WaitServerAsync(), TaskScheduler.Current);
         }
+
+        // --- IConsoleWebHost: доступ координатора к UI-части окна ---
+
+        CoreWebView2 IConsoleWebHost.GetCore() => webView?.CoreWebView2;
+        string IConsoleWebHost.GetHomeUrl() => _serverController?.GetHomeUrl();
+        void IConsoleWebHost.Navigate(string url) => webView?.CoreWebView2?.Navigate(url);
+        Task IConsoleWebHost.ShowLoadingAsync(string message) => ShowLoadingPageAsync(message);
+        SpendSettings IConsoleWebHost.GetSpendSettings() => _spendSettings;
 
         public void SetServiceProvider(IServiceProvider serviceProvider)
         {
@@ -112,19 +117,7 @@ namespace OpenCodeStudio
         /// </summary>
         public async Task ApplyUsageInjectionAsync()
         {
-            var core = webView?.CoreWebView2;
-            if (core == null) return;
-            try
-            {
-                if (_spendSettings?.ShowConsoleButton == true)
-                    await UsageInjector.InstallAsync(core);
-                else
-                    await UsageInjector.UninstallAsync(core);
-            }
-            catch (Exception ex)
-            {
-                Services.Log.Error("Usage injection apply failed", ex);
-            }
+            await _console.ApplyInjectionAsync(_spendSettings?.ShowConsoleButton == true);
         }
 
         /// <summary>Перезагружает веб-панель (применение смены настроек).</summary>
@@ -320,7 +313,7 @@ namespace OpenCodeStudio
         {
             // Во время входа OAuth открывается как новое окно: оставляем навигацию
             // внутри WebView2, иначе вход не завершается (cookie не появляется).
-            if (_loginMode)
+            if (_console.IsLoginMode)
             {
                 try { e.Handled = true; webView.CoreWebView2.Navigate(e.Uri); } catch { }
                 return;
@@ -356,13 +349,7 @@ namespace OpenCodeStudio
 
         private void OnNavigationStarting(object sender, CoreWebView2NavigationStartingEventArgs e)
         {
-            if (!_loginMode) return;
-            var u = e.Uri ?? "";
-            if (!ConsoleLoginService.IsReturnedToApp(u)) return;
-            // Вход выполнен: opencode вернул нас на свою страницу. НЕ отменяем загрузку —
-            // именно ответ этой навигации ставит сессионную cookie. Захват делаем в NavigationCompleted.
-            Services.Log.Info("Console login: returned to opencode.ai, waiting for cookie");
-            _loginReturned = true;
+            _console.NotifyNavigationStarting(e.Uri);
         }
 
         private void OnNavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
@@ -380,17 +367,8 @@ namespace OpenCodeStudio
                 _activeSessionId = parsed.Item2;
                 if (!string.IsNullOrEmpty(parsed.Item1)) _activeDirectory = parsed.Item1;
             }
-            // Вернулись на opencode.ai — забираем cookie именно после загрузки ответа.
-            if (_loginMode && _loginReturned)
-            {
-                _loginReturned = false;
-                _ = FinishConsoleCaptureAsync();
-            }
-            // Инъекция кнопки Console идемпотентна: включаем/снимаем по настройке
-            // на каждой загрузке документа, чтобы смена применялась после reload.
-            _ = ApplyUsageInjectionAsync();
-            PushUsageState(_autoOpenAfterLogin);
-            _autoOpenAfterLogin = false;
+            // Захват cookie после входа, инъекция кнопки Console и публикация состояния.
+            _console.NotifyNavigationCompleted();
         }
 
         private async Task WaitServerAsync()
@@ -647,167 +625,7 @@ namespace OpenCodeStudio
 
             if (_serverController.State == ConnectionState.Connected)
             {
-                StartSpendMonitor();
-            }
-        }
-
-        /// <summary>Запускает фоновый монитор расхода, если инъекция включена.</summary>
-        private void StartSpendMonitor()
-        {
-            // временно: парсинг отключён, кнопка только переключает консоль
-            return;
-
-            if (_spendMonitor != null) return;
-
-            _spendMonitor = new SpendMonitor(_spendSettings);
-            _spendMonitor.Updated += OnSpendUpdated;
-            _spendMonitor.AuthRequired += OnSpendAuthRequired;
-            _spendMonitor.Start();
-        }
-
-        private void OnSpendUpdated(SpendSnapshot s)
-        {
-#pragma warning disable VSSDK007
-            _ = ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
-            {
-                try
-                {
-                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    var core = webView?.CoreWebView2;
-                    if (core == null) return;
-                    LatestSnapshot = s;
-                    PushUsageState();
-                }
-                catch (Exception ex)
-                {
-                    Services.Log.Error("Failed to push usage to WebView2", ex);
-                }
-            });
-#pragma warning restore VSSDK007
-        }
-
-        private void OnSpendAuthRequired()
-        {
-            // Авто-вход больше не запускаем: показываем состояние входа в поповере.
-#pragma warning disable VSSDK007
-            _ = ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
-            {
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                PushUsageState();
-            });
-#pragma warning restore VSSDK007
-        }
-
-        /// <summary>Отправляет текущее состояние использования в веб-UI (UI-поток).</summary>
-        private void PushUsageState(bool autoOpen = false)
-        {
-            try
-            {
-                var core = webView?.CoreWebView2;
-                if (core == null) return;
-                var state = ConsoleSessionStore.Load() == null ? "login" : (LatestSnapshot != null ? "ready" : "loading");
-                UsageInjector.Push(core, UsageInjector.BuildPayload(state, LatestSnapshot, true, autoOpen));
-            }
-            catch (Exception ex) { Services.Log.Error("Failed to push usage state", ex); }
-        }
-
-        private async Task FinishConsoleCaptureAsync()
-        {
-            try
-            {
-                var core = webView?.CoreWebView2;
-                if (core == null) { _loginTcs?.TrySetResult(false); return; }
-
-                for (int attempt = 1; attempt <= 10; attempt++)
-                {
-                    var cookie = await ConsoleLoginService.ReadCookieAsync(core);
-                    if (string.IsNullOrEmpty(cookie))
-                    {
-                        await Task.Delay(1000);
-                        continue;
-                    }
-
-                    var names = string.Join(",", cookie.Split(';')
-                        .Select(p => p.Split('=')[0].Trim())
-                        .Where(n => n.Length > 0));
-                    Services.Log.Info($"Console login: attempt {attempt}, cookie names = {names}");
-
-                    bool ok;
-                    try { ok = await new SpendClient(cookie).ResolveOrgAsync(System.Threading.CancellationToken.None); }
-                    catch (ConsoleAuthException) { ok = false; }
-                    catch (Exception ex) { Services.Log.Warn("Console login: org check error: " + ex.Message); ok = false; }
-
-                    if (ok)
-                    {
-                        ConsoleSessionStore.Save(cookie);
-                        Services.Log.Info("Console login: valid session cookie saved");
-                        _loginTcs?.TrySetResult(true);
-                        return;
-                    }
-
-                    Services.Log.Warn($"Console login: cookie not valid yet (attempt {attempt})");
-                    await Task.Delay(1500);
-                }
-
-                Services.Log.Warn("Console login: no valid cookie after retries");
-                _loginTcs?.TrySetResult(false);
-            }
-            catch (Exception ex)
-            {
-                Services.Log.Error("Console login: capture failed", ex);
-                _loginTcs?.TrySetResult(false);
-            }
-        }
-
-        private async Task BeginConsoleLoginAsync()
-        {
-            if (_loginInProgress) return;
-            _loginInProgress = true;
-            try
-            {
-                _loginTcs = new System.Threading.Tasks.TaskCompletionSource<bool>();
-                _loginMode = true;
-                _loginReturned = false;
-                await ShowLoadingPageAsync("Вход в OpenCode Console...");
-                var core = webView?.CoreWebView2;
-                if (core != null)
-                    core.Navigate(ConsoleLoginService.LoginUrl);
-
-                var timeout = Task.Delay(TimeSpan.FromMinutes(5));
-                var finished = await Task.WhenAny(_loginTcs.Task, timeout);
-                var ok = finished == _loginTcs.Task && _loginTcs.Task.Result;
-                Services.Log.Info("Console login finished, success=" + ok);
-            }
-            catch (Exception ex)
-            {
-                Services.Log.Error("Console login failed", ex);
-            }
-            finally
-            {
-                try
-                {
-                    _autoOpenAfterLogin = true;
-                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    var home = _serverController?.GetHomeUrl();
-                    if (home != null && webView?.CoreWebView2 != null)
-                    {
-                        Services.Log.Info("Console login: returning to " + home);
-                        webView.CoreWebView2.Navigate(home);
-                    }
-                    else
-                    {
-                        PushUsageState(true);
-                    }
-                    _spendMonitor?.Stop();
-                    _spendMonitor = null;
-                    StartSpendMonitor();
-                }
-                catch (Exception ex)
-                {
-                    Services.Log.Error("Console login: failed to return to app", ex);
-                }
-                _loginInProgress = false;
-                _loginMode = false;
+                _console.StartMonitor();
             }
         }
 
@@ -824,34 +642,13 @@ namespace OpenCodeStudio
             var message = e.TryGetWebMessageAsString();
             if (message == "toggle-console")
             {
-#pragma warning disable VSSDK007
-                _ = ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
-                {
-                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    try
-                    {
-                        var core = webView?.CoreWebView2;
-                        if (core == null) return;
-                        var current = core.Source ?? "";
-                        if (current.StartsWith("https://opencode.ai", StringComparison.OrdinalIgnoreCase))
-                        {
-                            var home = _serverController?.GetHomeUrl();
-                            if (home != null) core.Navigate(home);
-                        }
-                        else
-                        {
-                            core.Navigate("https://opencode.ai/console");
-                        }
-                    }
-                    catch (Exception ex) { Services.Log.Error("toggle-console failed", ex); }
-                });
-#pragma warning restore VSSDK007
+                _console.HandleToggleConsole();
                 return;
             }
             if (message == "login")
             {
 #pragma warning disable VSSDK007
-                _ = ThreadHelper.JoinableTaskFactory.RunAsync(() => BeginConsoleLoginAsync());
+                _ = ThreadHelper.JoinableTaskFactory.RunAsync(() => _console.LoginAsync());
 #pragma warning restore VSSDK007
                 return;
             }
@@ -969,13 +766,8 @@ namespace OpenCodeStudio
             try { _lifetimeCts.Cancel(); _lifetimeCts.Dispose(); } catch { }
             _projRootTimer?.Dispose();
             CancelReconnect();
-            if (_spendMonitor != null)
-            {
-                _spendMonitor.Updated -= OnSpendUpdated;
-                _spendMonitor.AuthRequired -= OnSpendAuthRequired;
-            }
-            _spendMonitor?.Dispose();
-            _spendMonitor = null;
+            _console?.Dispose();
+            _console = null;
             _cliTerminal?.Dispose();
             _cliTerminal = null;
             webView?.Dispose();
