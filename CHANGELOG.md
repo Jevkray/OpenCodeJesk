@@ -3,18 +3,37 @@
 All notable changes to **OpenCode Studio** are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [1.2.0.32] - 2026-10-15
 
 ### Added
 - Interface choice in Settings only: **Desktop (Web)** shows the Web panel; **CLI** shows a plain terminal with OpenCode already running, inside the same OpenCode Studio panel (no Visual Studio terminal chrome). The separate v1 / v2 preview switch applies to both interfaces.
 - Web and Terminal connect to the same authenticated server for the selected OpenCode version. Switching from Web to CLI can resume the selected chat. No database copying or cross-version conversion is performed.
 - The terminal lives in the OpenCode Studio panel, so Visual Studio keeps its docked position and size, and the CLI is started automatically (v1 or v2) in the current project.
 - New-chat view defaults to the current Visual Studio solution/repository directory. Other projects remain selectable in OpenCode.
+- **Auto-connect for the v2 web panel.** The panel pairs through the local server (`/api/pair` → `/auth/connect/<code>`) before WebView2 navigates, so it opens already signed in and the "Connect to a server" screen is never shown.
+- **Updates tab: review card and rating popup.** A short review invite links to the Marketplace review page, and a one-time popup asks for a rating once per session, after about two hours of use. A new setting (**Show the review reminder**) turns the popup off.
+- **Updates tab shows the detailed changelog** (parsed from the bundled `CHANGELOG.md`) instead of the raw installation log.
+- **Extension icon in the Visual Studio menu and in the Settings window title**, making the extension easier to identify.
+- **Install tab with one-click v1/v2 CLI install**: progress and elapsed time, a Cancel button, a live install log, and a note about installing both versions side by side. Installed `opencode` / web / desktop presence is detected, and the OpenCode version is read via `--version` (so a v2 that installs as `opencode` is recognized).
+- **v2 support in the embedded Web mode** (the earlier "v2 is CLI-only" restriction was removed).
 
 ### Fixed
 - **Save selected** now applies settings even when no import items are selected.
 - Changing only the interface mode does not restart the shared OpenCode server.
 - Session lookup uses the v2 API when the preview binary is selected.
+- **Version switch in the web panel.** The WebView2 cache is now cleared on every version switch (previously once per session), so the panel no longer shows a stale page after switching v1 ↔ v2; a migration stamp file was added.
+- **Version selection at start.** The restart/adopt decision now compares by **major** version, and the v2 server output is logged.
+- **CLI crash when switching versions** ("Session not found"): the session is validated and, if missing, created before the terminal opens.
+- **CLI installation through npm** could hang or fail on locked shims. Install now stops the extension's own OpenCode server/CLI and the `opencode` service first, runs `npm` with `--force`, cleans stale directories, closes the child's stdin, kills the npm process tree on timeout, and shows a live log with a Cancel button.
+- Removed the hanging `opencode service stop` that kept `opencode.exe` open and caused EPERM during install.
+- Fixed the CLI `--dir` error and the web "Unrecognised route!" error.
+- OpenCode detection runs off the UI thread and initialization is guarded against exceptions.
+
+### Changed
+- **Blue accent palette matched to the icon** (gradient); the extension windows are always dark, with tidied spacing.
+- **Dead code removed** (`HealthInfo`, `CreateSessionRequest`, the `UsageWindow`/`StatsService` chain, unused members) and the install log (`UpdateLog`) dropped.
+- **Internal refactor: services extracted** for clarity and testing — `CliInstallService`, `Localization`, `CliVersionStatusService`, `CliBinaryLocator`, `ServerPortResolver`, `SharedServerRegistry`, `WebPageRenderer`, `SessionUrlParser`, `ConsoleCoordinator`, `ReconnectCoordinator`, `CliModeCoordinator`, `SettingsEditor`, `ImportPresenter`, `InstallStatusRenderer` and `UiPalette`.
+- Brand-aware Settings window titles.
 
 ## [1.2.0] - 2026-10-14
 
@@ -158,6 +177,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 - Initial public release: OpenCode web UI embedded in a Visual Studio tool window.
 
+[1.2.0.32]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.2.0.32
 [1.2.0]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.2.0
 [1.1.5.1]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.1.5.1
 [1.1.5]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.1.5
