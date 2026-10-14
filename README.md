@@ -41,32 +41,32 @@
 
 ## 📸 Screenshots
 
-<!-- SCREENSHOT: docs/images/jesk-settings-general.png — Settings: General (interface mode, OpenCode version, web zoom, panel behavior) -->
-![OpenCode Jesk — Settings: General](docs/images/jesk-settings-general.png)
+<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png — Settings: General (interface mode, OpenCode version, web zoom, panel behavior) -->
+![OpenCode Jesk — Settings: General](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png)
 *Settings — General: interface mode, OpenCode version, web zoom and panel behavior.*
 
-<!-- SCREENSHOT: docs/images/jesk-settings-terminal.png — Settings: Terminal (font, size, cursor, scrollback, CLI arguments) -->
-![OpenCode Jesk — Settings: Terminal](docs/images/jesk-settings-terminal.png)
+<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png — Settings: Terminal (font, size, cursor, scrollback, CLI arguments) -->
+![OpenCode Jesk — Settings: Terminal](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png)
 *Settings — Terminal: font, size, cursor, scrollback and CLI command options.*
 
-<!-- SCREENSHOT: docs/images/jesk-settings-server.png — Settings: Server (binary path, port, serve arguments, idle stop) -->
-![OpenCode Jesk — Settings: Server](docs/images/jesk-settings-server.png)
+<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png — Settings: Server (binary path, port, serve arguments, idle stop) -->
+![OpenCode Jesk — Settings: Server](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png)
 *Settings — Server: opencode binary path, preferred port, serve arguments and idle stop.*
 
-<!-- SCREENSHOT: docs/images/jesk-settings-updates.png — Settings: Updates (check toggle, interval, channel) -->
-![OpenCode Jesk — Settings: Updates](docs/images/jesk-settings-updates.png)
+<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png — Settings: Updates (check toggle, interval, channel) -->
+![OpenCode Jesk — Settings: Updates](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png)
 *Settings — Updates: check for new versions, interval and release channel.*
 
-<!-- SCREENSHOT: docs/images/jesk-settings-import.png — Settings: Import (detected sources, add folder, import selected) -->
-![OpenCode Jesk — Settings: Import](docs/images/jesk-settings-import.png)
+<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png — Settings: Import (detected sources, add folder, import selected) -->
+![OpenCode Jesk — Settings: Import](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png)
 *Settings — Import: detected OpenCode sources, add folder and import selected (with backups).*
 
-<!-- SCREENSHOT: docs/images/jesk-desktop.png — Panel in Desktop (Web) mode -->
-![OpenCode Jesk — Desktop (Web) panel](docs/images/jesk-desktop.png)
+<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png — Panel in Desktop (Web) mode -->
+![OpenCode Jesk — Desktop (Web) panel](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png)
 *The panel in **Desktop (Web)** mode — the full OpenCode web UI inside the tool window.*
 
-<!-- SCREENSHOT: docs/images/jesk-cli.png — Panel in CLI (terminal) mode -->
-![OpenCode Jesk — CLI (terminal) panel](docs/images/jesk-cli.png)
+<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-cli.png — Panel in CLI (terminal) mode -->
+![OpenCode Jesk — CLI (terminal) panel](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-cli.png)
 *The panel in **CLI (terminal)** mode — a plain terminal with OpenCode already running.*
 
 ## ✨ Why OpenCode Jesk?

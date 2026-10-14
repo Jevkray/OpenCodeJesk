@@ -41,32 +41,32 @@
 
 ## 📸 Скриншоты
 
-<!-- SCREENSHOT: docs/images/jesk-settings-general.png — Settings: Основные (режим интерфейса, версия OpenCode, масштаб, поведение панели) -->
-![OpenCode Jesk — Settings: Основные](docs/images/jesk-settings-general.png)
+<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png — Settings: Основные (режим интерфейса, версия OpenCode, масштаб, поведение панели) -->
+![OpenCode Jesk — Settings: Основные](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png)
 *Settings — Основные: режим интерфейса, версия OpenCode, масштаб веб-панели и поведение панели.*
 
-<!-- SCREENSHOT: docs/images/jesk-settings-terminal.png — Settings: Терминал (шрифт, размер, курсор, история, аргументы CLI) -->
-![OpenCode Jesk — Settings: Терминал](docs/images/jesk-settings-terminal.png)
+<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png — Settings: Терминал (шрифт, размер, курсор, история, аргументы CLI) -->
+![OpenCode Jesk — Settings: Терминал](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png)
 *Settings — Терминал: шрифт, размер, курсор, строки истории и параметры команды CLI.*
 
-<!-- SCREENSHOT: docs/images/jesk-settings-server.png — Settings: Сервер (путь к бинарнику, порт, аргументы serve, простой) -->
-![OpenCode Jesk — Settings: Сервер](docs/images/jesk-settings-server.png)
+<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png — Settings: Сервер (путь к бинарнику, порт, аргументы serve, простой) -->
+![OpenCode Jesk — Settings: Сервер](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png)
 *Settings — Сервер: путь к бинарнику opencode, порт, аргументы serve и остановка после простоя.*
 
-<!-- SCREENSHOT: docs/images/jesk-settings-updates.png — Settings: Обновления (проверка, интервал, канал) -->
-![OpenCode Jesk — Settings: Обновления](docs/images/jesk-settings-updates.png)
+<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png — Settings: Обновления (проверка, интервал, канал) -->
+![OpenCode Jesk — Settings: Обновления](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png)
 *Settings — Обновления: проверка новых версий, интервал и канал выпусков.*
 
-<!-- SCREENSHOT: docs/images/jesk-settings-import.png — Settings: Импорт (найденные источники, добавить папку, импорт) -->
-![OpenCode Jesk — Settings: Импорт](docs/images/jesk-settings-import.png)
+<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png — Settings: Импорт (найденные источники, добавить папку, импорт) -->
+![OpenCode Jesk — Settings: Импорт](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png)
 *Settings — Импорт: найденные источники OpenCode, добавление папки и импорт выбранного (с резервными копиями).*
 
-<!-- SCREENSHOT: docs/images/jesk-desktop.png — Панель в режиме Desktop (Web) -->
-![OpenCode Jesk — панель Desktop (Web)](docs/images/jesk-desktop.png)
+<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png — Панель в режиме Desktop (Web) -->
+![OpenCode Jesk — панель Desktop (Web)](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png)
 *Панель в режиме **Desktop (Web)** — полный веб-интерфейс OpenCode внутри окна-инструмента.*
 
-<!-- SCREENSHOT: docs/images/jesk-cli.png — Панель в режиме CLI (терминал) -->
-![OpenCode Jesk — панель CLI (терминал)](docs/images/jesk-cli.png)
+<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-cli.png — Панель в режиме CLI (терминал) -->
+![OpenCode Jesk — панель CLI (терминал)](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-cli.png)
 *Панель в режиме **CLI (терминал)** — простое окно терминала с уже запущенным OpenCode.*
 
 ## ✨ Почему OpenCode Jesk?
