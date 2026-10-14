@@ -53,6 +53,7 @@ namespace OpenCodeStudio
             { "install.status.v2", "OpenCode CLI (v2)" },
             { "install.status.installed", "installed" },
             { "install.status.notinstalled", "not installed" },
+            { "install.status.checking", "Checking…" },
             { "install.status.web", "Web interface" },
             { "install.status.web.available", "available" },
             { "install.status.web.unavailable", "unavailable — the web interface ships with the CLI; install the OpenCode CLI above." },
@@ -274,6 +275,7 @@ namespace OpenCodeStudio
             { "install.status.v2", "OpenCode CLI (v2)" },
             { "install.status.installed", "установлено" },
             { "install.status.notinstalled", "не установлено" },
+            { "install.status.checking", "Проверка…" },
             { "install.status.web", "Веб-интерфейс" },
             { "install.status.web.available", "доступен" },
             { "install.status.web.unavailable", "недоступен — веб-интерфейс поставляется вместе с CLI; установите OpenCode CLI выше." },
@@ -326,14 +328,17 @@ namespace OpenCodeStudio
             if (_settings != null) Services.SpendSettings.Current = _settings;
 
             LoadSettings();
-            DetectInstalledVersions();
-            RefreshInstallStatus();
             _lang = _settings?.Language == "ru" ? "ru" : "en";
             languageCombo.SelectedIndex = _lang == "ru" ? 1 : 0;
             SetVersionText();
             ApplyLanguage();
             menuList.SelectedIndex = Math.Max(0, Math.Min(menuList.Items.Count - 1, initialTab));
             Loaded += (_, __) => RebuildImport();
+
+            // Детекция версий и статуса установки — в фоне, чтобы открытие окна
+            // не подвешивало IDE.
+            _ = DetectInstalledVersionsAsync();
+            _ = RefreshInstallStatusAsync();
         }
 
         // ---- локализация -------------------------------------------------
@@ -349,7 +354,7 @@ namespace OpenCodeStudio
             SetItems(startDirCombo, d["combo.startdir.0"], d["combo.startdir.1"],
                 d["combo.startdir.2"], d["combo.startdir.3"]);
             SetItems(channelCombo, d["combo.channel.0"], d["combo.channel.1"]);
-            RefreshInstallStatus();
+            _ = RefreshInstallStatusAsync();
         }
 
         /// <summary>Локализованная строка по ключу для текущего языка.</summary>
@@ -381,20 +386,30 @@ namespace OpenCodeStudio
         }
 
         /// <summary>
-        /// Определяет установленные ветки opencode и делает недоступные пункты
-        /// неактивными; выбирает доступную, если сохранённая недоступна.
+        /// Определяет установленные ветки opencode в фоне (не на UI-потоке) и
+        /// обновляет комбобокс версий после завершения.
         /// </summary>
-        private void DetectInstalledVersions()
+        private async Task DetectInstalledVersionsAsync()
         {
-            _v1Available = OpenCodeServerService.IsV1Available();
-            _v2Available = OpenCodeServerService.IsV2Available();
+            try
+            {
+                var v1 = await OpenCodeServerService.FindV1PathAsync();
+                var v2 = await OpenCodeServerService.FindV2PathAsync();
+                _v1Available = v1 != null;
+                _v2Available = v2 != null;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Version detection failed", ex);
+                return;
+            }
 
             if (versionCombo.Items.Count >= 2
-                && versionCombo.Items[0] is ComboBoxItem v1
-                && versionCombo.Items[1] is ComboBoxItem v2)
+                && versionCombo.Items[0] is ComboBoxItem v1Item
+                && versionCombo.Items[1] is ComboBoxItem v2Item)
             {
-                v1.IsEnabled = _v1Available;
-                v2.IsEnabled = _v2Available;
+                v1Item.IsEnabled = _v1Available;
+                v2Item.IsEnabled = _v2Available;
             }
 
             if (versionCombo.SelectedIndex == 1 && !_v2Available)
@@ -402,33 +417,53 @@ namespace OpenCodeStudio
             else if (versionCombo.SelectedIndex == 0 && !_v1Available)
                 versionCombo.SelectedIndex = _v2Available ? 1 : -1;
 
+            SetVersionItems(_lang == "ru" ? Ru : En);
             ApplyVersionLock();
         }
 
-        /// <summary>Обновляет список статусов установки на вкладке Install.</summary>
-        private void RefreshInstallStatus()
+        /// <summary>
+        /// Обновляет список статусов установки на вкладке Install. Детекция идёт
+        /// в фоне, пока показывается состояние «проверка…».
+        /// </summary>
+        private async Task RefreshInstallStatusAsync()
         {
             if (installStatusPanel == null) return;
             installStatusPanel.Children.Clear();
+            installStatusPanel.Children.Add(new TextBlock
+            {
+                Text = Loc("install.status.checking"),
+                Foreground = MutedBrush
+            });
 
-            var v1 = OpenCodeServerService.FindV1Path();
-            var v2 = OpenCodeServerService.FindV2Path();
-            var desktop = OpenCodeServerService.FindDesktopAppPath();
+            string v1, v2, desktop, webCli;
+            bool webAvailable;
+            try
+            {
+                v1 = await OpenCodeServerService.FindV1PathAsync();
+                v2 = await OpenCodeServerService.FindV2PathAsync();
+                desktop = OpenCodeServerService.FindDesktopAppPath();
+                webCli = v1 ?? v2;
+                webAvailable = await OpenCodeServerService.SupportsWebAsync(webCli);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Install status refresh failed", ex);
+                return;
+            }
+
+            if (installStatusPanel == null) return;
+            installStatusPanel.Children.Clear();
 
             installStatusPanel.Children.Add(BuildCliRow(
                 Loc("install.status.v1"), v1, "npm i -g opencode-ai"));
             installStatusPanel.Children.Add(BuildCliRow(
                 Loc("install.status.v2"), v2, "npm i -g @opencode/cli"));
-
-            var webCli = v1 ?? v2;
-            bool webAvailable = OpenCodeServerService.SupportsWeb(webCli);
             installStatusPanel.Children.Add(BuildSimpleRow(
                 Loc("install.status.web"),
                 webAvailable
                     ? Loc("install.status.web.available") + " (" + webCli + ")"
                     : Loc("install.status.web.unavailable"),
                 null));
-
             installStatusPanel.Children.Add(BuildDesktopRow(desktop));
         }
 
@@ -753,10 +788,10 @@ namespace OpenCodeStudio
                 {
                     lock (log) { log.Add(line); if (log.Count > 200) log.RemoveAt(0); }
                 });
-                DetectInstalledVersions();
                 CliCommand.ResetVersionCache();
                 OpenCodeServerService.ResetWebSupportCache();
-                RefreshInstallStatus();
+                await DetectInstalledVersionsAsync();
+                await RefreshInstallStatusAsync();
                 Log.Info("OpenCode install (" + packageSpec + ") " + (ok ? "succeeded" : "failed"));
                 if (installResult != null)
                     installResult.Text = ok

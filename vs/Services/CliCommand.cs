@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using OpenCodeStudio.Models;
 
 namespace OpenCodeStudio.Services
@@ -24,8 +25,8 @@ namespace OpenCodeStudio.Services
 
         /// <summary>
         /// Мажорная версия бинаря opencode: запускает "&lt;binary&gt; --version"
-        /// (скрытно, таймаут 5 c), берёт первое целое из вывода. Кэшируется по
-        /// пути. При неудаче — 0.
+        /// (скрытно, таймаут 2 c), берёт первое целое из вывода. Кэшируется по
+        /// пути. При неудаче — 0. С UI-потока использовать DetectMajorAsync.
         /// </summary>
         public static int DetectMajor(string binary)
         {
@@ -39,10 +40,35 @@ namespace OpenCodeStudio.Services
                 if (MajorCache.TryGetValue(key, out var cached)) return cached;
             }
 
-            var major = RunVersionProbe(binary);
+            // Синхронный путь: может блокировать до 2 с. С UI-потока — только async.
+            var major = RunVersionProbeAsync(binary).GetAwaiter().GetResult();
 
             lock (MajorLock) { MajorCache[key] = major; }
             return major;
+        }
+
+        /// <summary>
+        /// Асинхронная обёртка: запуск уходит в Task.Run, UI-поток не блокируется.
+        /// Результат кладётся в тот же кэш, что и у DetectMajor.
+        /// </summary>
+        public static Task<int> DetectMajorAsync(string binary)
+        {
+            if (string.IsNullOrEmpty(binary)) return Task.FromResult(0);
+            string key;
+            try { key = Path.GetFullPath(binary); }
+            catch { key = binary; }
+
+            lock (MajorLock)
+            {
+                if (MajorCache.TryGetValue(key, out var cached)) return Task.FromResult(cached);
+            }
+
+            return Task.Run(async () =>
+            {
+                var major = await RunVersionProbeAsync(binary).ConfigureAwait(false);
+                lock (MajorLock) { MajorCache[key] = major; }
+                return major;
+            });
         }
 
         /// <summary>Сбросить кэш версий (например, после установки CLI).</summary>
@@ -51,35 +77,50 @@ namespace OpenCodeStudio.Services
             lock (MajorLock) { MajorCache.Clear(); }
         }
 
-        private static int RunVersionProbe(string binary)
+        private static Task<int> RunVersionProbeAsync(string binary)
+        {
+            string fileName, arguments;
+            if (binary.EndsWith(".cmd", StringComparison.OrdinalIgnoreCase) ||
+                binary.EndsWith(".bat", StringComparison.OrdinalIgnoreCase))
+            {
+                fileName = "cmd.exe";
+                arguments = "/c \"" + binary + "\" --version";
+            }
+            else
+            {
+                fileName = binary;
+                arguments = "--version";
+            }
+            return RunAndParseAsync(fileName, arguments);
+        }
+
+        /// <summary>
+        /// Запускает процесс, асинхронно читает stdout/stderr, ждёт выхода не
+        /// дольше 2 с и гарантированно убивает процесс по таймауту.
+        /// </summary>
+        private static async Task<int> RunAndParseAsync(string fileName, string arguments)
         {
             try
             {
                 var psi = new ProcessStartInfo
                 {
+                    FileName = fileName,
+                    Arguments = arguments,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 };
-                if (binary.EndsWith(".cmd", StringComparison.OrdinalIgnoreCase) ||
-                    binary.EndsWith(".bat", StringComparison.OrdinalIgnoreCase))
-                {
-                    psi.FileName = "cmd.exe";
-                    psi.Arguments = "/c \"" + binary + "\" --version";
-                }
-                else
-                {
-                    psi.FileName = binary;
-                    psi.Arguments = "--version";
-                }
 
                 using (var proc = Process.Start(psi))
                 {
                     if (proc == null) return 0;
-                    var output = proc.StandardOutput.ReadToEnd();
-                    output += proc.StandardError.ReadToEnd();
-                    if (!proc.WaitForExit(5000)) { try { proc.Kill(); } catch { } }
+                    var stdout = proc.StandardOutput.ReadToEndAsync();
+                    var stderr = proc.StandardError.ReadToEndAsync();
+                    var exited = await Task.Run(() => proc.WaitForExit(2000)).ConfigureAwait(false);
+                    if (!exited) { try { proc.Kill(); } catch { } }
+                    var output = await stdout.ConfigureAwait(false);
+                    output += await stderr.ConfigureAwait(false);
                     return ParseFirstInt(output);
                 }
             }

@@ -636,6 +636,40 @@ namespace OpenCodeStudio.Services
             return null;
         }
 
+        /// <summary>
+        /// Асинхронная версия FindV1Path: поиск и проверка версии не выполняются
+        /// на вызывающем (UI) потоке.
+        /// </summary>
+        public static async Task<string> FindV1PathAsync()
+        {
+            foreach (var name in new[] { "opencode", "opencode2" })
+            {
+                var path = await Task.Run(() => FindByName(name, CommonDirs)).ConfigureAwait(false);
+                if (path == null) continue;
+                var major = await CliCommand.DetectMajorAsync(path).ConfigureAwait(false);
+                if (major == 1) return path;
+                if (major == 0 && name == "opencode") return path;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Асинхронная версия FindV2Path: поиск и проверка версии не выполняются
+        /// на вызывающем (UI) потоке.
+        /// </summary>
+        public static async Task<string> FindV2PathAsync()
+        {
+            foreach (var name in new[] { "opencode", "opencode2" })
+            {
+                var path = await Task.Run(() => FindByName(name, CommonDirs)).ConfigureAwait(false);
+                if (path == null) continue;
+                var major = await CliCommand.DetectMajorAsync(path).ConfigureAwait(false);
+                if (major >= 2) return path;
+                if (major == 0 && name == "opencode2") return path;
+            }
+            return null;
+        }
+
         /// <summary>Установлен ли v1 (major==1, иначе по имени opencode).</summary>
         public static bool IsV1Available() => FindV1Path() != null;
 
@@ -679,8 +713,8 @@ namespace OpenCodeStudio.Services
 
         /// <summary>
         /// Поддерживает ли бинарь opencode веб-интерфейс: запускает
-        /// "&lt;cliPath&gt; --help" (скрытно, таймаут 5 c) и ищет "web" в выводе.
-        /// Результат кэшируется по пути.
+        /// "&lt;cliPath&gt; --help" (скрытно, таймаут 2 c) и ищет "web" в выводе.
+        /// Результат кэшируется по пути. С UI-потока использовать SupportsWebAsync.
         /// </summary>
         public static bool SupportsWeb(string cliPath)
         {
@@ -689,34 +723,74 @@ namespace OpenCodeStudio.Services
                 string.Equals(_webSupportPath, cliPath, StringComparison.OrdinalIgnoreCase))
                 return _webSupportResult;
 
-            bool result = false;
+            bool result;
             try
             {
-                var psi = new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = "cmd.exe",
-                    Arguments = "/c \"" + cliPath + "\" --help",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-                using (var proc = System.Diagnostics.Process.Start(psi))
-                {
-                    if (proc != null)
-                    {
-                        var output = proc.StandardOutput.ReadToEnd();
-                        output += proc.StandardError.ReadToEnd();
-                        if (!proc.WaitForExit(5000)) { try { proc.Kill(); } catch { } }
-                        result = output.IndexOf("web", StringComparison.OrdinalIgnoreCase) >= 0;
-                    }
-                }
+                var output = RunCaptureAsync("/c \"" + cliPath + "\" --help")
+                    .GetAwaiter().GetResult();
+                result = output.IndexOf("web", StringComparison.OrdinalIgnoreCase) >= 0;
             }
             catch { result = false; }
 
             _webSupportPath = cliPath;
             _webSupportResult = result;
             return result;
+        }
+
+        /// <summary>
+        /// Асинхронная обёртка: запуск уходит в Task.Run, UI-поток не блокируется.
+        /// Результат кладётся в тот же кэш, что и у SupportsWeb.
+        /// </summary>
+        public static Task<bool> SupportsWebAsync(string cliPath)
+        {
+            if (string.IsNullOrWhiteSpace(cliPath)) return Task.FromResult(false);
+            if (_webSupportPath != null &&
+                string.Equals(_webSupportPath, cliPath, StringComparison.OrdinalIgnoreCase))
+                return Task.FromResult(_webSupportResult);
+
+            return Task.Run(async () =>
+            {
+                bool result;
+                try
+                {
+                    var output = await RunCaptureAsync("/c \"" + cliPath + "\" --help")
+                        .ConfigureAwait(false);
+                    result = output.IndexOf("web", StringComparison.OrdinalIgnoreCase) >= 0;
+                }
+                catch { result = false; }
+
+                _webSupportPath = cliPath;
+                _webSupportResult = result;
+                return result;
+            });
+        }
+
+        /// <summary>
+        /// Запускает cmd.exe с аргументами, асинхронно читает stdout/stderr, ждёт
+        /// выхода не дольше 2 с и гарантированно убивает процесс по таймауту.
+        /// </summary>
+        private static async Task<string> RunCaptureAsync(string arguments)
+        {
+            var psi = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                Arguments = arguments,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            using (var proc = System.Diagnostics.Process.Start(psi))
+            {
+                if (proc == null) return "";
+                var stdout = proc.StandardOutput.ReadToEndAsync();
+                var stderr = proc.StandardError.ReadToEndAsync();
+                var exited = await Task.Run(() => proc.WaitForExit(2000)).ConfigureAwait(false);
+                if (!exited) { try { proc.Kill(); } catch { } }
+                var output = await stdout.ConfigureAwait(false);
+                output += await stderr.ConfigureAwait(false);
+                return output;
+            }
         }
 
         private static string FindByName(string name, string[] dirs)

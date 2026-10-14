@@ -48,63 +48,119 @@ namespace OpenCodeStudio
             IProgress<ServiceProgressData> progress)
         {
             await base.InitializeAsync(cancellationToken, progress);
+            Services.Log.Info("InitializeAsync step 1: base done");
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-            // Единый экземпляр настроек для сервисов (сервер, терминал, апдейты).
-            Services.SpendSettings.Current = GetSpendSettings();
-
-            // v2 доступна только в режиме CLI: веб-интерфейс Desktop её не поддерживает.
-            _serverController = new ServerController(() =>
-                GetSpendSettings()?.InterfaceMode == InterfaceMode.CLI &&
-                (GetSpendSettings()?.UseOpenCodeV2 ?? false));
-            _configuredV2 = GetSpendSettings().UseOpenCodeV2;
-            _configuredInterface = GetSpendSettings().InterfaceMode;
-            _configuredShowConsole = GetSpendSettings().ShowConsoleButton;
-
-            Services.SpendSettings.Applied += OnSpendSettingsApplied;
-
-            await ShowOpenCodeWindowCommand.InitializeAsync(this);
-            await ShowImportCommand.InitializeAsync(this);
-
-            _dte = await GetServiceAsync(typeof(DTE)) as DTE;
-            if (_dte != null)
+            // Настройки и общие сервисы.
+            try
             {
-                _solutionEvents = _dte.Events.SolutionEvents;
-                _solutionEvents.Opened += OnSolutionOpened;
+                // Единый экземпляр настроек для сервисов (сервер, терминал, апдейты).
+                Services.SpendSettings.Current = GetSpendSettings();
+
+                // v2 доступна только в режиме CLI: веб-интерфейс Desktop её не поддерживает.
+                _serverController = new ServerController(() =>
+                    GetSpendSettings()?.InterfaceMode == InterfaceMode.CLI &&
+                    (GetSpendSettings()?.UseOpenCodeV2 ?? false));
+                _configuredV2 = GetSpendSettings().UseOpenCodeV2;
+                _configuredInterface = GetSpendSettings().InterfaceMode;
+                _configuredShowConsole = GetSpendSettings().ShowConsoleButton;
+
+                Services.SpendSettings.Applied += OnSpendSettingsApplied;
+                Services.Log.Info("InitializeAsync step 2: settings ready");
+            }
+            catch (Exception ex)
+            {
+                Services.Log.Error("InitializeAsync step 2 failed", ex);
+            }
+
+            // Команды.
+            try
+            {
+                await ShowOpenCodeWindowCommand.InitializeAsync(this);
+                await ShowImportCommand.InitializeAsync(this);
+                Services.Log.Info("InitializeAsync step 3: commands initialized");
+            }
+            catch (Exception ex)
+            {
+                Services.Log.Error("InitializeAsync step 3 failed", ex);
+            }
+
+            // DTE и события решений.
+            try
+            {
+                _dte = await GetServiceAsync(typeof(DTE)) as DTE;
+                if (_dte != null)
+                {
+                    _solutionEvents = _dte.Events.SolutionEvents;
+                    _solutionEvents.Opened += OnSolutionOpened;
+                }
+                Services.Log.Info("InitializeAsync step 4: DTE events wired");
+            }
+            catch (Exception ex)
+            {
+                Services.Log.Error("InitializeAsync step 4 failed", ex);
             }
 
             // Первый запуск после установки или обновления (по версии расширения).
-            if (Onboarding.ShouldShow() && !_firstRunShown)
+            try
             {
-                _firstRunShown = true;
-                // Помечаем сразу: окно больше не появится до следующего обновления,
-                // даже если пользователь закроет его крестиком.
-                Onboarding.MarkCompleted();
-                _ = JoinableTaskFactory.RunAsync(async () =>
+                if (Onboarding.ShouldShow() && !_firstRunShown)
                 {
-                    try
+                    _firstRunShown = true;
+                    // Помечаем сразу: окно больше не появится до следующего обновления,
+                    // даже если пользователь закроет его крестиком.
+                    Onboarding.MarkCompleted();
+                    _ = JoinableTaskFactory.RunAsync(async () =>
                     {
-                        // Let the shell finish initializing before showing a window.
-                        await Task.Delay(2500);
-                        await JoinableTaskFactory.SwitchToMainThreadAsync();
-                        // Если opencode не найден — открываем окно на вкладке Install.
-                        var notInstalled = !OpenCodeServerService.IsV1Available()
-                            && !OpenCodeServerService.IsV2Available();
-                        await ShowSettingsWindowAsync(notInstalled ? 0 : 1);
-                    }
-                    catch (Exception ex)
-                    {
-                        Services.Log.Error("First-run wizard failed", ex);
-                    }
-                });
+                        try
+                        {
+                            // Let the shell finish initializing before showing a window.
+                            await Task.Delay(2500);
+                            await JoinableTaskFactory.SwitchToMainThreadAsync();
+                            // Если opencode не найден — открываем окно на вкладке Install.
+                            // Проверка версий — в фоне, не на UI-потоке.
+                            var notInstalled = await Task.Run(() =>
+                                !OpenCodeServerService.IsV1Available()
+                                && !OpenCodeServerService.IsV2Available());
+                            await ShowSettingsWindowAsync(notInstalled ? 0 : 1);
+                        }
+                        catch (Exception ex)
+                        {
+                            Services.Log.Error("First-run wizard failed", ex);
+                        }
+                    });
+                }
+                Services.Log.Info("InitializeAsync step 5: onboarding checked");
+            }
+            catch (Exception ex)
+            {
+                Services.Log.Error("InitializeAsync step 5 failed", ex);
             }
 
-            StartExtensionUpdateLoop();
-            StartOpenCodeUpdateLoop();
+            // Фоновые циклы проверки обновлений.
+            try
+            {
+                StartExtensionUpdateLoop();
+                StartOpenCodeUpdateLoop();
+                Services.Log.Info("InitializeAsync step 6: update loops started");
+            }
+            catch (Exception ex)
+            {
+                Services.Log.Error("InitializeAsync step 6 failed", ex);
+            }
 
 #if !JESK
-            ShowRenameNotice();
+            try
+            {
+                ShowRenameNotice();
+                Services.Log.Info("InitializeAsync step 7: rename notice scheduled");
+            }
+            catch (Exception ex)
+            {
+                Services.Log.Error("InitializeAsync step 7 failed", ex);
+            }
 #endif
+            Services.Log.Info("InitializeAsync completed");
         }
 
 #if !JESK
@@ -470,12 +526,19 @@ namespace OpenCodeStudio
         {
             _ = JoinableTaskFactory.RunAsync(async () =>
             {
-                await JoinableTaskFactory.SwitchToMainThreadAsync();
-                await Task.Delay(1000);
-                if (GetSpendSettings()?.AutoOpenOnSolutionOpen == true)
-                    await ShowOpenCodeWindowAsync();
-                else
-                    await RefreshOpenCodeWindowAsync();
+                try
+                {
+                    await JoinableTaskFactory.SwitchToMainThreadAsync();
+                    await Task.Delay(1000);
+                    if (GetSpendSettings()?.AutoOpenOnSolutionOpen == true)
+                        await ShowOpenCodeWindowAsync();
+                    else
+                        await RefreshOpenCodeWindowAsync();
+                }
+                catch (Exception ex)
+                {
+                    Services.Log.Error("OnSolutionOpened failed", ex);
+                }
             });
         }
 
