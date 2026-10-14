@@ -31,14 +31,14 @@
   <!-- Бренд Jesk: -p:Brand=Jesk включает отдельные GUID/строки (см. Brand.cs). -->
   <PropertyGroup Condition="'$(Brand)'=='Jesk'">
     <DefineConstants>$(DefineConstants);JESK</DefineConstants>
-    <VsctFile>OpenCodeStudioPackage.jesk.vsct</VsctFile>
+    <VsctFile>Package\OpenCodeStudioPackage.jesk.vsct</VsctFile>
   </PropertyGroup>
   <ItemGroup Condition="'$(Brand)'=='Jesk'">
-    <Page Remove="RenameNoticeWindow.xaml" />
-    <Compile Remove="RenameNoticeWindow.xaml.cs" />
+    <Page Remove="Windows\Dialogs\RenameNoticeWindow.xaml" />
+    <Compile Remove="Windows\Dialogs\RenameNoticeWindow.xaml.cs" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Brand)'!='Jesk'">
-    <VsctFile>OpenCodeStudioPackage.vsct</VsctFile>
+    <VsctFile>Package\OpenCodeStudioPackage.vsct</VsctFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -85,7 +85,7 @@
     </Content>
   </ItemGroup>
 
-  <!-- Логотип как WPF-ресурс: нужен для Source="Resources/IconJesk.png" в XAML
+  <!-- Логотип как WPF-ресурс: нужен для pack-URI /OpenCodeStudio;component/Resources/IconJesk.png в XAML
        (окно расширения исполняется внутри devenv.exe, файл из Content там не виден). -->
   <ItemGroup>
     <Resource Include="Resources\IconJesk.png" />

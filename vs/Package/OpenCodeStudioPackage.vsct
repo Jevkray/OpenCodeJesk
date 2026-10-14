@@ -8,7 +8,7 @@
   <Commands package="guidOpenCodeStudioPackage">
 
     <Bitmaps>
-      <Bitmap guid="guidImages" href="Resources\CommandIcons.png" usedList="bmpCommand" />
+      <Bitmap guid="guidImages" href="..\Resources\CommandIcons.png" usedList="bmpCommand" />
     </Bitmaps>
 
     <Groups>

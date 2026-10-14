@@ -5,6 +5,9 @@
         Width="480" SizeToContent="Height"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
         WindowStyle="None" Background="#1e1e1e" ShowInTaskbar="False">
+    <Window.Resources>
+        <ResourceDictionary Source="/OpenCodeStudio;component/Ui/UiButtonStyles.xaml" />
+    </Window.Resources>
     <Border Background="#1e1e1e" BorderBrush="#3a3a3a" BorderThickness="1" Padding="24">
         <StackPanel>
             <TextBlock x:Name="titleText" FontSize="18" FontWeight="SemiBold"
@@ -17,9 +20,9 @@
                       Content="Don't show this again" />
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
                 <Button x:Name="alreadyButton" Content="I already did" Padding="16,7"
-                        Margin="0,0,8,0" Click="OnAlreadyClick" />
+                        Margin="0,0,8,0" Style="{StaticResource OutlineButton}" Click="OnAlreadyClick" />
                 <Button x:Name="reviewButton" Content="Leave a review" Padding="18,7"
-                        FontWeight="SemiBold" Click="OnReviewClick" />
+                        FontWeight="SemiBold" Style="{StaticResource AccentButton}" Click="OnReviewClick" />
             </StackPanel>
         </StackPanel>
     </Border>

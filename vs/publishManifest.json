@@ -8,7 +8,7 @@
   "identity": {
     "internalName": "OpenCodeStudio"
   },
-  "overview": "README.md",
+  "overview": "Docs/README.md",
   "priceCategory": "free",
   "publisher": "jevkray",
   "private": false,

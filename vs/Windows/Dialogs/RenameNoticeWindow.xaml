@@ -6,6 +6,9 @@
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         ShowActivated="False" Background="#1e1e1e"
         WindowStyle="SingleBorderWindow">
+    <Window.Resources>
+        <ResourceDictionary Source="/OpenCodeStudio;component/Ui/UiButtonStyles.xaml" />
+    </Window.Resources>
     <Border Background="#1e1e1e" Padding="0">
         <StackPanel Margin="24">
             <TextBlock FontSize="20" FontWeight="SemiBold" Foreground="#f1f1f1"
@@ -45,9 +48,9 @@
                 <CheckBox x:Name="dontShowCheck" Content="Do not show again" Foreground="#9a9a9a"
                           VerticalAlignment="Center" Margin="0,0,16,0" />
                 <Button x:Name="laterButton" Content="Later" Padding="16,7" Margin="0,0,8,0"
-                        Click="OnLaterClick" />
+                        Style="{StaticResource OutlineButton}" Click="OnLaterClick" />
                 <Button x:Name="getButton" Content="Get OpenCode Jesk" Padding="18,7"
-                        FontWeight="SemiBold" Click="OnGetClick" />
+                        FontWeight="SemiBold" Style="{StaticResource AccentButton}" Click="OnGetClick" />
             </StackPanel>
         </StackPanel>
     </Border>

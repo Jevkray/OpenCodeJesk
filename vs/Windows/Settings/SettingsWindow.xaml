@@ -396,7 +396,7 @@
             <DockPanel>
                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="20,24,20,16">
                     <Image Width="20" Height="20" Margin="0,0,8,0"
-                           VerticalAlignment="Center" Source="Resources/IconJesk.png" />
+                           VerticalAlignment="Center" Source="/OpenCodeStudio;component/Resources/IconJesk.png" />
                     <TextBlock Uid="menu.title" Text="Settings" FontSize="18"
                                FontWeight="SemiBold" Foreground="#f1f1f1" VerticalAlignment="Center" />
                 </StackPanel>
@@ -495,15 +495,19 @@
                                                RequestNavigate="OnHyperlink"><Run Text="opencode.ai/docs" /></Hyperlink></TextBlock>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                                    <Button x:Name="installAllButton" Uid="install.button.all"
+                                            Content="Install All" Margin="0,0,10,0"
+                                            Style="{StaticResource AccentButton}" Click="OnInstallAllClick" />
                                     <Button x:Name="installButton" Uid="install.button.v1"
                                             Content="Install v1" Margin="0,0,10,0"
-                                            Style="{StaticResource AccentButton}" Click="OnInstallOpenCodeClick" />
+                                            Style="{StaticResource GhostButton}" Click="OnInstallOpenCodeClick" />
                                     <Button x:Name="installV2Button" Uid="install.button.v2"
-                                            Content="Install v2"
+                                            Content="Install v2" Margin="0,0,10,0"
                                             Style="{StaticResource GhostButton}" Click="OnInstallV2Click" />
+                                    <Button x:Name="checkVersionsButton" Uid="install.button.check"
+                                            Content="Check versions"
+                                            Style="{StaticResource GhostButton}" Click="OnCheckVersionsClick" />
                                 </StackPanel>
-                                <TextBlock Uid="install.v2.size" Style="{StaticResource CardHint}"
-                                           Text="The v2 package is large (~300 MB); installation may take several minutes — progress and time are shown below." />
                                 <Grid Margin="0,12,0,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />

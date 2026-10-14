@@ -7,6 +7,9 @@
         ResizeMode="NoResize"
         ShowActivated="False" Topmost="False"
         Background="#1e1e1e">
+    <Window.Resources>
+        <ResourceDictionary Source="/OpenCodeStudio;component/Ui/UiButtonStyles.xaml" />
+    </Window.Resources>
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -44,12 +47,12 @@
                    Text="Don't want these notifications? Turn off &quot;Check for new versions&quot; in Tools -&gt; Options -&gt; OpenCode Studio." />
 
         <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-            <Button x:Name="notNowButton" Content="Not now" Padding="14,8" Margin="0,0,8,0"
-                    Click="OnNotNowClick" />
-            <Button x:Name="marketplaceButton" Content="Marketplace page" Padding="14,8" Margin="0,0,8,0"
-                    Click="OnMarketplaceClick" />
-            <Button x:Name="extensionManagerButton" Content="Open Extension Manager" Padding="18,8"
-                    FontWeight="SemiBold" Click="OnExtensionManagerClick" />
+            <Button x:Name="notNowButton" Content="Not now" Padding="14,7" Margin="0,0,8,0"
+                    Style="{StaticResource OutlineButton}" Click="OnNotNowClick" />
+            <Button x:Name="marketplaceButton" Content="Marketplace page" Padding="14,7" Margin="0,0,8,0"
+                    Style="{StaticResource OutlineButton}" Click="OnMarketplaceClick" />
+            <Button x:Name="extensionManagerButton" Content="Open Extension Manager" Padding="18,7"
+                    FontWeight="SemiBold" Style="{StaticResource AccentButton}" Click="OnExtensionManagerClick" />
         </StackPanel>
     </Grid>
 </Window>

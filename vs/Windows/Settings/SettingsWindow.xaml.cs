@@ -473,7 +473,32 @@ namespace OpenCodeStudio
         private async void OnInstallV2Click(object sender, RoutedEventArgs e)
             => await InstallCliAsync("@opencode/cli");
 
-        /// <summary>Ставит указанный npm-пакет через CliInstallService и обновляет статус.</summary>
+        /// <summary>Кнопка Install All: ставит сразу v2 и v1 одним проходом.</summary>
+        private async void OnInstallAllClick(object sender, RoutedEventArgs e)
+            => await InstallAllAsync();
+
+        /// <summary>Кнопка Check versions: показывает фактические версии установленных v1/v2.</summary>
+        private async void OnCheckVersionsClick(object sender, RoutedEventArgs e)
+            => await CheckVersionsAsync();
+
+        /// <summary>Один проход установки npm-пакета без busy/таймера и итоговых статусов.</summary>
+        private async Task<(bool ok, List<string> log)> InstallPackageAsync(string packageSpec)
+        {
+            var log = new List<string>();
+            var ok = await _cliInstall.InstallAsync(packageSpec, line =>
+            {
+                lock (log) { log.Add(line); if (log.Count > 200) log.RemoveAt(0); }
+                // Живой вывод: последняя строка npm на UI-потоке.
+                Dispatcher.Invoke(() =>
+                {
+                    _lastNpmLine = line;
+                    UpdateInstallStatus();
+                });
+            }, _installCts.Token);
+            return (ok, log);
+        }
+
+        /// <summary>Обёртка установки одного пакета: busy-цикл, таймер и итоговый статус.</summary>
         private async Task InstallCliAsync(string packageSpec)
         {
             // На время установки блокируем кнопки установки и ссылки; Cancel доступен.
@@ -484,17 +509,7 @@ namespace OpenCodeStudio
             _installCts = new System.Threading.CancellationTokenSource();
             try
             {
-                var log = new List<string>();
-                var ok = await _cliInstall.InstallAsync(packageSpec, line =>
-                {
-                    lock (log) { log.Add(line); if (log.Count > 200) log.RemoveAt(0); }
-                    // Живой вывод: последняя строка npm на UI-потоке.
-                    Dispatcher.Invoke(() =>
-                    {
-                        _lastNpmLine = line;
-                        UpdateInstallStatus();
-                    });
-                }, _installCts.Token);
+                var (ok, log) = await InstallPackageAsync(packageSpec);
 
                 StopInstallTimer();
                 if (_installCts.IsCancellationRequested)
@@ -525,6 +540,97 @@ namespace OpenCodeStudio
                 _installCts?.Dispose();
                 _installCts = null;
             }
+        }
+
+        /// <summary>
+        /// Ставит v2, затем v1 в одном busy-цикле. Порядок важен: пакет v2
+        /// (@opencode/cli) перекрывает opencode, поэтому v1 ставим последним —
+        /// тогда opencode = v1, а opencode2 = v2.
+        /// </summary>
+        private async Task InstallAllAsync()
+        {
+            SetInstallBusy(true);
+            _lastNpmLine = null;
+            StartInstallTimer();
+
+            _installCts = new System.Threading.CancellationTokenSource();
+            try
+            {
+                var (okV2, logV2) = await InstallPackageAsync("@opencode/cli");
+                if (_installCts.IsCancellationRequested)
+                {
+                    Log.Info("OpenCode install all cancelled after v2");
+                    if (installResult != null) installResult.Text = Loc("install.cancelled");
+                    return;
+                }
+
+                var (okV1, logV1) = await InstallPackageAsync("opencode-ai@latest");
+                StopInstallTimer();
+                if (_installCts.IsCancellationRequested)
+                {
+                    Log.Info("OpenCode install all cancelled after v1");
+                    if (installResult != null) installResult.Text = Loc("install.cancelled");
+                    return;
+                }
+
+                var info = await DetectInstalledVersionsAsync();
+                await RefreshInstallStatusAsync(info);
+                var ok = okV1 && okV2;
+                Log.Info("OpenCode install all " + (ok ? "succeeded" : "failed"));
+                if (installResult != null)
+                {
+                    if (ok)
+                    {
+                        installResult.Text = Loc("install.done");
+                    }
+                    else
+                    {
+                        var tail = logV2.Skip(Math.Max(0, logV2.Count - 5))
+                            .Concat(logV1.Skip(Math.Max(0, logV1.Count - 5)));
+                        installResult.Text = Loc("install.failed") + "\n" + string.Join("\n", tail);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("OpenCode install all failed", ex);
+                if (installResult != null) installResult.Text = Loc("install.failed") + " " + ex.Message;
+            }
+            finally
+            {
+                StopInstallTimer();
+                SetInstallBusy(false);
+                _installCts?.Dispose();
+                _installCts = null;
+            }
+        }
+
+        /// <summary>Проверяет фактические версии найденных v1/v2 и выводит их в статус.</summary>
+        private async Task CheckVersionsAsync()
+        {
+            if (installResult == null) return;
+            installResult.Text = Loc("install.status.checking");
+            try
+            {
+                var info = await _versionStatus.DetectAsync();
+                var v1 = await DescribeVersionAsync("v1", info.V1Path);
+                var v2 = await DescribeVersionAsync("v2", info.V2Path);
+                installResult.Text = v1 + "\n" + v2;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Version check failed", ex);
+                installResult.Text = Loc("install.failed") + " " + ex.Message;
+            }
+        }
+
+        /// <summary>Строка вида "v1: 1.19.0 — <путь>" для бинаря или пометка об отсутствии.</summary>
+        private async Task<string> DescribeVersionAsync(string label, string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return label + ": " + Loc("install.version.notinstalled");
+            var version = await CliBinaryLocator.GetVersionAsync(path);
+            return label + ": " + (version ?? "?") + " — " + path;
         }
 
         /// <summary>Запускает таймер прошедшего времени установки (тик 1 c).</summary>
@@ -567,6 +673,8 @@ namespace OpenCodeStudio
         {
             if (installButton != null) installButton.IsEnabled = !busy;
             if (installV2Button != null) installV2Button.IsEnabled = !busy;
+            if (installAllButton != null) installAllButton.IsEnabled = !busy;
+            if (checkVersionsButton != null) checkVersionsButton.IsEnabled = !busy;
             if (installSiteLink != null) installSiteLink.IsEnabled = !busy;
             if (installDocsLink != null) installDocsLink.IsEnabled = !busy;
             if (installProgress != null)

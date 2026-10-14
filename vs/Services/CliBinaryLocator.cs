@@ -208,6 +208,32 @@ namespace OpenCodeStudio.Services
         }
 
         /// <summary>
+        /// Строка версии бинаря opencode или null. Запускает "&lt;binary&gt; --version"
+        /// (через RunCaptureAsync, для .cmd/.bat — cmd /c), берёт из первой строки
+        /// с цифрами версионный токен вида "1.19.0".
+        /// </summary>
+        public static async Task<string> GetVersionAsync(string binary)
+        {
+            if (string.IsNullOrWhiteSpace(binary)) return null;
+
+            string output;
+            try
+            {
+                output = await RunCaptureAsync("/c \"" + binary + "\" --version").ConfigureAwait(false);
+            }
+            catch { return null; }
+
+            if (string.IsNullOrEmpty(output)) return null;
+
+            foreach (var raw in output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var match = System.Text.RegularExpressions.Regex.Match(raw, @"\d+(\.\d+)+");
+                if (match.Success) return match.Value;
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Запускает cmd.exe с аргументами, асинхронно читает stdout/stderr, ждёт
         /// выхода не дольше 2 с и гарантированно убивает процесс по таймауту.
         /// </summary>

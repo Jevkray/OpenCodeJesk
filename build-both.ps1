@@ -36,9 +36,9 @@ function Build-Brand([string]$brand, [string]$manifestSource, [string]$destName)
 }
 
 # 2. Studio
-$studioVsix = Build-Brand '' $studio 'OpenCodeStudio-1.2.0.32.vsix'
+$studioVsix = Build-Brand '' $studio 'OpenCodeStudio-1.2.0.34.vsix'
 # 3. Jesk
-$jeskVsix = Build-Brand 'Jesk' $jesk 'OpenCodeJesk-1.2.0.32.vsix'
+$jeskVsix = Build-Brand 'Jesk' $jesk 'OpenCodeJesk-1.2.0.34.vsix'
 # 4. В дереве остаётся Jesk-манифест (после шага 3 он уже Jesk).
 
 # 5. Разложить и почистить прошлую версию.
@@ -49,6 +49,6 @@ foreach ($dir in @($root, $targetDir, $desktop)) {
         if ([string]::Equals($dir, $targetDir, [System.StringComparison]::OrdinalIgnoreCase)) { Copy-Item -LiteralPath $studioVsix -Destination $dir -Force }
         Copy-Item -LiteralPath $jeskVsix   -Destination $dir -Force
     }
-    Get-ChildItem -LiteralPath $dir -Filter 'OpenCode*-1.2.0.31.vsix' | Remove-Item -Force
+    Get-ChildItem -LiteralPath $dir -Filter 'OpenCode*-1.2.0.33.vsix' | Remove-Item -Force
 }
 Write-Host "VSIX разложены: $targetDir (Studio + Jesk), рабочий стол (Jesk)"
