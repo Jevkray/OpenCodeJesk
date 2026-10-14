@@ -38,7 +38,6 @@ namespace OpenCodeStudio
 
         private string _currentProjectRoot;
         private bool _isDisposed;
-        private bool _cacheChecked;
         private bool _isStarting;
         private bool _retryDisabled;
         private System.Threading.Timer _projRootTimer;
@@ -1032,11 +1031,10 @@ namespace OpenCodeStudio
         /// Очищает только кэш WebView2 (не cookie), если сменилась мажорная
         /// версия OpenCode (v1 ↔ v2). Иначе WebView2 отдаёт закэшированные
         /// ассеты старой версии с того же адреса 127.0.0.1:4096, и веб-клиент
-        /// падает с UnsupportedContentType. Выполняется один раз за сессию.
+        /// падает с UnsupportedContentType. Проверяется при каждом старте панели.
         /// </summary>
         private async Task EnsureWebViewCacheFreshAsync()
         {
-            if (_cacheChecked) return;
             var core = webView?.CoreWebView2;
             if (core == null) return;
 
@@ -1044,11 +1042,10 @@ namespace OpenCodeStudio
             try { major = CliCommand.DetectMajor(_serverController?.ServerService?.BinaryPath); }
             catch { major = 0; }
             if (major <= 0) major = 1;
-            _cacheChecked = true;
 
             var stamp = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "OpenCodeStudio", "webview-major.txt");
+                "OpenCodeStudio", "webview-major2.txt");
             int saved = 0;
             try
             {
