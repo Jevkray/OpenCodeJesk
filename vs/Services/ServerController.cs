@@ -19,12 +19,12 @@ namespace OpenCodeStudio.Services
         private IOpenCodeSessionService _sessionService;
 
         private string _currentProjectRoot;
+        private string _currentProjectDirectory;
         private string _currentSessionId;
         private string _currentSessionDirectory;
 
         private CancellationTokenSource _shutdownCts;
         private CancellationTokenSource _workspaceCheckCts;
-        private const int ShutdownIdleMinutes = 5;
         private const int AgentCheckIntervalMs = 10000;
         private const int WorkspaceCheckIntervalMs = 5000;
         private bool _isDisposed;
@@ -38,7 +38,10 @@ namespace OpenCodeStudio.Services
         public void UpdateProjectRoot(string newRoot)
         {
             if (!string.Equals(newRoot, _currentProjectRoot, StringComparison.OrdinalIgnoreCase))
+            {
                 _currentProjectRoot = newRoot;
+                _currentProjectDirectory = System.IO.Path.GetFullPath(newRoot);
+            }
         }
 
         public event Action<ConnectionState> ServerStateChanged;
@@ -60,6 +63,7 @@ namespace OpenCodeStudio.Services
         {
             CancelShutdown();
             _currentProjectRoot = projectRoot;
+            _currentProjectDirectory = System.IO.Path.GetFullPath(projectRoot);
 
             _serverService.PreferV2 = _useV2?.Invoke() ?? false;
 
@@ -72,6 +76,17 @@ namespace OpenCodeStudio.Services
                 var started = await _serverService.StartAsync(projectRoot);
                 if (!started || _serverService.State != ConnectionState.Connected)
                     return false;
+            }
+
+            try
+            {
+                var path = await _sessionService.GetPathAsync(projectRoot);
+                if (!string.IsNullOrEmpty(path?.Directory))
+                    _currentProjectDirectory = path.Directory;
+            }
+            catch (Exception ex)
+            {
+                Log.Info("Project directory lookup failed: " + ex.Message);
             }
 
             // Find an existing session for this project. We deliberately do NOT
@@ -112,11 +127,10 @@ namespace OpenCodeStudio.Services
             _connectionMonitor.Start();
 
             StartWorkspaceCheck();
-            // NOTE: the idle shutdown countdown was intentionally removed.
-            // Stopping the server after a few idle minutes caused the tool window
-            // to lose its connection periodically. The server process is bound to
-            // Visual Studio through a job object, so it is terminated automatically
-            // when VS exits.
+
+            // Остановка по простою — только если явно включена в настройках (0 = выкл).
+            var idleMinutes = SpendSettings.Current?.IdleStopMinutes ?? 0;
+            if (idleMinutes > 0) StartShutdownCountdown(idleMinutes);
 
             return true;
         }
@@ -144,15 +158,66 @@ namespace OpenCodeStudio.Services
         }
 
         /// <summary>
-        /// URL of the OpenCode web UI home. Opening the home (instead of a
-        /// project-scoped session) shows all projects and every chat, exactly
-        /// like the OpenCode desktop app.
+        /// Открывает черновик чата текущего проекта; остальные проекты доступны
+        /// через штатный интерфейс OpenCode. Сессию создаёт сам веб-клиент.
         /// </summary>
         public string GetHomeUrl()
         {
             if (_serverService.ServerInfo == null)
                 return null;
-            return _serverService.ServerInfo.BaseUrl + "/";
+            if (string.IsNullOrEmpty(_currentProjectDirectory))
+                return _serverService.ServerInfo.BaseUrl + "/";
+            return _serverService.ServerInfo.BaseUrl + "/"
+                + ToUrlSafeBase64(_currentProjectDirectory) + "/session";
+        }
+
+        /// <summary>
+        /// URL конкретного чата в веб-интерфейсе — используется при возврате
+        /// из CLI, чтобы открыть тот же чат.
+        /// </summary>
+        public string GetSessionUrl(string directory, string sessionId)
+        {
+            if (_serverService.ServerInfo == null || string.IsNullOrEmpty(sessionId))
+                return null;
+            var dir = !string.IsNullOrEmpty(directory)
+                ? directory
+                : (_currentProjectDirectory ?? _currentProjectRoot ?? "");
+            return $"{_serverService.ServerInfo.BaseUrl}/{ToUrlSafeBase64(dir)}/session/{sessionId}";
+        }
+
+        /// <summary>
+        /// Активный чат папки — тот, где отправлено последнее сообщение.
+        /// Терминал не сообщает свой чат, поэтому выбираем по времени
+        /// последнего сообщения (пустые только что созданные чаты пропускаем).
+        /// </summary>
+        public async Task<Session> GetActiveSessionAsync(string directory)
+        {
+            if (_sessionService == null || string.IsNullOrEmpty(directory)) return null;
+            try
+            {
+                var sessions = await _sessionService.ListSessionsAsync(directory);
+                if (sessions == null || sessions.Count == 0) return null;
+                var ordered = new System.Collections.Generic.List<Session>(sessions);
+                ordered.Sort((a, b) => (b.Time?.Updated ?? 0).CompareTo(a.Time?.Updated ?? 0));
+
+                Session best = null;
+                long bestTime = -1;
+                int inspected = 0;
+                foreach (var session in ordered)
+                {
+                    if (session == null) continue;
+                    if (inspected++ >= 5) break;
+                    // Запросы только по НЕСКОЛЬКИМ свежим кандидатам, чтобы не тормозить.
+                    var sent = await _sessionService.GetLastMessageTimeAsync(session.Id, directory);
+                    if (sent > 0 && sent > bestTime) { bestTime = sent; best = session; }
+                }
+                return best ?? ordered[0];
+            }
+            catch (Exception ex)
+            {
+                Log.Info("Active session lookup: " + ex.Message);
+                return null;
+            }
         }
 
         public void Stop()
@@ -207,7 +272,7 @@ namespace OpenCodeStudio.Services
             _workspaceCheckCts = null;
         }
 
-        private void StartShutdownCountdown()
+        private void StartShutdownCountdown(int idleMinutes)
         {
             _shutdownCts?.Cancel();
             _shutdownCts = new CancellationTokenSource();
@@ -226,7 +291,7 @@ namespace OpenCodeStudio.Services
                             continue;
                         }
 
-                        await Task.Delay(ShutdownIdleMinutes * 60 * 1000, ct);
+                        await Task.Delay(idleMinutes * 60 * 1000, ct);
 
                         if (!ct.IsCancellationRequested)
                         {

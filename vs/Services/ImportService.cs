@@ -194,11 +194,19 @@ namespace OpenCodeStudio.Services
         public ImportResult Import(ImportSource source, IEnumerable<ImportItem> items)
         {
             var result = new ImportResult();
+            // Замена opencode.db/auth.json под работающим OpenCode (CLI/сервер/Desktop)
+            // может уронить его — поэтому при запущенном OpenCode историю и ключи не трогаем.
+            bool openCodeRunning = IsOpenCodeRunning();
             foreach (var item in items)
             {
                 if (item == null || !item.Importable) continue;
                 try
                 {
+                    if ((item.Kind == ImportKind.History || item.Kind == ImportKind.Auth) && openCodeRunning)
+                    {
+                        result.Errors.Add($"{item.Label}: OpenCode is running - close OpenCode (including the desktop app) and try again.");
+                        continue;
+                    }
                     if (item.IsDirectory)
                         CopyDirectory(item.Source, item.Target, result);
                     else
@@ -221,6 +229,32 @@ namespace OpenCodeStudio.Services
                 }
             }
             return result;
+        }
+
+        /// <summary>
+        /// Запущен ли OpenCode (CLI, локальный сервер или Desktop-приложение).
+        /// Имена opencode/opencode2/OpenCode сопоставляются без учёта регистра.
+        /// </summary>
+        public static bool IsOpenCodeRunning()
+        {
+            try
+            {
+                foreach (var process in System.Diagnostics.Process.GetProcesses())
+                {
+                    try
+                    {
+                        var name = process.ProcessName;
+                        if (name.Equals("opencode", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("opencode2", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("OpenCode", StringComparison.OrdinalIgnoreCase))
+                            return true;
+                    }
+                    catch { }
+                    finally { process.Dispose(); }
+                }
+            }
+            catch { }
+            return false;
         }
 
         private void CopyFileWithBackup(string source, string target, ImportResult result)

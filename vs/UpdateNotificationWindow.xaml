@@ -1,0 +1,55 @@
+<Window x:Class="OpenCodeStudio.UpdateNotificationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Update available"
+        Width="460" SizeToContent="Height"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        ShowActivated="False" Topmost="False"
+        Background="#1e1e1e">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="titleText" Grid.Row="0" Text="Update available"
+                   FontSize="18" FontWeight="SemiBold" Foreground="#f1f1f1" TextWrapping="Wrap" />
+        <TextBlock x:Name="subtitleText" Grid.Row="1" Margin="0,6,0,0"
+                   FontSize="12" Foreground="#9a9a9a" TextWrapping="Wrap" />
+
+        <Border Grid.Row="2" Margin="0,14,0,0" CornerRadius="6"
+                Background="#252526" BorderBrush="#3a3a3a" BorderThickness="1" Padding="14">
+            <StackPanel>
+                <TextBlock x:Name="whatsNewLabel" Text="What's new" FontSize="13"
+                           FontWeight="SemiBold" Foreground="#f1f1f1" />
+                <TextBox x:Name="notesText" Margin="0,8,0,0" IsReadOnly="True"
+                         TextWrapping="Wrap" FontSize="11" MaxHeight="220"
+                         Background="#1e1e1e" Foreground="#e6e6e6" BorderBrush="#3a3a3a"
+                         VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                         Padding="6" />
+            </StackPanel>
+        </Border>
+
+        <TextBlock x:Name="hintText" Grid.Row="3" Margin="0,14,0,0"
+                   FontSize="11" Foreground="#9a9a9a" TextWrapping="Wrap"
+                   Text="Visual Studio updates extensions automatically - open Extension Manager to apply the update, or restart Visual Studio." />
+
+        <TextBlock Grid.Row="4" Margin="0,10,0,0"
+                   FontSize="11" Foreground="#9a9a9a" TextWrapping="Wrap"
+                   Text="Don't want these notifications? Turn off &quot;Check for new versions&quot; in Tools -&gt; Options -&gt; OpenCode Studio." />
+
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button x:Name="notNowButton" Content="Not now" Padding="14,8" Margin="0,0,8,0"
+                    Click="OnNotNowClick" />
+            <Button x:Name="marketplaceButton" Content="Marketplace page" Padding="14,8" Margin="0,0,8,0"
+                    Click="OnMarketplaceClick" />
+            <Button x:Name="extensionManagerButton" Content="Open Extension Manager" Padding="18,8"
+                    FontWeight="SemiBold" Click="OnExtensionManagerClick" />
+        </StackPanel>
+    </Grid>
+</Window>

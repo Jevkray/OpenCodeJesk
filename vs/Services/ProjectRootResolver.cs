@@ -21,6 +21,24 @@ namespace OpenCodeStudio.Services
             ThreadHelper.ThrowIfNotOnUIThread();
 
             string solutionDir = GetSolutionDirectory();
+            var mode = SpendSettings.Current?.StartDirectory ?? StartDirectoryMode.GitRoot;
+
+            if (mode == StartDirectoryMode.LastUsed)
+            {
+                var last = ReadRememberedRoot();
+                if (!string.IsNullOrEmpty(last) && Directory.Exists(last))
+                    return last;
+            }
+            else if (mode == StartDirectoryMode.SolutionDir && !string.IsNullOrEmpty(solutionDir))
+            {
+                return Remember(NormalizePath(solutionDir));
+            }
+            else if (mode == StartDirectoryMode.ProjectDir)
+            {
+                var projectDir = FindProjectDirectory(solutionDir);
+                if (!string.IsNullOrEmpty(projectDir))
+                    return Remember(NormalizePath(projectDir));
+            }
 
             // Try git root from solution directory (higher priority)
             string gitRoot = FindGitRoot(solutionDir);
@@ -44,6 +62,19 @@ namespace OpenCodeStudio.Services
 
             // Use user documents directory as last resort
             return NormalizePath(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+        }
+
+        /// <summary>Каталог первого найденного .csproj в решении.</summary>
+        private static string FindProjectDirectory(string solutionDir)
+        {
+            if (string.IsNullOrEmpty(solutionDir) || !Directory.Exists(solutionDir)) return null;
+            try
+            {
+                var projects = Directory.GetFiles(solutionDir, "*.csproj", SearchOption.AllDirectories);
+                if (projects.Length > 0) return Path.GetDirectoryName(projects[0]);
+            }
+            catch { }
+            return null;
         }
 
         private static string Remember(string root)

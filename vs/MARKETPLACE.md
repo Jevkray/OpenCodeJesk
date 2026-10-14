@@ -1,50 +1,77 @@
-# 🟣 OpenCode Studio
+# 🟣 OpenCode Jesk
 
 **The OpenCode AI coding agent — natively inside Visual Studio.**
 
-*A fast, self-contained tool window with a first-run import wizard and shared chat history. Works with Visual Studio 2022 and 2026.*
+*Formerly OpenCode Studio. A fast, self-contained tool window with a settings/import wizard and shared chat history. Works with Visual Studio 2022 and 2026.*
 
-![Marketplace](https://img.shields.io/visual-studio-marketplace/v/jevkray.OpenCodeStudio?label=marketplace&color=7C3AED)
-![Installs](https://img.shields.io/visual-studio-marketplace/i/jevkray.OpenCodeStudio?color=7C3AED)
+![Marketplace](https://img.shields.io/visual-studio-marketplace/v/jevkray.OpenCodeJesk?label=marketplace&color=7C3AED)
+![Installs](https://img.shields.io/visual-studio-marketplace/i/jevkray.OpenCodeJesk?color=7C3AED)
 ![Visual Studio](https://img.shields.io/badge/Visual%20Studio-2022%20%7C%202026-7C3AED)
 ![License](https://img.shields.io/badge/license-MIT-7C3AED)
 
 ---
 
-## 📸 Preview
-
-![OpenCode Studio running inside Visual Studio](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/vs/Resources/PreviewWork.jpg)
-
-> 💬 *The agent chat right next to your solution — with a live session panel showing model, provider, token usage, cost, last activity and the context breakdown.*
+> **Renamed: OpenCode Studio → OpenCode Jesk.** This is the same extension under a new name and it stays fully compatible — your settings, providers, credentials and chat history are kept. **OpenCode Studio support ends on 20.10.2026.** Switch to the new [OpenCode Jesk on the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk).
 
 ---
 
+## 📸 Preview
+
+![OpenCode Jesk running inside Visual Studio](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/vs/Resources/PreviewWork.jpg)
+
+> 💬 *The agent chat right next to your solution — with a live session panel showing model, provider, token usage, cost, last activity and the context breakdown.*
+
+## 📸 Screenshots
+
+<!-- SCREENSHOT: ../docs/images/jesk-settings-general.png — Settings: General -->
+![OpenCode Jesk — Settings: General](../docs/images/jesk-settings-general.png)
+*Settings — General: interface mode, OpenCode version, web zoom and panel behavior.*
+
+<!-- SCREENSHOT: ../docs/images/jesk-settings-terminal.png — Settings: Terminal -->
+![OpenCode Jesk — Settings: Terminal](../docs/images/jesk-settings-terminal.png)
+*Settings — Terminal: font, size, cursor, scrollback and CLI command options.*
+
+<!-- SCREENSHOT: ../docs/images/jesk-settings-server.png — Settings: Server -->
+![OpenCode Jesk — Settings: Server](../docs/images/jesk-settings-server.png)
+*Settings — Server: opencode binary path, preferred port, serve arguments and idle stop.*
+
+<!-- SCREENSHOT: ../docs/images/jesk-settings-updates.png — Settings: Updates -->
+![OpenCode Jesk — Settings: Updates](../docs/images/jesk-settings-updates.png)
+*Settings — Updates: check for new versions, interval and release channel.*
+
+<!-- SCREENSHOT: ../docs/images/jesk-settings-import.png — Settings: Import -->
+![OpenCode Jesk — Settings: Import](../docs/images/jesk-settings-import.png)
+*Settings — Import: detected OpenCode sources, add folder and import selected (with backups).*
+
+<!-- SCREENSHOT: ../docs/images/jesk-desktop.png — Panel in Desktop (Web) mode -->
+![OpenCode Jesk — Desktop (Web) panel](../docs/images/jesk-desktop.png)
+*The panel in **Desktop (Web)** mode — the full OpenCode web UI inside the tool window.*
+
+<!-- SCREENSHOT: ../docs/images/jesk-cli.png — Panel in CLI (terminal) mode -->
+![OpenCode Jesk — CLI (terminal) panel](../docs/images/jesk-cli.png)
+*The panel in **CLI (terminal)** mode — a plain terminal with OpenCode already running.*
+
 ## 🆕 What's new
 
+- **1.2.0** - **Desktop (Web)** and **CLI (terminal)** interface modes in the same panel; shared chat between modes; a dedicated **Settings** window (General, Terminal, Server, Updates, Import); auto-open on solution open; **web zoom**; terminal font, size, cursor and scrollback; server port/arguments/idle stop; marketplace update checks; **v1 / v2 preview** support; safe import with backups; and the rename to **OpenCode Jesk**.
 - **1.1.5.1** (minor hotfix) - More reliable **Open Extension Manager** action (opens the Visual Studio extension manager, Updates page first); the update window now hides until the next Visual Studio restart on any action, and explains how to turn the notifications off in settings.
 - **1.1.5** - Fixed: closing the update window hides it until the next restart; "Open Extension Manager" opens the Visual Studio extension manager.
-- **1.1.5** - Closing the update window hides it until the next Visual Studio restart, and **Open Extension Manager** now opens the Visual Studio extension manager (Marketplace page only as a fallback).
-- **1.1.4** - Background update checks (once a minute). For **OpenCode Studio itself**: a compact dark-themed window shows the new version and its release notes with **Open Extension Manager** / **Marketplace page** / **Not now** buttons (Visual Studio already installs extension updates in the background). For **OpenCode CLI**: the window offers to update it right from the extension (`npm i -g opencode-ai@latest`) or shows the manual command; the panel picks up the new version on restart. New setting **Check for new versions** turns extension update notifications off.
+- **1.1.4** - Background update checks (once a minute). For **OpenCode Jesk itself**: a compact dark-themed window shows the new version and its release notes with **Open Extension Manager** / **Marketplace page** / **Not now** buttons (Visual Studio already installs extension updates in the background). For **OpenCode CLI**: the window offers to update it right from the extension (`npm i -g opencode-ai@latest`) or shows the manual command; the panel picks up the new version on restart. New setting **Check for new versions** turns extension update notifications off.
 - **1.1.3** - The Settings window shows the installed and the latest available OpenCode version, with an **Update** button when a newer release exists. A new OpenCode version is now picked up automatically.
 - **1.1.2**
   - Always uses the **latest installed opencode**: on start the server re-checks the binary (path + modification time) and restarts if it changed; `server.json` now records the real server process PID.
   - The first-run wizard is now a **Settings** window with **Import** and **Settings** tabs; the button is **Save selected** and applies both imports and settings.
-  - The **"OpenCode Studio Usage Statistics"** menu item and its window are temporarily removed (statistics will return later); a button in the panel opens the OpenCode Console in the meantime.
-- **1.1.1**
-  - Works with **opencode v1 and v2 (including the v2 beta)**: the extension sets the server password itself, sends HTTP Basic Auth on every request and passes the credentials to WebView2 (the v2 server requires auth after the CVE-2026-22812 fix). The misleading "not in PATH" error is gone.
-  - Auto-detects the v2 beta binary (`opencode2`) and adds a native **"Use OpenCode v2.x (preview)"** switch (settings window and **Tools → Options**); `OPENCODESTUDIO_OPENCODE_BIN` forces a binary path.
-  - One VSIX for **Visual Studio 2022 and 2026**.
-  - Fixes: no more v2 reconnect loop (health check no longer demands `{"healthy":true}`), the whole process tree is terminated (`taskkill /T`, so the port no longer "jumps"), and readiness no longer depends on the startup log line.
 - **1.1.0** - Statistics button in the OpenCode panel: open your profile and check real usage without leaving Visual Studio.
 
 ## ✨ Highlights
 
 - 🧠 **Real OpenCode, not a clone** — the complete official web UI, rendered directly in Visual Studio.
-- 🔀 **opencode v1 and v2 (beta)** — a native **"Use OpenCode v2.x (preview)"** toggle in the first-run wizard and in **Tools → Options → OpenCode Studio** switches between versions (restarting the server); the extension auto-detects `opencode2` and handles the v2 server's HTTP Basic Auth.
+- 🔀 **opencode v1 and v2 (beta)** — a native **"Use OpenCode v2.x (preview)"** toggle in the settings window and in **Tools → Options → OpenCode Jesk** switches between versions (restarting the server); the extension auto-detects `opencode2` and handles the v2 server's HTTP Basic Auth.
 - 🔄 **Shared history** — the same chats as the CLI and desktop app, across every Visual Studio window.
-- 🗂️ **All chats visible** — opens the web UI home, listing every project and session.
+- 🗂️ **Current project by default** — new-chat view selects the open Visual Studio solution/repository; other projects remain selectable.
+- ⌨️ **Desktop / CLI** — the Web panel, or a plain terminal with OpenCode already running inside the same panel. Both support the selected OpenCode v1 or v2 preview version.
 - 📈 **Profile & usage in one click** - the statistics button opens your OpenCode console inside the panel, so you can check real spend and limits without switching to a browser.
-- 📥 **First-run wizard** — import settings, themes, credentials and history in one click.
+- 📥 **Settings & import wizard** — import settings, themes, credentials and history in one click.
 - 🔁 **Auto-reconnect** — recovers the session by itself if the server drops.
 - 🔒 **Local-first** — loopback only, zero telemetry.
 - 🪶 **Lightweight** — one VSIX for Visual Studio 2022 and 2026.
@@ -53,20 +80,26 @@
 ## 🚀 Getting started
 
 ```
-View   ->  Other Windows  ->  OpenCode Studio        (the agent)
-Tools  ->  OpenCode Studio Settings                 (setup wizard)
+View   ->  Other Windows  ->  OpenCode Jesk          (the agent)
+Tools  ->  OpenCode Jesk Settings                    (setup wizard)
 ```
 
 > **Requirement:** the OpenCode CLI (v1 or v2 beta) must be installed and available on your `PATH`.
 
+## ⌨️ Web and CLI
+
+Choose **Desktop (Web)** or **CLI** only in **Settings → Settings → Interface**. There is no mode selector in the panel. The version switch **Use OpenCode v2.x (preview)** applies to both modes. CLI shows a plain terminal with OpenCode already running inside the same OpenCode Jesk panel — no Visual Studio terminal chrome — started automatically in the current project directory. Visual Studio keeps the panel's docked position and size.
+
+Both modes use the same authenticated OpenCode server. A chat selected in Web can be continued in CLI. History sharing is within the selected OpenCode version, without automatic conversion between v1 and v2 database formats.
+
 ## 🔗 Syncing chat history
 
-OpenCode stores every session **against the project directory it was created in**. Because OpenCode Studio shares the same data as the CLI and desktop app, all chats are already available — but grouped by project path.
+OpenCode stores every session **against the project directory it was created in**. Because OpenCode Jesk shares the same data as the CLI and desktop app, all chats are already available — but grouped by project path.
 
 If a project lives at a **different absolute path** than when its chats were created (another drive, another user name, a moved or renamed folder), those sessions stay under the original path. **Line up the project paths and everything synchronizes.**
 
 1. Open each project at the **same absolute path** it originally used.
-2. If the path changed, move the project back, or import the old data via **Tools -> OpenCode Studio Settings** pointing at the folder with the original `opencode.db`.
+2. If the path changed, move the project back, or import the old data via **Tools -> OpenCode Jesk Settings** pointing at the folder with the original `opencode.db`.
 3. Reopen the tool window — the sessions appear under the matching project.
 
 Once the paths match, all chats sync between the CLI, the desktop app and every Visual Studio window. 🎉

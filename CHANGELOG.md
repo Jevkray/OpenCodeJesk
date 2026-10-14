@@ -3,6 +3,38 @@
 All notable changes to **OpenCode Studio** are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+- Interface choice in Settings only: **Desktop (Web)** shows the Web panel; **CLI** shows a plain terminal with OpenCode already running, inside the same OpenCode Studio panel (no Visual Studio terminal chrome). The separate v1 / v2 preview switch applies to both interfaces.
+- Web and Terminal connect to the same authenticated server for the selected OpenCode version. Switching from Web to CLI can resume the selected chat. No database copying or cross-version conversion is performed.
+- The terminal lives in the OpenCode Studio panel, so Visual Studio keeps its docked position and size, and the CLI is started automatically (v1 or v2) in the current project.
+- New-chat view defaults to the current Visual Studio solution/repository directory. Other projects remain selectable in OpenCode.
+
+### Fixed
+- **Save selected** now applies settings even when no import items are selected.
+- Changing only the interface mode does not restart the shared OpenCode server.
+- Session lookup uses the v2 API when the preview binary is selected.
+
+## [1.2.0] - 2026-10-14
+
+### Added
+- **Interface modes: Desktop (Web) and CLI (terminal)** in the same tool window. Desktop keeps the WebView2 integration; CLI shows a plain terminal with OpenCode already running inside the same panel (no Visual Studio terminal chrome), started automatically in the current project directory.
+- **Chat syncing between modes** — Web and CLI connect to the same authenticated server, and a chat selected in Web can be continued in CLI. History sharing stays within the selected OpenCode version (no automatic v1/v2 database conversion).
+- **Dedicated Settings window** with a section menu: **General**, **Terminal**, **Server**, **Updates**, **Import** (replaces the first-run wizard tabs).
+- **Auto-open on solution open** — the panel opens automatically when a solution is opened (toggle in General).
+- **Web zoom** (50–200%) for the Desktop panel.
+- **Terminal options** — font family, font size, cursor blink and scrollback lines.
+- **Server options** — opencode binary path, preferred port, extra serve arguments and idle stop.
+- **Update options** — check for new versions, check interval and release channel.
+- **opencode v1 / v2 (preview)** support (v2 is available in CLI mode).
+- **Safe import** — existing data is backed up before anything is written.
+- **Renamed to OpenCode Jesk** (from OpenCode Studio) — a new VSIX identity and brand with its own icon; OpenCode Studio support ends on 20.10.2026.
+
+### Changed
+- Version bumped to **1.2.0**.
+- One codebase now builds **two brands** (OpenCode Studio and OpenCode Jesk) via `build-both.ps1`.
+
 ## [1.1.5.1] - 2026-10-01
 
 ### Changed (minor)
@@ -126,6 +158,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 - Initial public release: OpenCode web UI embedded in a Visual Studio tool window.
 
+[1.2.0]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.2.0
 [1.1.5.1]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.1.5.1
 [1.1.5]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.1.5
 [1.1.5]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.1.5

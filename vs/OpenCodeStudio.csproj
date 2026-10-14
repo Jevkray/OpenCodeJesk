@@ -28,6 +28,11 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
+  <!-- Бренд Jesk: -p:Brand=Jesk включает отдельные GUID/строки (см. Brand.cs). -->
+  <PropertyGroup Condition="'$(Brand)'=='Jesk'">
+    <DefineConstants>$(DefineConstants);JESK</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectCapability Include="CreateVsixContainer" />
   </ItemGroup>
@@ -58,6 +63,14 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\IconJesk.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\PreviewImageJesk.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\CommandIcons.png">
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -70,6 +83,16 @@
     <EmbeddedResource Include="Resources\StatsPage.html" />
     <EmbeddedResource Include="Resources\UsagePage.html" />
     <EmbeddedResource Include="Resources\UsageInjector.js" />
+    <EmbeddedResource Include="Resources\Terminal.html" />
+    <EmbeddedResource Include="Resources\xterm.js" />
+    <EmbeddedResource Include="Resources\xterm.css" />
+    <EmbeddedResource Include="Resources\addon-fit.js" />
+    <Content Include="Resources\xterm-LICENSE.txt">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\addon-fit-LICENSE.txt">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

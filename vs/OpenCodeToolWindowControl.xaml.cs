@@ -44,6 +44,24 @@ namespace OpenCodeStudio
 
         private SpendMonitor _spendMonitor;
         private SpendSettings _spendSettings;
+        private CliTerminalControl _cliTerminal;
+        private string _activeSessionId;
+        private string _activeDirectory;
+        private bool _interfaceIsCli;
+        private string _cliSettingsKey;
+
+        /// <summary>Отпечаток настроек терминала: меняется — страницу пересоздаём.</summary>
+        private string TerminalSettingsKey()
+        {
+            var s = _spendSettings;
+            return string.Join("|",
+                s?.TerminalFontFamily ?? "Consolas",
+                (s?.TerminalFontSize ?? 13).ToString(),
+                (s?.TerminalCursorBlink ?? true).ToString(),
+                (s?.TerminalScrollback ?? 5000).ToString(),
+                s?.CliArguments ?? "");
+        }
+        private string _pendingWebUrl;
         private bool _loginInProgress;
         private bool _loginMode;
         private bool _loginReturned;
@@ -98,7 +116,171 @@ namespace OpenCodeStudio
         public void SetSpendSettings(SpendSettings settings)
         {
             _spendSettings = settings;
+            ApplyZoom();
         }
+
+        /// <summary>Применяет масштаб веб-панели из настроек.</summary>
+        private void ApplyZoom()
+        {
+            try
+            {
+                var percent = Math.Max(50, Math.Min(200, _spendSettings?.WebZoomPercent ?? 100));
+                if (webView != null) webView.ZoomFactor = percent / 100.0;
+            }
+            catch (Exception ex) { Services.Log.Info("Apply zoom failed: " + ex.Message); }
+        }
+
+        /// <summary>
+        /// Включает или снимает инъекцию кнопки Console в зависимости от
+        /// настройки ShowConsoleButton. Идемпотентно, можно вызывать на каждой
+        /// навигации и после смены настроек.
+        /// </summary>
+        public async Task ApplyUsageInjectionAsync()
+        {
+            var core = webView?.CoreWebView2;
+            if (core == null) return;
+            try
+            {
+                if (_spendSettings?.ShowConsoleButton == true)
+                    await UsageInjector.InstallAsync(core);
+                else
+                    await UsageInjector.UninstallAsync(core);
+            }
+            catch (Exception ex)
+            {
+                Services.Log.Error("Usage injection apply failed", ex);
+            }
+        }
+
+        /// <summary>Перезагружает веб-панель (применение смены настроек).</summary>
+        public void ReloadPanel()
+        {
+            try { webView?.CoreWebView2?.Reload(); }
+            catch (Exception ex) { Services.Log.Info("Reload panel failed: " + ex.Message); }
+        }
+
+        /// <summary>
+        /// Показывает либо веб-панель, либо собственный терминал с OpenCode,
+        /// в зависимости от настройки Interface mode. Терминал живёт в этой же
+        /// панели, поэтому Visual Studio сохраняет его положение и размер.
+        /// </summary>
+        public async Task ApplyInterfaceAsync()
+        {
+            if (_isDisposed) return;
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            bool cli = _spendSettings?.InterfaceMode == InterfaceMode.CLI;
+            Services.Log.Info("Interface apply: mode=" + (cli ? "CLI" : "Web") + " wasCli=" + _interfaceIsCli);
+            if (!cli)
+            {
+                // Возврат к веб-панели: терминал убираем.
+                if (_cliTerminal != null)
+                {
+                    rootGrid.Children.Remove(_cliTerminal);
+                    _cliTerminal.Dispose();
+                    _cliTerminal = null;
+                }
+                webView.Visibility = System.Windows.Visibility.Visible;
+                // Перезагружаем веб-панель только при реальном возврате из CLI,
+                // чтобы не сбивать собственную загрузку при старте.
+                if (_interfaceIsCli)
+                {
+                    // При возврате из CLI открываем самый свежий чат этой папки —
+                    // так подхватывается и чат, созданный или открытый в терминале.
+                    var webDirectory = _activeDirectory
+                        ?? (string.IsNullOrEmpty(_currentProjectRoot) ? null : Path.GetFullPath(_currentProjectRoot));
+                    string target = null;
+                    var latest = await _serverController.GetActiveSessionAsync(webDirectory);
+                    if (latest != null)
+                    {
+                        _activeSessionId = latest.Id;
+                        if (!string.IsNullOrEmpty(latest.Directory)) _activeDirectory = latest.Directory;
+                        target = _serverController.GetSessionUrl(_activeDirectory, _activeSessionId);
+                    }
+                    else if (!string.IsNullOrEmpty(_activeSessionId))
+                    {
+                        target = _serverController.GetSessionUrl(_activeDirectory, _activeSessionId);
+                    }
+                    if (target != null && webView.CoreWebView2 != null)
+                        NavigateToSession(target);
+                    else
+                        webView.CoreWebView2?.Reload();
+                }
+                _interfaceIsCli = false;
+                webView.Focus();
+                return;
+            }
+            _interfaceIsCli = true;
+            webView.Visibility = System.Windows.Visibility.Collapsed;
+            if (_serverController?.State != ConnectionState.Connected || string.IsNullOrEmpty(_currentProjectRoot))
+                return;
+
+            // Настройки терминала (шрифт, размер, курсор, прокрутка, аргументы)
+            // применяются при пересоздании страницы — пересоздаём при их изменении.
+            var terminalKey = TerminalSettingsKey();
+            if (_cliTerminal != null && _cliSettingsKey != terminalKey)
+            {
+                rootGrid.Children.Remove(_cliTerminal);
+                _cliTerminal.Dispose();
+                _cliTerminal = null;
+            }
+            _cliSettingsKey = terminalKey;
+
+            // Создаём терминал только когда панель уже видима: WebView2, созданный
+            // внутри скрытого контейнера, не отрисовывается и не выполняет скрипты.
+            if (_cliTerminal == null)
+            {
+                _cliTerminal = new CliTerminalControl();
+                rootGrid.Children.Add(_cliTerminal);
+            }
+            _cliTerminal.Visibility = System.Windows.Visibility.Visible;
+
+            string directory = _activeDirectory;
+            string session = _activeSessionId;
+            var fromUrl = ParseSessionFromUrl(_pendingWebUrl ?? webView.CoreWebView2?.Source);
+            if (fromUrl != null) { directory = fromUrl.Item1 ?? directory; session = fromUrl.Item2; }
+            if (string.IsNullOrEmpty(directory)) directory = Path.GetFullPath(_currentProjectRoot);
+
+            // Общий сервер: чат создаётся один раз и передаётся в терминал, чтобы
+            // в обоих режимах была одна и та же активная сессия.
+            if (string.IsNullOrEmpty(session))
+            {
+                try
+                {
+                    var created = await _serverController.SessionService.CreateSessionAsync(directory, Brand.Name);
+                    session = created?.Id;
+                    if (!string.IsNullOrEmpty(created?.Directory)) directory = created.Directory;
+                }
+                catch (Exception ex) { Services.Log.Info("CLI session create: " + ex.Message); }
+            }
+            _activeSessionId = session;
+            _activeDirectory = directory;
+            await _cliTerminal.ActivateAsync(_serverController.ServerService, directory, session);
+        }
+
+        private Tuple<string, string> ParseSessionFromUrl(string url)
+        {
+            var info = _serverController?.ServerService?.ServerInfo;
+            if (info == null || !Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
+                uri.Authority != new Uri(info.BaseUrl).Authority) return null;
+            var segments = uri.AbsolutePath.Trim('/').Split('/');
+            var session = segments.LastOrDefault(s => s.StartsWith("ses_", StringComparison.Ordinal));
+            if (session == null) return null;
+            string directory = null;
+            if (segments.Length >= 2 && segments[1] == "session")
+            {
+                try
+                {
+                    var encoded = segments[0].Replace('-', '+').Replace('_', '/');
+                    encoded = encoded.PadRight((encoded.Length + 3) / 4 * 4, '=');
+                    var decoded = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(encoded));
+                    if (Path.IsPathRooted(decoded) && Directory.Exists(decoded)) directory = decoded;
+                }
+                catch (FormatException) { }
+            }
+            return Tuple.Create(directory, session);
+        }
+
+        public void StopCli() => _cliTerminal?.Stop();
 
         /// <summary>
         /// Set the shared server controller. Must be called before StartAsync.
@@ -212,17 +394,7 @@ namespace OpenCodeStudio
                 core.Settings.AreDevToolsEnabled = false;
                 core.Settings.IsZoomControlEnabled = true;
 
-                if (_spendSettings == null || _spendSettings.EnableInjection)
-                {
-                    try
-                    {
-                        await UsageInjector.InstallAsync(core);
-                    }
-                    catch (Exception ex)
-                    {
-                        Services.Log.Error("UsageInjector install failed", ex);
-                    }
-                }
+                await ApplyUsageInjectionAsync();
 
                 await ShowLoadingPageAsync(StringsHelper.UILoading);
             }
@@ -290,12 +462,23 @@ namespace OpenCodeStudio
                 Debug.WriteLine($"Navigation failed: {e.WebErrorStatus}");
                 return;
             }
+            _pendingWebUrl = null;
+            // Запоминаем активный чат веб-панели, чтобы передать его в CLI.
+            var parsed = ParseSessionFromUrl(webView?.CoreWebView2?.Source);
+            if (parsed != null)
+            {
+                _activeSessionId = parsed.Item2;
+                if (!string.IsNullOrEmpty(parsed.Item1)) _activeDirectory = parsed.Item1;
+            }
             // Вернулись на opencode.ai — забираем cookie именно после загрузки ответа.
             if (_loginMode && _loginReturned)
             {
                 _loginReturned = false;
                 _ = FinishConsoleCaptureAsync();
             }
+            // Инъекция кнопки Console идемпотентна: включаем/снимаем по настройке
+            // на каждой загрузке документа, чтобы смена применялась после reload.
+            _ = ApplyUsageInjectionAsync();
             PushUsageState(_autoOpenAfterLogin);
             _autoOpenAfterLogin = false;
         }
@@ -338,6 +521,7 @@ namespace OpenCodeStudio
 
         public void OnWindowClosing()
         {
+            StopCli();
             _projRootTimer?.Dispose();
             _projRootTimer = null;
             CancelReconnect();
@@ -419,7 +603,10 @@ namespace OpenCodeStudio
                                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                                 var url = _serverController.GetHomeUrl();
                                 if (url != null && webView.CoreWebView2 != null)
+                                {
                                     NavigateToSession(url);
+                                    await ApplyInterfaceAsync();
+                                }
                                 else
                                     await StartFlowAsync();
                                 return;
@@ -476,6 +663,7 @@ namespace OpenCodeStudio
                 if (existingUrl != null)
                 {
                     NavigateToSession(existingUrl);
+                    await ApplyInterfaceAsync();
                     return;
                 }
             }
@@ -492,6 +680,8 @@ namespace OpenCodeStudio
             var sessionUrl = _serverController.GetHomeUrl();
             if (sessionUrl != null)
                 NavigateToSession(sessionUrl);
+
+            await ApplyInterfaceAsync();
 
             _projRootTimer?.Dispose();
             _projRootTimer = new System.Threading.Timer(_ =>
@@ -530,7 +720,9 @@ namespace OpenCodeStudio
             }, null, 5000, 5000);
 
             if (_serverController.State == ConnectionState.Connected)
+            {
                 StartSpendMonitor();
+            }
         }
 
         /// <summary>Запускает фоновый монитор расхода, если инъекция включена.</summary>
@@ -538,7 +730,6 @@ namespace OpenCodeStudio
         {
             // временно: парсинг отключён, кнопка только переключает консоль
             return;
-            if (_spendSettings == null || !_spendSettings.EnableInjection) return;
 
             if (_spendMonitor != null) return;
 
@@ -590,7 +781,7 @@ namespace OpenCodeStudio
                 var core = webView?.CoreWebView2;
                 if (core == null) return;
                 var state = ConsoleSessionStore.Load() == null ? "login" : (LatestSnapshot != null ? "ready" : "loading");
-                UsageInjector.Push(core, UsageInjector.BuildPayload(state, LatestSnapshot, _spendSettings?.ShowLimits ?? true, autoOpen));
+                UsageInjector.Push(core, UsageInjector.BuildPayload(state, LatestSnapshot, true, autoOpen));
             }
             catch (Exception ex) { Services.Log.Error("Failed to push usage state", ex); }
         }
@@ -699,6 +890,7 @@ namespace OpenCodeStudio
         {
             if (webView.CoreWebView2 == null) return;
             Services.Log.Info($"Navigating to {sessionUrl}");
+            _pendingWebUrl = sessionUrl;
             webView.CoreWebView2.Navigate(sessionUrl);
         }
 
@@ -809,6 +1001,8 @@ namespace OpenCodeStudio
             }
             _spendMonitor?.Dispose();
             _spendMonitor = null;
+            _cliTerminal?.Dispose();
+            _cliTerminal = null;
             webView?.Dispose();
         }
     }

@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OpenCodeStudio.Models;
 using OpenCodeStudio.Resources;
 
@@ -33,13 +34,40 @@ namespace OpenCodeStudio.Services
                 throw new InvalidOperationException(StringsHelper.ErrorServerNotConnected);
 
             var encoded = Uri.EscapeDataString(directory);
-            var response = await client.GetAsync($"/session?directory={encoded}");
+            bool v2 = CliCommand.IsV2(_serverService.BinaryPath);
+            var response = await client.GetAsync($"{(v2 ? "/api/session" : "/session")}?directory={encoded}");
 
             if (!response.IsSuccessStatusCode)
                 throw new HttpRequestException($"Failed to list sessions: {response.StatusCode}");
 
             var json = await ReadUtf8Async(response.Content);
-            return JsonConvert.DeserializeObject<List<Session>>(json);
+            if (!v2) return JsonConvert.DeserializeObject<List<Session>>(json);
+            var result = new List<Session>();
+            foreach (var item in JObject.Parse(json)["data"] ?? new JArray())
+            {
+                var session = item.ToObject<Session>();
+                session.Directory = (string)item["location"]?["directory"];
+                result.Add(session);
+            }
+            return result;
+        }
+
+        public async Task<Session> GetSessionAsync(string id, string directory)
+        {
+            var client = _serverService.GetClient();
+            if (client == null) throw new InvalidOperationException(StringsHelper.ErrorServerNotConnected);
+            bool v2 = CliCommand.IsV2(_serverService.BinaryPath);
+            var path = (v2 ? "/api/session/" : "/session/") + Uri.EscapeDataString(id)
+                + "?directory=" + Uri.EscapeDataString(directory);
+            using (var response = await client.GetAsync(path))
+            {
+                response.EnsureSuccessStatusCode();
+                var data = JObject.Parse(await ReadUtf8Async(response.Content));
+                if (v2) data = (JObject)data["data"];
+                var session = data.ToObject<Session>();
+                if (v2) session.Directory = (string)data["location"]?["directory"];
+                return session;
+            }
         }
 
         /// <summary>
@@ -60,16 +88,14 @@ namespace OpenCodeStudio.Services
             if (client == null)
                 throw new InvalidOperationException(StringsHelper.ErrorServerNotConnected);
 
-            var body = new CreateSessionRequest
-            {
-                Title = title ?? "VS OpenCode"
-            };
+            bool v2 = CliCommand.IsV2(_serverService.BinaryPath);
+            var body = new JObject(new JProperty("title", title ?? "VS OpenCode"));
+            if (v2) body["location"] = new JObject(new JProperty("directory", directory));
 
-            var json = JsonConvert.SerializeObject(body, JsonSettings);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
+            var content = new StringContent(body.ToString(), Encoding.UTF8, "application/json");
             var encoded = Uri.EscapeDataString(directory);
-            var response = await client.PostAsync($"/session?directory={encoded}", content);
+            var endpoint = v2 ? "/api/session" : "/session";
+            var response = await client.PostAsync($"{endpoint}?directory={encoded}", content);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -79,11 +105,48 @@ namespace OpenCodeStudio.Services
             }
 
             var responseJson = await ReadUtf8Async(response.Content);
-            return JsonConvert.DeserializeObject<Session>(responseJson);
+            if (!v2) return JsonConvert.DeserializeObject<Session>(responseJson);
+            var data = (JObject)JObject.Parse(responseJson)["data"];
+            var session = data.ToObject<Session>();
+            session.Directory = (string)data["location"]?["directory"];
+            return session;
+        }
+
+        public async Task<long> GetLastMessageTimeAsync(string id, string directory)
+        {
+            var client = _serverService.GetClient();
+            if (client == null) return -1;
+            try
+            {
+                bool v2 = CliCommand.IsV2(_serverService.BinaryPath);
+                var path = (v2 ? "/api/session/" : "/session/") + Uri.EscapeDataString(id)
+                    + "/message?directory=" + Uri.EscapeDataString(directory);
+                using (var response = await client.GetAsync(path))
+                {
+                    if (!response.IsSuccessStatusCode) return -1;
+                    var token = JToken.Parse(await ReadUtf8Async(response.Content));
+                    if (v2 && token is JObject wrapper) token = wrapper["data"] ?? new JArray();
+                    if (!(token is JArray array) || array.Count == 0) return 0;
+                    long best = 0;
+                    foreach (var item in array)
+                    {
+                        var created = (long?)(item["info"]?["time"]?["created"] ?? item["time"]?["created"]);
+                        if (created.HasValue && created.Value > best) best = created.Value;
+                    }
+                    return best;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Info("Last message lookup: " + ex.Message);
+                return -1;
+            }
         }
 
         public async Task<PathInfo> GetPathAsync(string directory)
         {
+            if (CliCommand.IsV2(_serverService.BinaryPath))
+                return new PathInfo { Directory = System.IO.Path.GetFullPath(directory) };
             var client = _serverService.GetClient();
             if (client == null)
                 throw new InvalidOperationException(StringsHelper.ErrorServerNotConnected);
@@ -100,6 +163,7 @@ namespace OpenCodeStudio.Services
 
         public async Task<PathInfo> GetServerPathAsync()
         {
+            if (CliCommand.IsV2(_serverService.BinaryPath)) return null;
             var client = _serverService.GetClient();
             if (client == null)
                 throw new InvalidOperationException(StringsHelper.ErrorServerNotConnected);

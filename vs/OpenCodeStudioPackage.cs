@@ -11,17 +11,17 @@ using OpenCodeStudio.Services;
 
 namespace OpenCodeStudio
 {
-    [Guid("7E4A9C31-2B6D-4F58-9A10-3C8E7B5D1F20")]
+    [Guid(Brand.PackageGuid)]
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideToolWindow(typeof(OpenCodeToolWindow))]
     [ProvideAutoLoad(UIContextGuids80.NoSolution, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideAutoLoad(UIContextGuids80.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
-    [ProvideOptionPage(typeof(Services.SpendSettings), "OpenCode Studio", "Usage & Limits", 0, 0, true)]
+    [ProvideOptionPage(typeof(Services.SpendSettings), Brand.Name, "Settings", 0, 0, true)]
     public sealed class OpenCodeStudioPackage : AsyncPackage
     {
-        public const string PackageGuidString = "7E4A9C31-2B6D-4F58-9A10-3C8E7B5D1F20";
+        public const string PackageGuidString = Brand.PackageGuid;
 
         private DTE _dte;
         private SolutionEvents _solutionEvents;
@@ -30,6 +30,12 @@ namespace OpenCodeStudio
         /// Shared server controller вЂ” survives across tool window open/close.
         /// </summary>
         private ServerController _serverController;
+        private bool _configuredV2;
+        private InterfaceMode _configuredInterface;
+        private bool _configuredShowConsole;
+
+        private SettingsWindow _settingsWindow;
+        private bool _firstRunShown;
 
         private OpenCodeToolWindowControl _toolWindowControl;
         private CancellationTokenSource _extensionUpdateCts;
@@ -44,7 +50,16 @@ namespace OpenCodeStudio
             await base.InitializeAsync(cancellationToken, progress);
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-            _serverController = new ServerController(() => GetSpendSettings()?.UseOpenCodeV2 ?? false);
+            // Единый экземпляр настроек для сервисов (сервер, терминал, апдейты).
+            Services.SpendSettings.Current = GetSpendSettings();
+
+            // v2 доступна только в режиме CLI: веб-интерфейс Desktop её не поддерживает.
+            _serverController = new ServerController(() =>
+                GetSpendSettings()?.InterfaceMode == InterfaceMode.CLI &&
+                (GetSpendSettings()?.UseOpenCodeV2 ?? false));
+            _configuredV2 = GetSpendSettings().UseOpenCodeV2;
+            _configuredInterface = GetSpendSettings().InterfaceMode;
+            _configuredShowConsole = GetSpendSettings().ShowConsoleButton;
 
             Services.SpendSettings.Applied += OnSpendSettingsApplied;
 
@@ -60,8 +75,9 @@ namespace OpenCodeStudio
 
             // First run (or fresh reinstall): offer to bring in settings, themes,
             // credentials and chat history from any detected OpenCode environment.
-            if (!Onboarding.IsCompleted())
+            if (!Onboarding.IsCompleted() && !_firstRunShown)
             {
+                _firstRunShown = true;
                 _ = JoinableTaskFactory.RunAsync(async () =>
                 {
                     try
@@ -69,7 +85,7 @@ namespace OpenCodeStudio
                         // Let the shell finish initializing before showing a window.
                         await Task.Delay(2500);
                         await JoinableTaskFactory.SwitchToMainThreadAsync();
-                        new FirstRunWindow(new ImportService(), GetSolutionDir(), GetSpendSettings()).Show();
+                        await ShowSettingsWindowAsync();
                     }
                     catch (Exception ex)
                     {
@@ -124,7 +140,7 @@ namespace OpenCodeStudio
                             Services.Log.Warn("OpenCode update check failed: " + ex.Message);
                         }
 
-                        await Task.Delay(60000, ct);
+                        await Task.Delay(UpdateCheckDelayMs(), ct);
                     }
                 }
                 catch (OperationCanceledException) { }
@@ -181,11 +197,18 @@ namespace OpenCodeStudio
                             Services.Log.Warn("Extension update check failed: " + ex.Message);
                         }
 
-                        await Task.Delay(60000, ct);
+                        await Task.Delay(UpdateCheckDelayMs(), ct);
                     }
                 }
                 catch (OperationCanceledException) { }
             }, ct);
+        }
+
+        /// <summary>Интервал между проверками обновлений (мин.), из настроек.</summary>
+        private int UpdateCheckDelayMs()
+        {
+            var minutes = Math.Max(5, Math.Min(1440, GetSpendSettings()?.UpdateCheckMinutes ?? 60));
+            return minutes * 60 * 1000;
         }
 
         /// <summary>
@@ -331,11 +354,61 @@ namespace OpenCodeStudio
         {
             _ = JoinableTaskFactory.RunAsync(async () =>
             {
+                Services.SpendSettings.Current = GetSpendSettings();
                 try
                 {
                     await JoinableTaskFactory.SwitchToMainThreadAsync();
-                    _serverController?.Stop();
-                    await RefreshOpenCodeWindowAsync();
+                    var useV2 = GetSpendSettings().UseOpenCodeV2 && GetSpendSettings().InterfaceMode == InterfaceMode.CLI;
+                    var mode = GetSpendSettings().InterfaceMode;
+                    var showConsole = GetSpendSettings().ShowConsoleButton;
+                    if (showConsole != _configuredShowConsole)
+                    {
+                        // Смена кнопки Console: обновляем настройки панели, включаем/
+                        // снимаем инъекцию и перезагружаем панель.
+                        _configuredShowConsole = showConsole;
+                        if (_toolWindowControl != null)
+                        {
+                            _toolWindowControl.SetSpendSettings(GetSpendSettings());
+                            await _toolWindowControl.ApplyUsageInjectionAsync();
+                            _toolWindowControl.ReloadPanel();
+                        }
+                    }
+                    if (useV2 != _configuredV2)
+                    {
+                        // Смена версии v1/v2 требует перезапуска сервера: пересоздаём панель.
+                        _serverController?.Stop();
+                        _configuredV2 = useV2;
+                        _configuredInterface = mode;
+                        await ShowOpenCodeWindowAsync();
+                        return;
+                    }
+                    if (mode != _configuredInterface)
+                    {
+                        _configuredInterface = mode;
+                        _toolWindowControl?.SetSpendSettings(GetSpendSettings());
+                        if (mode == InterfaceMode.CLI)
+                        {
+                            var opened = await FindToolWindowAsync(typeof(OpenCodeToolWindow), 0, false, DisposalToken);
+                            if (opened is OpenCodeToolWindow tool && tool.Control != null)
+                            {
+                                tool.Control.SetSpendSettings(GetSpendSettings());
+                                await tool.Control.ApplyInterfaceAsync();
+                            }
+                            else
+                            {
+                                await ShowOpenCodeWindowAsync();
+                            }
+                        }
+                        else
+                        {
+                            await ShowOpenCodeWindowAsync();
+                        }
+                    }
+                    else if (_toolWindowControl != null)
+                    {
+                        _toolWindowControl.SetSpendSettings(GetSpendSettings());
+                        await _toolWindowControl.ApplyInterfaceAsync();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -362,7 +435,10 @@ namespace OpenCodeStudio
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync();
                 await Task.Delay(1000);
-                await RefreshOpenCodeWindowAsync();
+                if (GetSpendSettings()?.AutoOpenOnSolutionOpen == true)
+                    await ShowOpenCodeWindowAsync();
+                else
+                    await RefreshOpenCodeWindowAsync();
             });
         }
 
@@ -399,20 +475,35 @@ namespace OpenCodeStudio
         internal async Task ShowUsageWindowAsync()
         {
             await JoinableTaskFactory.SwitchToMainThreadAsync();
-            var w = new UsageWindow(_toolWindowControl, GetSpendSettings()?.ShowLimits ?? true);
+            var w = new UsageWindow(_toolWindowControl, true);
             w.Show();
+        }
+
+        /// <summary>
+        /// Единственный экземпляр окна Settings. Повторные вызовы активируют уже
+        /// открытое окно вместо создания нового.
+        /// </summary>
+        internal async Task<SettingsWindow> ShowSettingsWindowAsync()
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+            if (_settingsWindow != null)
+            {
+                _settingsWindow.Activate();
+                return _settingsWindow;
+            }
+
+            var window = new SettingsWindow(new ImportService(), GetSolutionDir(), GetSpendSettings());
+            window.Closed += (_, __) => _settingsWindow = null;
+            _settingsWindow = window;
+            window.Show();
+            return window;
         }
 
         /// <summary>
         /// Opens the import/setup wizard on demand (also shown automatically on
         /// first run).
         /// </summary>
-        internal async Task ShowImportWindowAsync()
-        {
-            await JoinableTaskFactory.SwitchToMainThreadAsync();
-            var window = new FirstRunWindow(new ImportService(), GetSolutionDir(), GetSpendSettings());
-            window.Show();
-        }
+        internal Task ShowImportWindowAsync() => ShowSettingsWindowAsync();
 
         protected override void Dispose(bool disposing)
         {
@@ -422,6 +513,8 @@ namespace OpenCodeStudio
                 _extensionUpdateCts?.Dispose();
                 _openCodeUpdateCts?.Cancel();
                 _openCodeUpdateCts?.Dispose();
+                Services.SpendSettings.Applied -= OnSpendSettingsApplied;
+                _toolWindowControl?.Dispose();
                 _serverController?.Dispose();
             }
             base.Dispose(disposing);

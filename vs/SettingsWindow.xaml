@@ -1,0 +1,797 @@
+<Window x:Class="OpenCodeStudio.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="OpenCode Settings"
+        Width="940" Height="680" MinWidth="780" MinHeight="540"
+        WindowStartupLocation="CenterScreen"
+        Background="#1e1e1e" Foreground="#f1f1f1"
+        FontFamily="Segoe UI" FontSize="13"
+        UseLayoutRounding="True" SnapsToDevicePixels="True">
+    <Window.Resources>
+
+        <!-- Карточка раздела -->
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="#252526" />
+            <Setter Property="BorderBrush" Value="#3a3a3a" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Margin" Value="0,0,0,16" />
+        </Style>
+
+        <Style x:Key="CardTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#f1f1f1" />
+        </Style>
+
+        <Style x:Key="CardHint" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="#9a9a9a" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,6,0,0" />
+        </Style>
+
+        <!-- Текст внутри "Подробнее": светлее подсказок, но не чёрный -->
+        <Style x:Key="MoreText" TargetType="TextBlock" BasedOn="{StaticResource CardHint}">
+            <Setter Property="Foreground" Value="#cfcfcf" />
+        </Style>
+
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#f1f1f1" />
+            <Setter Property="Margin" Value="0,16,0,6" />
+        </Style>
+
+        <!-- Кнопка-акцент -->
+        <Style x:Key="AccentButton" TargetType="Button">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="#7C3AED" />
+            <Setter Property="BorderBrush" Value="#7C3AED" />
+            <Setter Property="Padding" Value="18,6" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#8b5cf6" />
+                                <Setter TargetName="b" Property="BorderBrush" Value="#8b5cf6" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="b" Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Кнопка-секундарная -->
+        <Style x:Key="GhostButton" TargetType="Button">
+            <Setter Property="Foreground" Value="#f1f1f1" />
+            <Setter Property="Background" Value="#2d2d30" />
+            <Setter Property="BorderBrush" Value="#3a3a3a" />
+            <Setter Property="Padding" Value="14,6" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1"
+                                CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#3a3a3a" />
+                                <Setter TargetName="b" Property="BorderBrush" Value="#7C3AED" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Тумблер для CheckBox -->
+        <Style x:Key="ToggleCheckBox" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#f1f1f1" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Margin" Value="0,16,0,0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal" Background="Transparent">
+                            <Border x:Name="track" Width="40" Height="22" CornerRadius="11"
+                                    Background="#3a3a3a" VerticalAlignment="Center">
+                                <Ellipse x:Name="knob" Width="16" Height="16" Fill="#f1f1f1"
+                                         HorizontalAlignment="Left" Margin="3,0,0,0" />
+                            </Border>
+                            <ContentPresenter Margin="10,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="track" Property="Background" Value="#7C3AED" />
+                                <Setter TargetName="knob" Property="HorizontalAlignment" Value="Right" />
+                                <Setter TargetName="knob" Property="Margin" Value="0,0,3,0" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Поле ввода с плейсхолдером (watermark) -->
+        <Style x:Key="FieldTextBox" TargetType="TextBox">
+            <Setter Property="Foreground" Value="#f1f1f1" />
+            <Setter Property="CaretBrush" Value="#f1f1f1" />
+            <Setter Property="Background" Value="#2d2d30" />
+            <Setter Property="BorderBrush" Value="#3a3a3a" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="5,0" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="b" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+                            <Grid>
+                                <!-- Никакой внутренней прокрутки: текст по центру по вертикали -->
+                                <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"
+                                              VerticalAlignment="Center"
+                                              VerticalScrollBarVisibility="Hidden"
+                                              HorizontalScrollBarVisibility="Hidden" />
+                                <!-- Позиция watermark совпадает с текстом (те же Padding/Margin) -->
+                                <!-- Позиция watermark — как было (10), текст поля — компактнее (Padding 5) -->
+                                <TextBlock x:Name="wm" Text="{TemplateBinding Tag}" Foreground="#7a7a7a"
+                                           FontSize="{TemplateBinding FontSize}"
+                                           Margin="10,0,0,0" VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis" IsHitTestVisible="False"
+                                           Visibility="Collapsed" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="b" Property="BorderBrush" Value="#7C3AED" />
+                            </Trigger>
+                            <!-- Watermark виден только когда пусто И поле не в фокусе -->
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Text" Value="" />
+                                    <Condition Property="IsKeyboardFocusWithin" Value="False" />
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="wm" Property="Visibility" Value="Visible" />
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Тёмный ComboBox -->
+        <Style x:Key="DarkComboItem" TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="#f1f1f1" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="b" Background="Transparent" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#3a3a3a" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#7C3AED" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DarkCombo" TargetType="ComboBox">
+            <Setter Property="Foreground" Value="#f1f1f1" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="ItemContainerStyle" Value="{StaticResource DarkComboItem}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border x:Name="bd" Background="#2d2d30" BorderBrush="#3a3a3a"
+                                    BorderThickness="1" CornerRadius="6" />
+                            <ToggleButton Focusable="False" ClickMode="Press"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border Background="Transparent">
+                                            <Path Data="M0,0 L4,4 L8,0" Stroke="#9a9a9a" StrokeThickness="1.5"
+                                                  HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                  Margin="0,0,12,0" />
+                                        </Border>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter IsHitTestVisible="False"
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              Margin="10,0,30,0" VerticalAlignment="Center"
+                                              HorizontalAlignment="Left" />
+                            <Popup AllowsTransparency="True" Placement="Bottom"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}" Focusable="False"
+                                   PopupAnimation="Slide">
+                                <Border Background="#2d2d30" BorderBrush="#3a3a3a" BorderThickness="1"
+                                        CornerRadius="6" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                                        MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <ScrollViewer>
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#7C3AED" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Тёмный Slider -->
+        <Style x:Key="DarkSlider" TargetType="Slider">
+            <Setter Property="MinHeight" Value="34" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid VerticalAlignment="Center">
+                            <Border Height="4" CornerRadius="2" Background="#3a3a3a" VerticalAlignment="Center" />
+                            <Track x:Name="PART_Track">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="Slider.DecreaseLarge">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Background="#7C3AED" Height="4" CornerRadius="2"
+                                                        VerticalAlignment="Center" />
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="Slider.IncreaseLarge">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Background="Transparent" />
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Width="16" Height="16">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Ellipse Fill="#7C3AED" Stroke="#8b5cf6" StrokeThickness="1"
+                                                         Width="16" Height="16" />
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Сворачиваемое описание "Подробнее": как обычный пояснительный текст -->
+        <Style x:Key="MoreExpander" TargetType="Expander">
+            <Setter Property="Foreground" Value="#9a9a9a" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Margin" Value="0,8,0,0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Expander">
+                        <StackPanel>
+                            <ToggleButton x:Name="hdr" Focusable="False" Cursor="Hand"
+                                          Foreground="#9a9a9a" FontSize="12"
+                                          Content="{TemplateBinding Header}"
+                                          IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border Background="Transparent" Padding="0,2">
+                                            <StackPanel Orientation="Horizontal">
+                                                <!-- Маленькая стрелка того же серого цвета, без фиолетового -->
+                                                <Path x:Name="chev" Data="M0,0 L4,4 L8,0" Stroke="#9a9a9a"
+                                                      StrokeThickness="1.4" VerticalAlignment="Center"
+                                                      Margin="0,0,6,0" />
+                                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                                  VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="chev" Property="Stroke" Value="#cfcfcf" />
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="chev" Property="Data" Value="M0,4 L4,0 L8,4" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter x:Name="body" Visibility="Collapsed"
+                                              Margin="14,8,0,0" Content="{TemplateBinding Content}" />
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="True">
+                                <Setter TargetName="body" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Пункт бокового меню -->
+        <Style x:Key="MenuListBoxItem" TargetType="ListBoxItem">
+            <Setter Property="Foreground" Value="#c9c9c9" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Grid>
+                            <Border x:Name="bg" Background="Transparent" />
+                            <Border x:Name="accent" Width="3" HorizontalAlignment="Left"
+                                    Background="Transparent" />
+                            <ContentPresenter Margin="24,12,16,12" VerticalAlignment="Center" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bg" Property="Background" Value="#202020" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="bg" Property="Background" Value="#252526" />
+                                <Setter TargetName="accent" Property="Background" Value="#7C3AED" />
+                                <Setter Property="Foreground" Value="#f1f1f1" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="211" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Боковое меню -->
+        <Border Grid.Column="0" Background="#181818" BorderBrush="#3a3a3a" BorderThickness="0,0,1,0">
+            <DockPanel>
+                <TextBlock Uid="menu.title" DockPanel.Dock="Top" Text="Settings" FontSize="18"
+                           FontWeight="SemiBold" Foreground="#f1f1f1" Margin="20,24,20,16" />
+                <ListBox x:Name="menuList" Background="Transparent" BorderThickness="0"
+                         ItemContainerStyle="{StaticResource MenuListBoxItem}"
+                         SelectionChanged="OnMenuChanged">
+                    <ListBoxItem>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                       VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <TextBlock Uid="menu.general" Text="General" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE756;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                       VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <TextBlock Uid="menu.terminal" Text="Terminal" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE968;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                       VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <TextBlock Uid="menu.server" Text="Server" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE895;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                       VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <TextBlock Uid="menu.updates" Text="Updates" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8B5;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                       VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <TextBlock Uid="menu.import" Text="Import" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ListBoxItem>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- Содержимое -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Padding="24,24,24,0">
+                <Grid>
+                    <!-- General -->
+                    <StackPanel x:Name="panelGeneral">
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="general.interface.title" Text="Interface"
+                                           Style="{StaticResource CardTitle}" />
+
+                                <TextBlock Uid="general.interface.mode" Text="Interface mode"
+                                           Style="{StaticResource FieldLabel}" />
+                                <ComboBox x:Name="interfaceCombo" Style="{StaticResource DarkCombo}"
+                                          Width="260" HorizontalAlignment="Left"
+                                          SelectionChanged="OnInterfaceChanged">
+                                    <ComboBoxItem Content="Desktop (Web)" />
+                                    <ComboBoxItem Content="CLI (terminal)" />
+                                </ComboBox>
+                                <Expander Uid="general.interface.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="general.interface.desc" Style="{StaticResource MoreText}"
+                                               Text="Desktop shows the OpenCode web panel; CLI shows a terminal with OpenCode already running inside the same panel." />
+                                </Expander>
+
+                                <TextBlock Uid="general.version" Text="OpenCode version"
+                                           Style="{StaticResource FieldLabel}" />
+                                <ComboBox x:Name="versionCombo" Style="{StaticResource DarkCombo}"
+                                          Width="260" HorizontalAlignment="Left">
+                                    <ComboBoxItem Content="v1 (stable)" />
+                                    <ComboBoxItem Content="v2 (preview)" />
+                                </ComboBox>
+                                <TextBlock Uid="general.version.hint" Style="{StaticResource CardHint}"
+                                           Text="Choose the OpenCode branch to run." />
+                                <TextBlock x:Name="versionLockedHint" Uid="general.version.locked"
+                                           Style="{StaticResource CardHint}" Foreground="#c9a24a"
+                                           Visibility="Collapsed"
+                                           Text="v2 (preview) is available only in CLI mode." />
+                                <Expander Uid="general.version.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="general.version.desc" Style="{StaticResource MoreText}"
+                                               Text="v1 is the stable branch, updated rarely and best for daily work. v2 (preview) is a newer branch with a reworked API and early features that may have rough edges. Example: if v2 fails to start or misbehaves, switch back to v1 — your settings stay the same." />
+                                </Expander>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="general.zoom.title" Text="Web zoom"
+                                           Style="{StaticResource CardTitle}" />
+                                <Grid Margin="0,12,0,0" Height="40">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Slider x:Name="webZoom" Grid.Column="0" Style="{StaticResource DarkSlider}"
+                                            Minimum="50" Maximum="200" TickFrequency="1" IsSnapToTickEnabled="True"
+                                            ValueChanged="OnWebZoomChanged" />
+                                    <TextBlock x:Name="webZoomText" Grid.Column="1" Width="48" Margin="12,0,0,0"
+                                               VerticalAlignment="Center" TextAlignment="Right" Foreground="#f1f1f1" />
+                                </Grid>
+                                <TextBlock Uid="general.zoom.hint" Style="{StaticResource CardHint}"
+                                           Text="Scales the OpenCode web panel (50–200%)." />
+                                <Expander Uid="general.zoom.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="general.zoom.desc" Style="{StaticResource MoreText}"
+                                               Text="Sets the zoom level of the web panel only (not the terminal). Larger values make text and controls bigger and easier to read; smaller values fit more on screen. Example: 125% makes the text noticeably larger, 80% shows more content at once." />
+                                </Expander>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="general.panel.title" Text="Panel behavior"
+                                           Style="{StaticResource CardTitle}" />
+                                <CheckBox x:Name="autoOpenCheck" Uid="general.autoopen"
+                                          Style="{StaticResource ToggleCheckBox}"
+                                          Content="Auto-open panel when a solution opens" />
+                                <TextBlock Uid="general.autoopen.hint" Style="{StaticResource CardHint}"
+                                           Margin="0,6,0,0"
+                                           Text="Opens the OpenCode tool window automatically whenever you open a solution." />
+                                <Expander Uid="general.autoopen.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}" Margin="0,8,0,0">
+                                    <TextBlock Uid="general.autoopen.desc" Style="{StaticResource MoreText}"
+                                               Text="When enabled, the OpenCode tool window opens automatically every time you open a solution, so you can start right away without using the menu. Turn it off if you prefer to open the panel manually. Example: disable it for large solutions where you do not always need OpenCode." />
+                                </Expander>
+                                <CheckBox x:Name="consoleButtonCheck" Uid="general.console"
+                                          Style="{StaticResource ToggleCheckBox}"
+                                          Content="Show OpenCode authorization button (limits)" />
+                                <TextBlock Uid="general.console.hint" Style="{StaticResource CardHint}"
+                                           Text="Shows the panel button that signs you in to OpenCode Console to check your usage limits." />
+                                <Expander Uid="general.console.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="general.console.desc" Style="{StaticResource MoreText}"
+                                               Text="Shows the button in the OpenCode panel that opens the OpenCode Console sign-in (authorization). Use it to sign in and see your usage limits and remaining quota. Example: turn it off for a cleaner panel if you never check limits." />
+                                </Expander>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Terminal -->
+                    <StackPanel x:Name="panelTerminal" Visibility="Collapsed">
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="terminal.appearance.title" Text="Terminal appearance"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="terminal.font" Text="Font family"
+                                           Style="{StaticResource FieldLabel}" />
+                                <ComboBox x:Name="fontCombo" Style="{StaticResource DarkCombo}" Width="260"
+                                          HorizontalAlignment="Left"
+                                          SelectionChanged="OnFontChanged">
+                                    <ComboBoxItem Content="Consolas" />
+                                    <ComboBoxItem Content="Cascadia Mono" />
+                                    <ComboBoxItem Content="Courier New" />
+                                    <ComboBoxItem Content="Cascadia Code" />
+                                    <ComboBoxItem Content="Fira Code" />
+                                </ComboBox>
+                                <Expander Uid="terminal.font.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="terminal.font.desc" Style="{StaticResource MoreText}"
+                                               Text="The font used to draw terminal text. Monospaced fonts (Consolas, Cascadia Mono) are best: every character has the same width, so tables, code and menus line up neatly. The change applies the next time the terminal is opened." />
+                                </Expander>
+                                <TextBlock Uid="terminal.fontsize" Text="Font size"
+                                           Style="{StaticResource FieldLabel}" />
+                                <Grid Height="34">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Slider x:Name="fontSize" Grid.Column="0" Style="{StaticResource DarkSlider}"
+                                            Minimum="8" Maximum="28" TickFrequency="1" IsSnapToTickEnabled="True"
+                                            ValueChanged="OnFontSizeChanged" />
+                                    <TextBlock x:Name="fontSizeText" Grid.Column="1" Width="48" Margin="12,0,0,0"
+                                               VerticalAlignment="Center" TextAlignment="Right" Foreground="#f1f1f1" />
+                                </Grid>
+                                <Expander Uid="terminal.fontsize.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="terminal.fontsize.desc" Style="{StaticResource MoreText}"
+                                               Text="Size of terminal text in points. Bigger is easier to read; smaller fits more lines. Example: set 15–16 for HiDPI displays, 11–12 to see more output at once." />
+                                </Expander>
+                                <CheckBox x:Name="cursorBlinkCheck" Uid="terminal.cursorblink"
+                                          Style="{StaticResource ToggleCheckBox}"
+                                          Content="Cursor blink" />
+                                <Expander Uid="terminal.cursorblink.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}" Margin="0,8,0,0">
+                                    <TextBlock Uid="terminal.cursorblink.desc" Style="{StaticResource MoreText}"
+                                               Text="Makes the terminal cursor blink so it is easy to spot. Turn it off if blinking distracts you. Example: some users prefer a steady cursor when reading long output." />
+                                </Expander>
+                                <TextBlock Uid="terminal.scrollback" Text="Scrollback lines"
+                                           Style="{StaticResource FieldLabel}" />
+                                <TextBox x:Name="scrollbackBox" Style="{StaticResource FieldTextBox}" Width="260"
+                                         HorizontalAlignment="Left" Tag="5000" />
+                                <TextBlock Uid="terminal.scrollback.hint" Style="{StaticResource CardHint}"
+                                           Text="500–50000 lines." />
+                                <Expander Uid="terminal.scrollback.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="terminal.scrollback.desc" Style="{StaticResource MoreText}"
+                                               Text="How many previous lines the terminal keeps in its buffer, so you can scroll back. Larger values use more memory. Example: 5000 is fine for most work; raise it to 50000 if you need long build logs." />
+                                </Expander>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="terminal.command.title" Text="Command"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="terminal.cliargs" Text="Extra CLI arguments"
+                                           Style="{StaticResource FieldLabel}" />
+                                <TextBox x:Name="cliArgsBox" Style="{StaticResource FieldTextBox}"
+                                         Tag="e.g. --model sonnet" />
+                                <TextBlock Uid="terminal.cliargs.hint" Style="{StaticResource CardHint}"
+                                           Text="Appended to the opencode arguments when the CLI terminal starts." />
+                                <Expander Uid="terminal.cliargs.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="terminal.cliargs.desc" Style="{StaticResource MoreText}"
+                                               Text="Extra command-line arguments added right after 'opencode' when the CLI terminal starts. Use them to pass a model, a profile or other flags. Example: --model sonnet starts with the Sonnet model; separate multiple arguments with spaces." />
+                                </Expander>
+                                <TextBlock Uid="terminal.startdir" Text="Start directory"
+                                           Style="{StaticResource FieldLabel}" />
+                                <ComboBox x:Name="startDirCombo" Style="{StaticResource DarkCombo}"
+                                          Width="260" HorizontalAlignment="Left">
+                                    <ComboBoxItem Content="Git root" />
+                                    <ComboBoxItem Content="Solution folder" />
+                                    <ComboBoxItem Content=".csproj folder" />
+                                    <ComboBoxItem Content="Last used" />
+                                </ComboBox>
+                                <Expander Uid="terminal.startdir.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="terminal.startdir.desc" Style="{StaticResource MoreText}"
+                                               Text="Which folder the CLI terminal starts in. Git root is the repository root, Solution folder is where the .sln lives, .csproj folder is the project's folder. Example: choose .csproj folder if each project has its own OpenCode config." />
+                                </Expander>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Server -->
+                    <StackPanel x:Name="panelServer" Visibility="Collapsed">
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="server.binary.title" Text="OpenCode binary"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="server.path" Text="Path to opencode binary"
+                                           Style="{StaticResource FieldLabel}" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="openCodePathBox" Grid.Column="0" Style="{StaticResource FieldTextBox}"
+                                             Tag="Auto-detect from PATH" />
+                                    <Button x:Name="browseButton" Grid.Column="1" Uid="server.browse"
+                                            Content="Browse…" Margin="16,0,0,0"
+                                            Style="{StaticResource GhostButton}" Click="OnBrowseClick" />
+                                </Grid>
+                                <TextBlock Uid="server.path.hint" Style="{StaticResource CardHint}"
+                                           Text="Leave empty to auto-detect opencode/opencode2 on PATH." />
+                                <Expander Uid="server.path.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="server.path.desc" Style="{StaticResource MoreText}"
+                                               Text="Full path to the opencode executable. Leave it empty and OpenCode Studio finds opencode/opencode2 on PATH automatically. Set it when you use a custom build or a non-standard install. Example: C:\tools\opencode\opencode.exe." />
+                                </Expander>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="server.title" Text="Server"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="server.port" Text="Preferred port"
+                                           Style="{StaticResource FieldLabel}" />
+                                <TextBox x:Name="portBox" Style="{StaticResource FieldTextBox}" Width="260"
+                                         HorizontalAlignment="Left" Tag="4096" />
+                                <Expander Uid="server.port.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="server.port.desc" Style="{StaticResource MoreText}"
+                                               Text="The port the local OpenCode server prefers to listen on. If it is busy, a free port is used instead. Example: 4096 by default; change it if another tool already uses that port." />
+                                </Expander>
+                                <TextBlock Uid="server.serveargs" Text="Extra serve arguments"
+                                           Style="{StaticResource FieldLabel}" />
+                                <TextBox x:Name="serveArgsBox" Style="{StaticResource FieldTextBox}"
+                                         Tag="e.g. --print-logs" />
+                                <Expander Uid="server.serveargs.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="server.serveargs.desc" Style="{StaticResource MoreText}"
+                                               Text="Extra arguments passed to the 'opencode serve' command that starts the local server. Example: --print-logs writes server logs to the console for debugging; leave empty for normal use." />
+                                </Expander>
+                                <TextBlock Uid="server.idle" Text="Stop server after idle minutes"
+                                           Style="{StaticResource FieldLabel}" />
+                                <TextBox x:Name="idleBox" Style="{StaticResource FieldTextBox}" Width="260"
+                                         HorizontalAlignment="Left" Tag="0" />
+                                <TextBlock Uid="server.idle.hint" Style="{StaticResource CardHint}"
+                                           Text="0 = never stop." />
+                                <Expander Uid="server.idle.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="server.idle.desc" Style="{StaticResource MoreText}"
+                                               Text="Automatically stops the local server after this many minutes without activity, freeing memory. 0 keeps it running always. Example: 30 stops an idle server after half an hour; 0 if you want instant responses." />
+                                </Expander>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Updates -->
+                    <StackPanel x:Name="panelUpdates" Visibility="Collapsed">
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="updates.title" Text="Updates"
+                                           Style="{StaticResource CardTitle}" />
+                                <CheckBox x:Name="checkUpdatesCheck" Uid="updates.check"
+                                          Style="{StaticResource ToggleCheckBox}"
+                                          Content="Check for new versions" />
+                                <TextBlock Uid="updates.check.hint" Style="{StaticResource CardHint}"
+                                           Margin="0,6,0,0"
+                                           Text="Looks for a newer OpenCode Studio version on the Marketplace and shows a notification." />
+                                <Expander Uid="updates.check.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}" Margin="0,8,0,0">
+                                    <TextBlock Uid="updates.check.desc" Style="{StaticResource MoreText}"
+                                               Text="When on, OpenCode Studio periodically checks the Marketplace for a newer version and shows a notification. Example: keep it on to learn about updates; turn it off on offline machines." />
+                                </Expander>
+                                <TextBlock Uid="updates.minutes" Text="Check every (minutes)"
+                                           Style="{StaticResource FieldLabel}" />
+                                <TextBox x:Name="updateMinutesBox" Style="{StaticResource FieldTextBox}" Width="260"
+                                         HorizontalAlignment="Left" Tag="60" />
+                                <Expander Uid="updates.minutes.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="updates.minutes.desc" Style="{StaticResource MoreText}"
+                                               Text="How often to check for updates, in minutes. Smaller values find updates sooner but make more network requests. Example: 60 checks once an hour; 1440 once a day." />
+                                </Expander>
+                                <TextBlock Uid="updates.channel" Text="Channel"
+                                           Style="{StaticResource FieldLabel}" />
+                                <ComboBox x:Name="channelCombo" Style="{StaticResource DarkCombo}"
+                                          Width="260" HorizontalAlignment="Left">
+                                    <ComboBoxItem Content="Stable" />
+                                    <ComboBoxItem Content="Beta (next)" />
+                                </ComboBox>
+                                <Expander Uid="updates.channel.details" Header="Details"
+                                          Style="{StaticResource MoreExpander}">
+                                    <TextBlock Uid="updates.channel.desc" Style="{StaticResource MoreText}"
+                                               Text="Which release channel to follow. Stable only offers tested versions; Beta (next) also offers preview builds with new features. Example: choose Beta if you want early features and can tolerate occasional issues." />
+                                </Expander>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Import -->
+                    <StackPanel x:Name="panelImport" Visibility="Collapsed">
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="import.title" Text="Import OpenCode data"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="import.hint" Style="{StaticResource CardHint}"
+                                           Text="Bring in settings, commands, themes, credentials and chat history from a detected OpenCode environment." />
+                                <TextBlock x:Name="importWarning" Margin="0,6,0,0" FontSize="12"
+                                           Foreground="#c9a24a" TextWrapping="Wrap" Visibility="Collapsed"
+                                           Text="OpenCode is running. Close OpenCode (including the desktop app) before importing credentials or chat history." />
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="360" Margin="0,16,0,0">
+                                    <StackPanel x:Name="sourcesPanel" />
+                                </ScrollViewer>
+                                <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                                    <Button Uid="import.addfolder" Content="Add folder…"
+                                            Style="{StaticResource GhostButton}" Click="OnBrowseImportClick" />
+                                    <Button x:Name="importButton" Uid="import.importbtn" Content="Import selected"
+                                            Margin="16,0,0,0" Style="{StaticResource AccentButton}"
+                                            Click="OnImportClick" />
+                                </StackPanel>
+                                <TextBlock x:Name="statusText" Margin="0,10,0,0" FontSize="12"
+                                           Foreground="#9a9a9a" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+
+            <!-- Нижняя панель -->
+            <Border Grid.Row="1" Background="#181818" BorderBrush="#3a3a3a" BorderThickness="0,1,0,0"
+                    Padding="24,12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Uid="bottom.language" Text="Language" Foreground="#9a9a9a"
+                                   VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <ComboBox x:Name="languageCombo" Style="{StaticResource DarkCombo}" Width="92"
+                                  SelectionChanged="OnLanguageChanged">
+                            <ComboBoxItem Content="EN" />
+                            <ComboBoxItem Content="RU" />
+                        </ComboBox>
+                        <TextBlock x:Name="versionText" Margin="16,0,0,0" Foreground="#9a9a9a"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button x:Name="cancelButton" Uid="common.cancel" Content="Cancel" Margin="0,0,10,0"
+                                Style="{StaticResource GhostButton}" Click="OnCancelClick" />
+                        <Button x:Name="saveButton" Uid="common.save" Content="Save"
+                                Style="{StaticResource AccentButton}" Click="OnSaveClick" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

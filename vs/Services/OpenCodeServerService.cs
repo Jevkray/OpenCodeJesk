@@ -26,6 +26,7 @@ namespace OpenCodeStudio.Services
         public ServerInfo ServerInfo => _serverInfo;
         public ConnectionState State => _state;
         public bool PreferV2 { get; set; }
+        public string BinaryPath => _binaryPath;
         public event Action<ConnectionState> StateChanged;
 
         public HttpClient GetClient()
@@ -95,16 +96,19 @@ namespace OpenCodeStudio.Services
                 // local state (selected server/project) like the desktop app.
                 var port = ResolvePort();
                 Log.Info($"Using port {port}");
+                var serveArgs = "serve --port " + port;
+                var extraServe = SpendSettings.Current?.ServeArguments;
+                if (!string.IsNullOrWhiteSpace(extraServe)) serveArgs += " " + extraServe.Trim();
                 if (opencodePath.EndsWith(".cmd", StringComparison.OrdinalIgnoreCase) ||
                     opencodePath.EndsWith(".bat", StringComparison.OrdinalIgnoreCase))
                 {
                     psi.FileName = "cmd.exe";
-                    psi.Arguments = "/c \"" + opencodePath + "\" serve --port " + port;
+                    psi.Arguments = "/c \"" + opencodePath + "\" " + serveArgs;
                 }
                 else
                 {
                     psi.FileName = opencodePath;
-                    psi.Arguments = "serve --port " + port;
+                    psi.Arguments = serveArgs;
                 }
 
                 _process = System.Diagnostics.Process.Start(psi);
@@ -244,6 +248,7 @@ namespace OpenCodeStudio.Services
             catch { return false; }
 
             _serverInfo = info;
+            _binaryPath = ResolveOpenCodePath();
             _process = null;
             _ownsProcess = false;
             await InitializeHttpClientAsync();
@@ -278,12 +283,14 @@ namespace OpenCodeStudio.Services
 
         private static int ResolvePort()
         {
-            // Стабильный origin: сначала пробуем предпочтительный порт, затем последний
-            // успешно использованный, и лишь потом случайный свободный.
-            if (IsPortFree(PreferredPort)) { SaveLastPort(PreferredPort); return PreferredPort; }
+            // Стабильный origin: сначала пробуем предпочтительный порт (из настроек),
+            // затем последний успешно использованный, и лишь потом случайный свободный.
+            var preferred = SpendSettings.Current?.PreferredPort ?? PreferredPort;
+            if (preferred < 1 || preferred > 65535) preferred = PreferredPort;
+            if (IsPortFree(preferred)) { SaveLastPort(preferred); return preferred; }
 
             var last = ReadLastPort();
-            if (last > 0 && last != PreferredPort && IsPortFree(last)) return last;
+            if (last > 0 && last != preferred && IsPortFree(last)) return last;
 
             try
             {
@@ -548,6 +555,11 @@ namespace OpenCodeStudio.Services
             var overridePath = Environment.GetEnvironmentVariable("OPENCODESTUDIO_OPENCODE_BIN");
             if (!string.IsNullOrWhiteSpace(overridePath) && File.Exists(overridePath))
                 return overridePath;
+
+            // Путь из настроек приоритетнее автоопределения.
+            var configured = SpendSettings.Current?.OpenCodePath;
+            if (!string.IsNullOrWhiteSpace(configured) && File.Exists(configured))
+                return configured;
 
             // v1 ставится как "opencode"; v2-бета — отдельным бинарём "opencode2".
             // Порядок имён зависит от настройки PreferV2.

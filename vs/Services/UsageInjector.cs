@@ -16,9 +16,15 @@ namespace OpenCodeStudio.Services
     {
         private const string ResourceName = "OpenCodeStudio.Resources.UsageInjector.js";
         private static string _script;
+        private static string _scriptId;
 
+        /// <summary>
+        /// Регистрирует скрипт для выполнения на каждом новом документе.
+        /// Идемпотентно: повторные вызовы ничего не добавляют.
+        /// </summary>
         public static async Task InstallAsync(CoreWebView2 core)
         {
+            if (_scriptId != null) return;
             if (_script == null)
             {
                 using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(ResourceName))
@@ -27,7 +33,17 @@ namespace OpenCodeStudio.Services
                     _script = reader.ReadToEnd();
                 }
             }
-            await core.AddScriptToExecuteOnDocumentCreatedAsync(_script);
+            _scriptId = await core.AddScriptToExecuteOnDocumentCreatedAsync(_script);
+        }
+
+        /// <summary>Снимает ранее зарегистрированный скрипт (если он был).</summary>
+        public static Task UninstallAsync(CoreWebView2 core)
+        {
+            if (_scriptId == null) return Task.CompletedTask;
+            try { core.RemoveScriptToExecuteOnDocumentCreated(_scriptId); }
+            catch (Exception ex) { Log.Warn("UsageInjector uninstall failed: " + ex.Message); }
+            _scriptId = null;
+            return Task.CompletedTask;
         }
 
         public static void Push(CoreWebView2 core, string json)

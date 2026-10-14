@@ -1,0 +1,47 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'">
+<style>__XTERM_CSS__
+html,body{height:100%;margin:0;background:#1e1e1e;overflow:hidden}
+#terminal{height:100%;padding:4px;box-sizing:border-box}
+/* Скрываем полосы прокрутки: прокрутка колесом остаётся. */
+::-webkit-scrollbar{width:0;height:0;display:none}
+.xterm-viewport{scrollbar-width:none;-ms-overflow-style:none;overflow-y:auto!important}
+.xterm-viewport::-webkit-scrollbar{width:0;height:0;display:none}</style>
+</head><body><div id="terminal"></div>
+<script>__XTERM_JS__</script><script>__FIT_JS__</script>
+<script>
+const term=new Terminal({cursorBlink:__CURSOR_BLINK__,fontFamily:'__FONT_FAMILY__',fontSize:__FONT_SIZE__,scrollback:__SCROLLBACK__,
+  theme:{background:'#1e1e1e',foreground:'#e6e6e6'},allowProposedApi:false,screenReaderMode:true});
+const fit=new FitAddon.FitAddon();term.loadAddon(fit);term.open(document.getElementById('terminal'));
+// Приложение (opencode) само запрашивает мигание курсора (DECSCUSR), перебивая
+// опцию xterm, поэтому удерживаем выбранное значение принудительно.
+const BLINK=__CURSOR_BLINK__;
+term.options.cursorBlink=BLINK;
+setInterval(function(){if(term.options.cursorBlink!==BLINK)term.options.cursorBlink=BLINK;},200);
+function send(message){window.chrome.webview.postMessage(JSON.stringify(message));}
+let ready=false;
+function pump(){
+  const w=document.body.clientWidth,h=document.body.clientHeight;
+  if(w&&h){try{fit.fit();}catch(e){}}
+  if(!ready){ready=true;send({type:'ready',cols:term.cols,rows:term.rows});}
+  else send({type:'resize',cols:term.cols,rows:term.rows});
+}
+term.onData(data=>send({type:'input',data}));
+term.attachCustomKeyEventHandler(e=>{
+  if(e.ctrlKey&&e.shiftKey&&e.type==='keydown'){
+    if(e.key.toLowerCase()==='c'){send({type:'copy',data:term.getSelection()});return false;}
+    if(e.key.toLowerCase()==='v'){send({type:'paste'});return false;}
+  }
+  return true;
+});
+window.chrome.webview.addEventListener('message',e=>{
+  const message=e.data;
+  if(message.type==='output')term.write(message.data);
+  if(message.type==='reset'){term.reset();pump();term.focus();}
+  if(message.type==='focus'){pump();term.focus();}
+});
+new ResizeObserver(pump).observe(document.getElementById('terminal'));
+requestAnimationFrame(pump);
+setTimeout(pump,300);
+</script></body></html>

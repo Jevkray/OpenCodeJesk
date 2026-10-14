@@ -53,7 +53,7 @@ namespace OpenCodeStudio.Services
                 Path.Combine(root, "config"),
                 Path.Combine(root, "data"),
                 Path.Combine(root, "state"),
-                Path.Combine(root, "cache")) { Name = "OpenCode Studio" };
+                Path.Combine(root, "cache")) { Name = Brand.Name };
         }
 
         public static string StudioDir => Path.Combine(

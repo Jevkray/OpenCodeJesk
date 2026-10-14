@@ -4,14 +4,14 @@ using Microsoft.VisualStudio.Shell;
 
 namespace OpenCodeStudio
 {
-    [Guid("E3F4A5B6-C7D8-9012-EFAB-CDEF34567890")]
+    [Guid(Brand.ToolWindowGuid)]
     public sealed class OpenCodeToolWindow : ToolWindowPane
     {
         public OpenCodeToolWindowControl Control { get; private set; }
 
         public OpenCodeToolWindow() : base(null)
         {
-            Caption = "OpenCode Studio";
+            Caption = Brand.Name;
             Control = new OpenCodeToolWindowControl();
             Content = Control;
         }

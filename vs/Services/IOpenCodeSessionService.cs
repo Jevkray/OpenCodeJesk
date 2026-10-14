@@ -12,6 +12,12 @@ namespace OpenCodeStudio.Services
         /// Lists all sessions for the given directory.
         /// </summary>
         Task<List<Models.Session>> ListSessionsAsync(string directory);
+        Task<Models.Session> GetSessionAsync(string id, string directory);
+
+        /// <summary>
+        /// Время последнего сообщения чата (мс). 0 — сообщений нет, -1 — неизвестно.
+        /// </summary>
+        Task<long> GetLastMessageTimeAsync(string id, string directory);
 
         /// <summary>
         /// Creates a new session for the given directory.

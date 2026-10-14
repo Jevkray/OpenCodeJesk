@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="OpenCodeStudio.7e4a9c31-2b6d-4f58-9a10-3c8e7b5d1f20" Version="1.1.5.1" Language="en-US" Publisher="jevkray" />
-    <DisplayName>OpenCode Studio</DisplayName>
-    <Description xml:space="preserve">The OpenCode AI coding agent, natively inside Visual Studio. Full OpenCode web UI in a tool window, shared chat history with the CLI and desktop app, a usage dashboard (cost, tokens, requests) and a first-run import wizard. Everything runs locally. Supports VS 2022 and VS 2026. Adds a usage overlay with remaining Go limits and today's spend, plus a usage dashboard window.</Description>
-    <Icon>Resources\Icon.png</Icon>
-    <PreviewImage>Resources\PreviewImage.png</PreviewImage>
-    <Tags>ai;artificial intelligence;coding;assistant;llm;copilot;opencode;webview2;productivity;statistics;analytics</Tags>
+    <Identity Id="OpenCodeJesk.2c99a37c-11f8-4f9f-9a77-d6347b8d3461" Version="1.2.0" Language="en-US" Publisher="jevkray" />
+    <DisplayName>OpenCode Jesk</DisplayName>
+    <Description xml:space="preserve">OpenCode Jesk (formerly OpenCode Studio) brings the OpenCode AI coding agent natively inside Visual Studio. Full OpenCode web UI in a tool window, a plain CLI terminal mode, shared chat history with the CLI and desktop app, custom Settings (interface, terminal, server, updates), a first-run import wizard, web zoom and automatic panel opening. Everything runs locally. Supports VS 2022 and VS 2026.</Description>
+    <Icon>Resources\IconJesk.png</Icon>
+    <PreviewImage>Resources\PreviewImageJesk.png</PreviewImage>
+    <Tags>ai;artificial intelligence;coding;assistant;llm;copilot;opencode;jesk;webview2;productivity;statistics;analytics</Tags>
   </Metadata>
   <Installation>
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 19.0)">

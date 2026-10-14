@@ -63,8 +63,9 @@ namespace OpenCodeStudio.Services
 
         private async Task RunAsync(CancellationToken ct)
         {
-            int limitsSec = Math.Max(2, _settings?.LimitsPollSeconds ?? 5);
-            int historySec = Math.Max(10, _settings?.HistoryPollSeconds ?? 60);
+            // Парсинг лимитов и истории отключён; интервалы фиксированы.
+            int limitsSec = 5;
+            int historySec = 60;
 
             string cookie = null;
             SpendClient client = null;

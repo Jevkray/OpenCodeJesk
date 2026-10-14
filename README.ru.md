@@ -1,16 +1,16 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/vs/Resources/PreviewImage.png" width="240" alt="OpenCode Studio" />
+<img src="https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/vs/Resources/PreviewImageJesk.png" width="240" alt="OpenCode Jesk" />
 
-# 🟣 OpenCode Studio
+# 🟣 OpenCode Jesk
 
 **OpenCode-агент — прямо внутри Visual Studio.**
 
-*Быстрое, самодостаточное окно-инструмент с мастером переноса при первом запуске и общей историей чатов.*
+*Ранее OpenCode Studio. Быстрое, самодостаточное окно-инструмент с мастером настроек/переноса и общей историей чатов.*
 
-[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/jevkray.OpenCodeStudio?label=marketplace&color=7C3AED)](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeStudio)
-[![Установки](https://img.shields.io/visual-studio-marketplace/i/jevkray.OpenCodeStudio?color=7C3AED)](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeStudio)
-[![Рейтинг](https://img.shields.io/visual-studio-marketplace/r/jevkray.OpenCodeStudio?color=7C3AED)](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeStudio)
+[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/jevkray.OpenCodeJesk?label=marketplace&color=7C3AED)](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk)
+[![Установки](https://img.shields.io/visual-studio-marketplace/i/jevkray.OpenCodeJesk?color=7C3AED)](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk)
+[![Рейтинг](https://img.shields.io/visual-studio-marketplace/r/jevkray.OpenCodeJesk?color=7C3AED)](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk)
 ![Visual Studio](https://img.shields.io/badge/Visual%20Studio-2022%20%7C%202026-7C3AED)
 ![Лицензия](https://img.shields.io/badge/license-MIT-7C3AED)
 ![.NET](https://img.shields.io/badge/.NET%20Framework-4.7.2-7C3AED)
@@ -21,53 +21,85 @@
 
 ---
 
+> [!IMPORTANT]
+> **Переименование: OpenCode Studio → OpenCode Jesk.** Это то же расширение под новым именем, оно полностью совместимо — настройки, провайдеры, ключи и история чатов сохраняются. **Поддержка OpenCode Studio завершается 20.10.2026.** Пожалуйста, перейдите на новое [OpenCode Jesk в Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk).
+
 > [!TIP]
-> **Одно окружение — везде.** OpenCode Studio использует те же данные, что OpenCode CLI и desktop-приложение — провайдеры, настройки, ключи и **все чаты** уже на месте. Никакой настройки и дублирования.
+> **Одно окружение — везде.** OpenCode Jesk использует те же данные, что OpenCode CLI и desktop-приложение — провайдеры, настройки, ключи и **все чаты** уже на месте. Никакой настройки и дублирования.
 
 ## 🆕 Что нового
 
+- **1.2.0** - Режимы интерфейса **Desktop (Web)** и **CLI (терминал)** в одной панели; общий чат между режимами; отдельное окно **Settings** (Основные, Терминал, Сервер, Обновления, Импорт); авто-открытие при открытии решения; **масштаб веб-панели**; шрифт, размер, курсор и строки истории терминала; порт/аргументы/остановка сервера по простою; проверка обновлений в Marketplace; поддержка **v1 / v2 preview**; безопасный импорт с резервными копиями; и переименование в **OpenCode Jesk**.
 - **1.1.5.1** (минорный хотфикс) - Надёжнее открывается **Open Extension Manager** (менеджер расширений Visual Studio, сначала вкладка Updates); окно обновления теперь скрывается до следующего перезапуска Visual Studio при любом действии и подсказывает, как отключить уведомления в настройках.
 - **1.1.5** - Исправлено: закрытие окна обновления прячет его до следующего перезапуска; «Open Extension Manager» открывает диспетчер расширений Visual Studio.
-- **1.1.5** - Закрытие окна обновления скрывает его до следующего перезапуска Visual Studio, а **Open Extension Manager** теперь открывает менеджер расширений Visual Studio (сайт — только запасной вариант).
-- **1.1.4** - Фоновая проверка обновлений (раз в минуту). Для **самого OpenCode Studio**: компактное тёмное окно показывает новую версию и список изменений с кнопками **Open Extension Manager** / **Marketplace page** / **Not now** (Visual Studio и так ставит обновления расширений в фоне). Для **OpenCode CLI**: окно предлагает обновить прямо из расширения (`npm i -g opencode-ai@latest`) или показывает команду вручную; панель подхватит новую версию при перезапуске. Новая настройка **Check for new versions** отключает уведомления об обновлении расширения.
+- **1.1.4** - Фоновая проверка обновлений (раз в минуту). Для **самого OpenCode Jesk**: компактное тёмное окно показывает новую версию и список изменений с кнопками **Open Extension Manager** / **Marketplace page** / **Not now** (Visual Studio и так ставит обновления расширений в фоне). Для **OpenCode CLI**: окно предлагает обновить прямо из расширения (`npm i -g opencode-ai@latest`) или показывает команду вручную; панель подхватит новую версию при перезапуске. Новая настройка **Check for new versions** отключает уведомления об обновлении расширения.
 - **1.1.3** - Окно Settings показывает установленную и последнюю доступную версию OpenCode и кнопку **Update**, если вышла новая. Новая версия подхватывается автоматически.
 - **1.1.2**
   - Всегда используется **последняя установленная версия opencode**: при старте сервер заново проверяет бинарь (путь + время изменения) и перезапускается, если он обновился; в `server.json` теперь пишется реальный PID серверного процесса.
   - Мастер первого запуска превращён в окно **Settings** с вкладками **Import** и **Settings**; кнопка — **Save selected** (применяет и импорт, и настройки).
-  - Пункт меню **«OpenCode Studio Usage Statistics»** и его окно временно убраны (статистика вернётся позже); пока кнопка в панели открывает OpenCode Console.
-- **1.1.1**
-  - Работает с **opencode v1 и v2 (включая v2-бету)**: расширение само задаёт пароль сервера, отправляет HTTP Basic Auth во всех запросах и передаёт учётные данные в WebView2 (сервер v2 требует авторизацию после фикса CVE-2026-22812). Вводящая в заблуждение ошибка «not in PATH» исчезла.
-  - Авто-обнаружение бинаря v2-беты (`opencode2`) и нативный переключатель **"Use OpenCode v2.x (preview)"** (в окне настроек и в **Сервис → Параметры**); `OPENCODESTUDIO_OPENCODE_BIN` форсирует путь к бинарю.
-  - Один VSIX для **Visual Studio 2022 и 2026**.
-  - Исправления: больше нет цикла переподключения на v2 (health-check не требует `{"healthy":true}`), завершается всё дерево процессов (`taskkill /T` — порт больше не «прыгает»), а готовность сервера не зависит от строки запуска.
 - **1.1.0** - Кнопка статистики в панели OpenCode: профиль и реальные траты, не выходя из Visual Studio.
 
-## ✨ Почему OpenCode Studio?
+## 📸 Скриншоты
+
+<!-- SCREENSHOT: docs/images/jesk-settings-general.png — Settings: Основные (режим интерфейса, версия OpenCode, масштаб, поведение панели) -->
+![OpenCode Jesk — Settings: Основные](docs/images/jesk-settings-general.png)
+*Settings — Основные: режим интерфейса, версия OpenCode, масштаб веб-панели и поведение панели.*
+
+<!-- SCREENSHOT: docs/images/jesk-settings-terminal.png — Settings: Терминал (шрифт, размер, курсор, история, аргументы CLI) -->
+![OpenCode Jesk — Settings: Терминал](docs/images/jesk-settings-terminal.png)
+*Settings — Терминал: шрифт, размер, курсор, строки истории и параметры команды CLI.*
+
+<!-- SCREENSHOT: docs/images/jesk-settings-server.png — Settings: Сервер (путь к бинарнику, порт, аргументы serve, простой) -->
+![OpenCode Jesk — Settings: Сервер](docs/images/jesk-settings-server.png)
+*Settings — Сервер: путь к бинарнику opencode, порт, аргументы serve и остановка после простоя.*
+
+<!-- SCREENSHOT: docs/images/jesk-settings-updates.png — Settings: Обновления (проверка, интервал, канал) -->
+![OpenCode Jesk — Settings: Обновления](docs/images/jesk-settings-updates.png)
+*Settings — Обновления: проверка новых версий, интервал и канал выпусков.*
+
+<!-- SCREENSHOT: docs/images/jesk-settings-import.png — Settings: Импорт (найденные источники, добавить папку, импорт) -->
+![OpenCode Jesk — Settings: Импорт](docs/images/jesk-settings-import.png)
+*Settings — Импорт: найденные источники OpenCode, добавление папки и импорт выбранного (с резервными копиями).*
+
+<!-- SCREENSHOT: docs/images/jesk-desktop.png — Панель в режиме Desktop (Web) -->
+![OpenCode Jesk — панель Desktop (Web)](docs/images/jesk-desktop.png)
+*Панель в режиме **Desktop (Web)** — полный веб-интерфейс OpenCode внутри окна-инструмента.*
+
+<!-- SCREENSHOT: docs/images/jesk-cli.png — Панель в режиме CLI (терминал) -->
+![OpenCode Jesk — панель CLI (терминал)](docs/images/jesk-cli.png)
+*Панель в режиме **CLI (терминал)** — простое окно терминала с уже запущенным OpenCode.*
+
+## ✨ Почему OpenCode Jesk?
 
 | | |
 |---|---|
 | 🧠 | **Настоящий OpenCode, а не клон** — полный официальный веб-UI прямо в Visual Studio. |
 | 🔄 | **Общая история** — те же чаты, что в CLI и desktop, во всех окнах Visual Studio. |
-| 🗂️ | **Видны все чаты** — открывается главная веб-UI со списком всех проектов и сессий. |
+| 🗂️ | **Текущий проект по умолчанию** — форма нового чата выбирает открытое решение/репозиторий Visual Studio; другие проекты и чаты остаются доступны. |
+| ⌨️ | **Desktop / CLI** — веб-панель или простое окно терминала с уже запущенным OpenCode внутри той же панели, для v1 и v2 preview. |
 | 📈 | **Профиль и расход в один клик** — кнопка статистики открывает консоль OpenCode прямо в панели: реальные траты и лимиты без переключения в браузер. |
-| 📥 | **Мастер при первом запуске** — импорт настроек, тем, ключей и истории в один клик. |
+| 📥 | **Настройки и мастер переноса** — импорт настроек, тем, ключей и истории в один клик. |
 | 🔁 | **Авто-переподключение** — само восстанавливает сессию при обрыве связи. |
 | 🔒 | **Локально** — только loopback, ноль телеметрии. |
 | 🪶 | **Лёгкий** — один VSIX для Visual Studio 2022 и 2026. |
 
 - ⚙️ **Переключатель проверки обновлений** — включить или отключить уведомления об обновлениях в настройках.
 
-## 📸 Превью
+## ⌨️ Web и CLI
 
-![OpenCode Studio прямо внутри Visual Studio](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/vs/Resources/PreviewWork.jpg)
+Режим выбирается только в **Settings → Settings → Interface**: **Desktop (Web)** или **CLI**. Переключателя в самой панели нет. Настройка **Use OpenCode v2.x (preview)** независима и действует на оба интерфейса.
 
-> 💬 *Чат с агентом рядом с решением — и живая панель сессии с моделью, провайдером, расходом токенов, стоимостью, последней активностью и разбивкой контекста.*
+Desktop сохраняет существующую интеграцию WebView2. CLI показывает простое окно терминала с уже запущенным OpenCode — без хрома терминала Visual Studio и лишнего интерфейса, только терминал и агент. Терминал живёт в той же панели OpenCode Jesk, поэтому Visual Studio сохраняет его положение и размер, а OpenCode запускается автоматически в папке проекта.
+
+Оба режима подключаются к одному серверу. При переходе из Web в CLI можно продолжить выбранный чат. История общая в пределах выбранной версии OpenCode; автоматической конвертации БД v1/v2 нет. При открытии Jesk форма нового чата выбирает Git-корень решения либо папку решения, если репозитория нет.
+
+Проверка: соберите Release и запустите `tests\Run-TerminalSmoke.ps1`. Проверка использует отдельные тестовые данные и охватывает терминал (ConPTY), общие сессии v1/v2 и отображение терминала в WebView2.
 
 ## 🚀 Быстрый старт
 
 ```text
-  Вид      →  Другие окна          →  OpenCode Studio        🔹 агент
-  Сервис   →  OpenCode Studio Settings                      📥 мастер настройки
+  Вид      →  Другие окна          →  OpenCode Jesk          🔹 агент
+  Сервис   →  OpenCode Jesk Settings                        📥 мастер настройки
 ```
 
 > [!NOTE]
@@ -79,25 +111,25 @@
 **Из Visual Studio Marketplace (рекомендуется)**
 
 1. В Visual Studio откройте **Расширения → Управление расширениями**.
-2. Найдите **OpenCode Studio** и установите.
+2. Найдите **OpenCode Jesk** и установите.
 3. Перезапустите Visual Studio.
 
 **Из VSIX-файла**
 
-1. Скачайте последний `OpenCodeStudio-x.y.z.vsix` из [Releases](https://github.com/Jevkray/OpenCodeStudio/releases).
+1. Скачайте последний `OpenCodeJesk-x.y.z.vsix` из [Releases](https://github.com/Jevkray/OpenCodeStudio/releases).
 2. Закройте все окна Visual Studio и дважды кликните по файлу.
 
 </details>
 
 ## 🔗 Синхронизация истории чатов
 
-OpenCode хранит каждую сессию **в привязке к каталогу проекта**, в котором она создана. Поскольку OpenCode Studio использует те же данные, что CLI и desktop, все чаты уже доступны — но сгруппированы по пути проекта.
+OpenCode хранит каждую сессию **в привязке к каталогу проекта**, в котором она создана. Поскольку OpenCode Jesk использует те же данные, что CLI и desktop, все чаты уже доступны — но сгруппированы по пути проекта.
 
 > [!IMPORTANT]
 > Если проект находится по **другому абсолютному пути**, чем при создании чатов (другой диск, другое имя пользователя, перемещённая или переименованная папка), сессии останутся привязаны к исходному пути. **Приведите пути проектов в соответствие — и всё синхронизируется.**
 
 1. Открывайте каждый проект по **тому же абсолютному пути**, что использовался изначально — например `C:\Users\<вы>\source\repos\MyApp`.
-2. Если путь изменился — верните проект на место либо перенесите старые данные через **Сервис → OpenCode Studio Settings**, указав папку с исходным `opencode.db`.
+2. Если путь изменился — верните проект на место либо перенесите старые данные через **Сервис → OpenCode Jesk Settings**, указав папку с исходным `opencode.db`.
 3. Переоткройте окно-инструмент — сессии появятся у нужного проекта.
 
 Как только пути совпадают, **все чаты синхронизируются** между CLI, desktop-приложением и всеми окнами Visual Studio. 🎉
@@ -108,7 +140,7 @@ OpenCode хранит каждую сессию **в привязке к кат�
 
 ## 🧱 Архитектура
 
-Ядро OpenCode Studio намеренно компактное и разделённое.
+Ядро OpenCode Jesk намеренно компактное и разделённое.
 
 ```text
  ┌──────────────────────────────────────────────────────────────┐
@@ -123,8 +155,8 @@ OpenCode хранит каждую сессию **в привязке к кат�
  │  OpenCodeToolWindowControl        хост WebView2              │
  │    └── открывает http://127.0.0.1:<port>/ (главная веб-UI)   │
  ├──────────────────────────────────────────────────────────────┤
- │  FirstRunWindow                   мастер переноса            │
- │  ImportService / OpenCodeEnvironment / Log                   │
+ │  SettingsWindow / ImportService   настройки и импорт         │
+ │    └── OpenCodeEnvironment / Log                             │
  └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -152,7 +184,7 @@ cd OpenCodeStudio
 dotnet build vs/OpenCodeStudio.csproj -c Release
 ```
 
-VSIX появится в `vs/bin/Release/net472/OpenCodeStudio.vsix`. Для отладки откройте `OpenCodeStudio.sln` и нажмите **F5** (экспериментальный экземпляр). 🧪
+VSIX появится в `vs/bin/Release/net472/OpenCodeStudio.vsix`. Для сборки обоих брендов сразу (Studio и Jesk) запустите `build-both.ps1`. Для отладки откройте `OpenCodeStudio.sln` и нажмите **F5** (экспериментальный экземпляр). 🧪
 
 ## 🛡️ Приватность
 
