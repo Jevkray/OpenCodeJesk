@@ -67,10 +67,27 @@ namespace OpenCodeStudio.Services
             _currentProjectDirectory = System.IO.Path.GetFullPath(projectRoot);
 
             _serverService.PreferV2 = _useV2?.Invoke() ?? false;
+            bool wantV2 = _serverService.PreferV2;
 
             _sessionService = new OpenCodeSessionService(_serverService);
 
             var running = await _serverService.CheckHealthAsync();
+
+            if (running)
+            {
+                // Подключённый сервер мог быть поднят другой версией (например,
+                // раньше в этой же или прошлой сессии). Сверяем фактическую
+                // ветку с выбранной и при расхождении перезапускаем.
+                var curMajor = CliCommand.DetectMajor(_serverService.BinaryPath);
+                bool curV2 = curMajor >= 2;
+                if (curMajor == 0) curV2 = wantV2;
+                Log.Info($"Server version check: current=v{(curV2 ? 2 : 1)} want=v{(wantV2 ? 2 : 1)}");
+                if (curV2 != wantV2)
+                {
+                    _serverService.Stop();
+                    running = false;
+                }
+            }
 
             if (!running)
             {

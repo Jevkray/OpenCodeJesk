@@ -61,7 +61,7 @@ namespace OpenCodeStudio.Services
                     SetState(ConnectionState.Error);
                     return false;
                 }
-                Log.Info($"Using opencode executable: {opencodePath}");
+                Log.Info($"Using opencode executable: {opencodePath} (v{CliCommand.DetectMajor(opencodePath)})");
                 _binaryPath = opencodePath;
 
                 var psi = new System.Diagnostics.ProcessStartInfo
@@ -235,6 +235,22 @@ namespace OpenCodeStudio.Services
             // Не переиспользуем сервер, запущенный другим/старым бинарём opencode:
             // после обновления CLI поднимем свежий. Проверяем только при старте.
             if (IsRecordedBinaryStale()) return false;
+
+            // Записанный сервер мог быть поднят неподходящей версией (v1/v2).
+            // Если версию определить удалось и ветка не совпадает с выбранной —
+            // не переиспользуем, поднимем свой сервер нужной версии.
+            try
+            {
+                var rec = JsonConvert.DeserializeObject<SharedServerRecord>(
+                    File.ReadAllText(RegistryPath));
+                if (rec != null)
+                {
+                    var recMajor = CliCommand.DetectMajor(rec.Binary);
+                    bool recV2 = recMajor >= 2;
+                    if (recMajor != 0 && recV2 != PreferV2) return false;
+                }
+            }
+            catch { }
 
             try
             {
@@ -525,13 +541,21 @@ namespace OpenCodeStudio.Services
         {
             try
             {
+                // Счётчики на процесс: первые строки вывода пишем в журнал
+                // (диагностика старта v2), остальное — только в Debug.
+                int stdoutLines = 0;
+                int stderrLines = 0;
                 process.OutputDataReceived += (s, e) =>
                 {
-                    if (e.Data != null) System.Diagnostics.Debug.WriteLine("OpenCode stdout: " + e.Data);
+                    if (e.Data == null) return;
+                    System.Diagnostics.Debug.WriteLine("OpenCode stdout: " + e.Data);
+                    if (stdoutLines++ < 40) Log.Info("OpenCode stdout: " + e.Data);
                 };
                 process.ErrorDataReceived += (s, e) =>
                 {
-                    if (e.Data != null) System.Diagnostics.Debug.WriteLine("OpenCode stderr: " + e.Data);
+                    if (e.Data == null) return;
+                    System.Diagnostics.Debug.WriteLine("OpenCode stderr: " + e.Data);
+                    if (stderrLines++ < 40) Log.Info("OpenCode stderr: " + e.Data);
                 };
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
