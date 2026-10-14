@@ -34,7 +34,7 @@ namespace OpenCodeStudio.Services
             if (!ct.IsCancellationRequested)
             {
                 CliCommand.ResetVersionCache();
-                OpenCodeServerService.ResetWebSupportCache();
+                CliBinaryLocator.ResetWebSupportCache();
             }
             return ok;
         }

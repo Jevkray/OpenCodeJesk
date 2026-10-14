@@ -14,7 +14,6 @@ namespace OpenCodeStudio.Services
     {
         private const int ConnectTimeoutMs = 30000;
         private const int HealthCheckIntervalMs = 500;
-        private const int PreferredPort = 4096;
 
         private System.Diagnostics.Process _process;
         private HttpClient _httpClient;
@@ -54,7 +53,7 @@ namespace OpenCodeStudio.Services
 
             try
             {
-                var opencodePath = ResolveOpenCodePath();
+                var opencodePath = CliBinaryLocator.Resolve(PreferV2);
                 if (opencodePath == null)
                 {
                     Log.Error("Could not locate the opencode executable on PATH or common locations");
@@ -94,7 +93,7 @@ namespace OpenCodeStudio.Services
                 // A stable port keeps the WebView2 origin (http://127.0.0.1:PORT)
                 // constant across restarts, so the OpenCode web UI keeps its
                 // local state (selected server/project) like the desktop app.
-                var port = ResolvePort();
+                var port = ServerPortResolver.Resolve();
                 Log.Info($"Using port {port}");
                 var serveArgs = "serve --port " + port;
                 var extraServe = SpendSettings.Current?.ServeArguments;
@@ -264,7 +263,7 @@ namespace OpenCodeStudio.Services
             catch { return false; }
 
             _serverInfo = info;
-            _binaryPath = ResolveOpenCodePath();
+            _binaryPath = CliBinaryLocator.Resolve(PreferV2);
             _process = null;
             _ownsProcess = false;
             await InitializeHttpClientAsync();
@@ -273,52 +272,6 @@ namespace OpenCodeStudio.Services
 
         private static string RegistryPath => Path.Combine(
             OpenCodeEnvironment.StudioDir, "server.json");
-
-        private static string LastPortPath => Path.Combine(
-            OpenCodeEnvironment.StudioDir, "last-port.txt");
-
-        private static int ReadLastPort()
-        {
-            try
-            {
-                if (!File.Exists(LastPortPath)) return 0;
-                return int.TryParse(File.ReadAllText(LastPortPath).Trim(), out var p) ? p : 0;
-            }
-            catch { return 0; }
-        }
-
-        private static void SaveLastPort(int port)
-        {
-            try
-            {
-                Directory.CreateDirectory(OpenCodeEnvironment.StudioDir);
-                File.WriteAllText(LastPortPath, port.ToString());
-            }
-            catch { }
-        }
-
-        private static int ResolvePort()
-        {
-            // Стабильный origin: сначала пробуем предпочтительный порт (из настроек),
-            // затем последний успешно использованный, и лишь потом случайный свободный.
-            var preferred = SpendSettings.Current?.PreferredPort ?? PreferredPort;
-            if (preferred < 1 || preferred > 65535) preferred = PreferredPort;
-            if (IsPortFree(preferred)) { SaveLastPort(preferred); return preferred; }
-
-            var last = ReadLastPort();
-            if (last > 0 && last != preferred && IsPortFree(last)) return last;
-
-            try
-            {
-                var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0);
-                listener.Start();
-                var port = ((System.Net.IPEndPoint)listener.LocalEndpoint).Port;
-                listener.Stop();
-                SaveLastPort(port);
-                return port;
-            }
-            catch { return 0; }
-        }
 
         private void WriteSharedRegistry(ServerInfo info)
         {
@@ -347,7 +300,7 @@ namespace OpenCodeStudio.Services
                 if (!File.Exists(RegistryPath)) return false;
                 var rec = JsonConvert.DeserializeObject<SharedServerRecord>(File.ReadAllText(RegistryPath));
                 if (rec == null) return false;
-                var current = ResolveOpenCodePath();
+                var current = CliBinaryLocator.Resolve(PreferV2);
                 if (!string.IsNullOrEmpty(rec.Binary) && !string.IsNullOrEmpty(current)
                     && !string.Equals(rec.Binary, current, StringComparison.OrdinalIgnoreCase))
                     return true;
@@ -363,7 +316,7 @@ namespace OpenCodeStudio.Services
         {
             try
             {
-                var path = !string.IsNullOrEmpty(_binaryPath) ? _binaryPath : ResolveOpenCodePath();
+                var path = !string.IsNullOrEmpty(_binaryPath) ? _binaryPath : CliBinaryLocator.Resolve(PreferV2);
                 if (!string.IsNullOrEmpty(path) && File.Exists(path))
                     return File.GetLastWriteTimeUtc(path).Ticks;
             }
@@ -393,19 +346,6 @@ namespace OpenCodeStudio.Services
         private static void RemoveSharedRegistry()
         {
             try { if (File.Exists(RegistryPath)) File.Delete(RegistryPath); } catch { }
-        }
-
-        private static bool IsPortFree(int port)
-        {
-            try
-            {
-                var listener = new System.Net.Sockets.TcpListener(
-                    System.Net.IPAddress.Loopback, port);
-                listener.Start();
-                listener.Stop();
-                return true;
-            }
-            catch { return false; }
         }
 
         public void UpdateConnectionState(bool connected)
@@ -570,272 +510,6 @@ namespace OpenCodeStudio.Services
                 _state = newState;
                 StateChanged?.Invoke(newState);
             }
-        }
-
-        private string ResolveOpenCodePath()
-        {
-            // Явное переопределение пути к бинарю (например, для теста v2-беты
-            // opencode2): OPENCODESTUDIO_OPENCODE_BIN=<полный путь>.
-            var overridePath = Environment.GetEnvironmentVariable("OPENCODESTUDIO_OPENCODE_BIN");
-            if (!string.IsNullOrWhiteSpace(overridePath) && File.Exists(overridePath))
-                return overridePath;
-
-            // Путь из настроек приоритетнее автоопределения.
-            var configured = SpendSettings.Current?.OpenCodePath;
-            if (!string.IsNullOrWhiteSpace(configured) && File.Exists(configured))
-                return configured;
-
-            // Определяем бинарь по фактической версии ("opencode --version"), а
-            // не по имени: пакет v2 ставит и "opencode", и "opencode2".
-            var v2Path = FindV2Path();
-            var v1Path = FindV1Path();
-
-            if (PreferV2)
-            {
-                if (v2Path != null) return v2Path;
-                if (v1Path != null)
-                {
-                    Log.Warn("OpenCode v2 not found; falling back to opencode v1");
-                    return v1Path;
-                }
-            }
-            else
-            {
-                if (v1Path != null) return v1Path;
-                if (v2Path != null) return v2Path;
-            }
-
-            // Версии определить не удалось — прежний порядок по именам.
-            var names = PreferV2
-                ? new[] { "opencode2", "opencode" }
-                : new[] { "opencode", "opencode2" };
-            foreach (var name in names)
-            {
-                var path = FindByName(name, CommonDirs);
-                if (path != null) return path;
-            }
-
-            return null;
-        }
-
-        /// <summary>Каталоги установки npm/node, где искать бинарь opencode.</summary>
-        private static readonly string[] CommonDirs =
-        {
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "npm"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "nvmw", "nodejs"),
-            Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles") ?? "", "nodejs"),
-        };
-
-        /// <summary>
-        /// Полный путь к v1-бинарю или null. v1 — бинарь с major==1; если версию
-        /// определить не удалось, считаем v1 по имени "opencode".
-        /// </summary>
-        public static string FindV1Path()
-        {
-            foreach (var name in new[] { "opencode", "opencode2" })
-            {
-                var path = FindByName(name, CommonDirs);
-                if (path == null) continue;
-                var major = CliCommand.DetectMajor(path);
-                if (major == 1) return path;
-                if (major == 0 && name == "opencode") return path;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Полный путь к v2-бинарю или null. v2 — бинарь с major&gt;=2; если версию
-        /// определить не удалось, считаем v2 по имени "opencode2".
-        /// </summary>
-        public static string FindV2Path()
-        {
-            foreach (var name in new[] { "opencode", "opencode2" })
-            {
-                var path = FindByName(name, CommonDirs);
-                if (path == null) continue;
-                var major = CliCommand.DetectMajor(path);
-                if (major >= 2) return path;
-                if (major == 0 && name == "opencode2") return path;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Асинхронная версия FindV1Path: поиск и проверка версии не выполняются
-        /// на вызывающем (UI) потоке.
-        /// </summary>
-        public static async Task<string> FindV1PathAsync()
-        {
-            foreach (var name in new[] { "opencode", "opencode2" })
-            {
-                var path = await Task.Run(() => FindByName(name, CommonDirs)).ConfigureAwait(false);
-                if (path == null) continue;
-                var major = await CliCommand.DetectMajorAsync(path).ConfigureAwait(false);
-                if (major == 1) return path;
-                if (major == 0 && name == "opencode") return path;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Асинхронная версия FindV2Path: поиск и проверка версии не выполняются
-        /// на вызывающем (UI) потоке.
-        /// </summary>
-        public static async Task<string> FindV2PathAsync()
-        {
-            foreach (var name in new[] { "opencode", "opencode2" })
-            {
-                var path = await Task.Run(() => FindByName(name, CommonDirs)).ConfigureAwait(false);
-                if (path == null) continue;
-                var major = await CliCommand.DetectMajorAsync(path).ConfigureAwait(false);
-                if (major >= 2) return path;
-                if (major == 0 && name == "opencode2") return path;
-            }
-            return null;
-        }
-
-        /// <summary>Установлен ли v1 (major==1, иначе по имени opencode).</summary>
-        public static bool IsV1Available() => FindV1Path() != null;
-
-        /// <summary>Установлен ли v2 (major&gt;=2, иначе по имени opencode2).</summary>
-        public static bool IsV2Available() => FindV2Path() != null;
-
-        /// <summary>
-        /// Полный путь к приложению OpenCode Desktop или null, если не найдено.
-        /// Проверяются стандартные каталоги установки.
-        /// </summary>
-        public static string FindDesktopAppPath()
-        {
-            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var programFiles = Environment.GetEnvironmentVariable("ProgramFiles") ?? "";
-            var programFilesX86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)") ?? "";
-
-            var candidates = new[]
-            {
-                Path.Combine(localAppData, "Programs", "@opencode-aidesktop", "OpenCode.exe"),
-                Path.Combine(programFiles, "OpenCode", "OpenCode.exe"),
-                Path.Combine(programFilesX86, "OpenCode", "OpenCode.exe"),
-            };
-            foreach (var path in candidates)
-            {
-                if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
-                    return path;
-            }
-            return null;
-        }
-
-        // Кэш результата SupportsWeb: CLI-бинарь -> поддерживает ли подкоманду web.
-        private static string _webSupportPath;
-        private static bool _webSupportResult;
-
-        /// <summary>Сбросить кэш SupportsWeb (например, после установки CLI).</summary>
-        public static void ResetWebSupportCache()
-        {
-            _webSupportPath = null;
-            _webSupportResult = false;
-        }
-
-        /// <summary>
-        /// Асинхронная обёртка: запуск уходит в Task.Run, UI-поток не блокируется.
-        /// Результат кладётся в тот же кэш, что и у SupportsWeb.
-        /// </summary>
-        public static Task<bool> SupportsWebAsync(string cliPath)
-        {
-            if (string.IsNullOrWhiteSpace(cliPath)) return Task.FromResult(false);
-            if (_webSupportPath != null &&
-                string.Equals(_webSupportPath, cliPath, StringComparison.OrdinalIgnoreCase))
-                return Task.FromResult(_webSupportResult);
-
-            return Task.Run(async () =>
-            {
-                bool result;
-                try
-                {
-                    var output = await RunCaptureAsync("/c \"" + cliPath + "\" --help")
-                        .ConfigureAwait(false);
-                    result = output.IndexOf("web", StringComparison.OrdinalIgnoreCase) >= 0;
-                }
-                catch { result = false; }
-
-                _webSupportPath = cliPath;
-                _webSupportResult = result;
-                return result;
-            });
-        }
-
-        /// <summary>
-        /// Запускает cmd.exe с аргументами, асинхронно читает stdout/stderr, ждёт
-        /// выхода не дольше 2 с и гарантированно убивает процесс по таймауту.
-        /// </summary>
-        private static async Task<string> RunCaptureAsync(string arguments)
-        {
-            var psi = new System.Diagnostics.ProcessStartInfo
-            {
-                FileName = "cmd.exe",
-                Arguments = arguments,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-            using (var proc = System.Diagnostics.Process.Start(psi))
-            {
-                if (proc == null) return "";
-                var stdout = proc.StandardOutput.ReadToEndAsync();
-                var stderr = proc.StandardError.ReadToEndAsync();
-                var exited = await Task.Run(() => proc.WaitForExit(2000)).ConfigureAwait(false);
-                if (!exited) { try { proc.Kill(); } catch { } }
-                var output = await stdout.ConfigureAwait(false);
-                output += await stderr.ConfigureAwait(false);
-                return output;
-            }
-        }
-
-        private static string FindByName(string name, string[] dirs)
-        {
-            var direct = FindOnPath(name);
-            if (direct != null) return direct;
-
-            foreach (var dir in dirs)
-            {
-                var path = Path.Combine(dir, name + ".cmd");
-                if (File.Exists(path)) return path;
-            }
-            return null;
-        }
-
-        private static string FindOnPath(string name)
-        {
-            try
-            {
-                var psi = new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = "cmd.exe",
-                    Arguments = "/c where " + name + " 2>nul",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-                using (var proc = System.Diagnostics.Process.Start(psi))
-                {
-                    var output = proc.StandardOutput.ReadToEnd();
-                    proc.WaitForExit(3000);
-                    var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                    string cmdFallback = null;
-                    foreach (var line in lines)
-                    {
-                        var trimmed = line.Trim();
-                        if (trimmed.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
-                            return trimmed;
-                        if (cmdFallback == null && trimmed.EndsWith(".cmd", StringComparison.OrdinalIgnoreCase))
-                            cmdFallback = trimmed;
-                    }
-                    if (cmdFallback != null)
-                        return cmdFallback;
-                }
-            }
-            catch { }
-            return null;
         }
     }
 

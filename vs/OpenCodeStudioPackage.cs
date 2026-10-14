@@ -122,8 +122,8 @@ namespace OpenCodeStudio
                             // Если opencode не найден — открываем окно на вкладке Install.
                             // Проверка версий — в фоне, не на UI-потоке.
                             var notInstalled = await Task.Run(() =>
-                                !OpenCodeServerService.IsV1Available()
-                                && !OpenCodeServerService.IsV2Available());
+                                !CliBinaryLocator.IsV1Available()
+                                && !CliBinaryLocator.IsV2Available());
                             await ShowSettingsWindowAsync(notInstalled ? 0 : 1);
                         }
                         catch (Exception ex)

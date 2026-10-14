@@ -109,7 +109,7 @@ namespace OpenCodeStudio.Services
                         {
                             // Бинарь мог смениться — сбрасываем кэши определения.
                             CliCommand.ResetVersionCache();
-                            OpenCodeServerService.ResetWebSupportCache();
+                            CliBinaryLocator.ResetWebSupportCache();
                             return true;
                         }
                         return false;

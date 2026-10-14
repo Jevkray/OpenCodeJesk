@@ -49,7 +49,7 @@ namespace OpenCodeStudio.Services
 
             try
             {
-                result.V1Path = await OpenCodeServerService.FindV1PathAsync().ConfigureAwait(false);
+                result.V1Path = await CliBinaryLocator.FindV1PathAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -58,7 +58,7 @@ namespace OpenCodeStudio.Services
 
             try
             {
-                result.V2Path = await OpenCodeServerService.FindV2PathAsync().ConfigureAwait(false);
+                result.V2Path = await CliBinaryLocator.FindV2PathAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -67,7 +67,7 @@ namespace OpenCodeStudio.Services
 
             try
             {
-                result.DesktopAppPath = OpenCodeServerService.FindDesktopAppPath();
+                result.DesktopAppPath = CliBinaryLocator.FindDesktopAppPath();
             }
             catch (Exception ex)
             {
@@ -77,7 +77,7 @@ namespace OpenCodeStudio.Services
             result.WebBinaryPath = result.V1Path ?? result.V2Path;
             try
             {
-                result.WebSupported = await OpenCodeServerService.SupportsWebAsync(result.WebBinaryPath)
+                result.WebSupported = await CliBinaryLocator.SupportsWebAsync(result.WebBinaryPath)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)

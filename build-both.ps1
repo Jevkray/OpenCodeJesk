@@ -9,7 +9,7 @@ $studio    = Join-Path $vsDir 'source.studio.extension.vsixmanifest'
 $jesk      = Join-Path $vsDir 'source.jesk.extension.vsixmanifest'
 $project   = Join-Path $vsDir 'OpenCodeStudio.csproj'
 $outDir    = Join-Path $vsDir 'bin\Release\net472'
-$targetDir = 'C:\Users\semmi\Desktop\пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ)\OpenCodeStudio'
+$targetDir = 'C:\Users\semmi\Desktop\Текущие проекты (сборки)\OpenCodeStudio'
 $desktop   = [Environment]::GetFolderPath('Desktop')
 
 # 1. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (Jesk) пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ.
@@ -36,9 +36,9 @@ function Build-Brand([string]$brand, [string]$manifestSource, [string]$destName)
 }
 
 # 2. Studio
-$studioVsix = Build-Brand '' $studio 'OpenCodeStudio-1.2.0.23.vsix'
+$studioVsix = Build-Brand '' $studio 'OpenCodeStudio-1.2.0.24.vsix'
 # 3. Jesk
-$jeskVsix = Build-Brand 'Jesk' $jesk 'OpenCodeJesk-1.2.0.23.vsix'
+$jeskVsix = Build-Brand 'Jesk' $jesk 'OpenCodeJesk-1.2.0.24.vsix'
 # 4. пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ Jesk-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 3 пїЅпїЅ пїЅпїЅпїЅ Jesk).
 
 # 5. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.
@@ -49,6 +49,6 @@ foreach ($dir in @($root, $targetDir, $desktop)) {
         if ([string]::Equals($dir, $targetDir, [System.StringComparison]::OrdinalIgnoreCase)) { Copy-Item -LiteralPath $studioVsix -Destination $dir -Force }
         Copy-Item -LiteralPath $jeskVsix   -Destination $dir -Force
     }
-    Get-ChildItem -LiteralPath $dir -Filter 'OpenCode*-1.2.0.22.vsix' | Remove-Item -Force
+    Get-ChildItem -LiteralPath $dir -Filter 'OpenCode*-1.2.0.23.vsix' | Remove-Item -Force
 }
 Write-Host "пїЅпїЅпїЅ VSIX пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ: $targetDir пїЅ $desktop"
