@@ -39,35 +39,13 @@
   - Мастер первого запуска превращён в окно **Settings** с вкладками **Import** и **Settings**; кнопка — **Save selected** (применяет и импорт, и настройки).
 - **1.1.0** - Кнопка статистики в панели OpenCode: профиль и реальные траты, не выходя из Visual Studio.
 
-## 📸 Скриншоты
+## 📸 Превью
 
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png — Settings: Основные (режим интерфейса, версия OpenCode, масштаб, поведение панели) -->
-![OpenCode Jesk — Settings: Основные](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png)
-*Settings — Основные: режим интерфейса, версия OpenCode, масштаб веб-панели и поведение панели.*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png — Settings: Терминал (шрифт, размер, курсор, история, аргументы CLI) -->
-![OpenCode Jesk — Settings: Терминал](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png)
-*Settings — Терминал: шрифт, размер, курсор, строки истории и параметры команды CLI.*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png — Settings: Сервер (путь к бинарнику, порт, аргументы serve, простой) -->
-![OpenCode Jesk — Settings: Сервер](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png)
-*Settings — Сервер: путь к бинарнику opencode, порт, аргументы serve и остановка после простоя.*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png — Settings: Обновления (проверка, интервал, канал) -->
-![OpenCode Jesk — Settings: Обновления](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png)
-*Settings — Обновления: проверка новых версий, интервал и канал выпусков.*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png — Settings: Импорт (найденные источники, добавить папку, импорт) -->
-![OpenCode Jesk — Settings: Импорт](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png)
-*Settings — Импорт: найденные источники OpenCode, добавление папки и импорт выбранного (с резервными копиями).*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png — Панель в режиме Desktop (Web) -->
 ![OpenCode Jesk — панель Desktop (Web)](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png)
-*Панель в режиме **Desktop (Web)** — полный веб-интерфейс OpenCode внутри окна-инструмента.*
+*Панель в режиме **Desktop (Web)** — полный веб-интерфейс OpenCode в окне Visual Studio.*
 
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-cli.png — Панель в режиме CLI (терминал) -->
 ![OpenCode Jesk — панель CLI (терминал)](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-cli.png)
-*Панель в режиме **CLI (терминал)** — простое окно терминала с уже запущенным OpenCode.*
+*Панель в режиме **CLI (терминал)** — простой терминал с уже запущенным OpenCode.*
 
 ## ✨ Почему OpenCode Jesk?
 
@@ -192,6 +170,23 @@ VSIX появится в `vs/bin/Release/net472/OpenCodeStudio.vsix`. Для с�
 - 🔑 ключи хранит сам OpenCode в вашем окружении
 - 🚫 нет телеметрии и аналитики
 - 📈 оверлей использования входит в OpenCode Console и читает расход и лимиты с `opencode.ai` по вашей сессионной cookie (хранится зашифрованной через DPAPI) — другие данные наружу не уходят.
+
+## ⚙️ Настройки
+
+![OpenCode Jesk — Настройки: Общие](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png)
+*Общие: режим интерфейса, версия OpenCode, масштаб и поведение панели.*
+
+![OpenCode Jesk — Настройки: Терминал](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png)
+*Терминал: шрифт, размер, курсор, прокрутка и аргументы CLI.*
+
+![OpenCode Jesk — Настройки: Сервер](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png)
+*Сервер: путь к opencode, порт, аргументы serve и остановка по простою.*
+
+![OpenCode Jesk — Настройки: Обновления](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png)
+*Обновления: проверка версий, интервал и канал.*
+
+![OpenCode Jesk — Настройки: Импорт](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png)
+*Импорт: найденные источники OpenCode, добавление папки и импорт с бэкапами.*
 
 ## 💬 Контакты и поддержка
 

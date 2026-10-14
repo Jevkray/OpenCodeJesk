@@ -39,33 +39,11 @@
   - The first-run wizard is now a **Settings** window with **Import** and **Settings** tabs; the button is **Save selected** and applies both imports and settings.
 - **1.1.0** - Statistics button in the OpenCode panel: open your profile and check real usage without leaving Visual Studio.
 
-## 📸 Screenshots
+## 📸 Preview
 
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png — Settings: General (interface mode, OpenCode version, web zoom, panel behavior) -->
-![OpenCode Jesk — Settings: General](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png)
-*Settings — General: interface mode, OpenCode version, web zoom and panel behavior.*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png — Settings: Terminal (font, size, cursor, scrollback, CLI arguments) -->
-![OpenCode Jesk — Settings: Terminal](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png)
-*Settings — Terminal: font, size, cursor, scrollback and CLI command options.*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png — Settings: Server (binary path, port, serve arguments, idle stop) -->
-![OpenCode Jesk — Settings: Server](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png)
-*Settings — Server: opencode binary path, preferred port, serve arguments and idle stop.*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png — Settings: Updates (check toggle, interval, channel) -->
-![OpenCode Jesk — Settings: Updates](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png)
-*Settings — Updates: check for new versions, interval and release channel.*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png — Settings: Import (detected sources, add folder, import selected) -->
-![OpenCode Jesk — Settings: Import](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png)
-*Settings — Import: detected OpenCode sources, add folder and import selected (with backups).*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png — Panel in Desktop (Web) mode -->
 ![OpenCode Jesk — Desktop (Web) panel](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png)
 *The panel in **Desktop (Web)** mode — the full OpenCode web UI inside the tool window.*
 
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-cli.png — Panel in CLI (terminal) mode -->
 ![OpenCode Jesk — CLI (terminal) panel](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-cli.png)
 *The panel in **CLI (terminal)** mode — a plain terminal with OpenCode already running.*
 
@@ -192,6 +170,23 @@ The VSIX is produced at `vs/bin/Release/net472/OpenCodeStudio.vsix`. To build bo
 - 🔑 credentials are stored by OpenCode itself in your own environment
 - 🚫 no telemetry, no analytics
 - 📈 the usage overlay signs in to the OpenCode Console and reads your usage and limits from `opencode.ai` using your own session cookie (stored encrypted with DPAPI) — no other data leaves your machine.
+
+## ⚙️ Settings
+
+![OpenCode Jesk — Settings: General](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png)
+*General: interface mode, OpenCode version, web zoom and panel behavior.*
+
+![OpenCode Jesk — Settings: Terminal](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png)
+*Terminal: font, size, cursor, scrollback and CLI command options.*
+
+![OpenCode Jesk — Settings: Server](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png)
+*Server: opencode binary path, preferred port, serve arguments and idle stop.*
+
+![OpenCode Jesk — Settings: Updates](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png)
+*Updates: check for new versions, interval and release channel.*
+
+![OpenCode Jesk — Settings: Import](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png)
+*Import: detected OpenCode sources, add folder and import selected (with backups).*
 
 ## 💬 Contacts & Support
 

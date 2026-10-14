@@ -17,40 +17,11 @@
 
 ## 📸 Preview
 
-![OpenCode Jesk running inside Visual Studio](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/vs/Resources/PreviewWork.jpg)
-
-> 💬 *The agent chat right next to your solution — with a live session panel showing model, provider, token usage, cost, last activity and the context breakdown.*
-
-## 📸 Screenshots
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png — Settings: General -->
-![OpenCode Jesk — Settings: General](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png)
-*Settings — General: interface mode, OpenCode version, web zoom and panel behavior.*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png — Settings: Terminal -->
-![OpenCode Jesk — Settings: Terminal](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png)
-*Settings — Terminal: font, size, cursor, scrollback and CLI command options.*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png — Settings: Server -->
-![OpenCode Jesk — Settings: Server](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png)
-*Settings — Server: opencode binary path, preferred port, serve arguments and idle stop.*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png — Settings: Updates -->
-![OpenCode Jesk — Settings: Updates](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png)
-*Settings — Updates: check for new versions, interval and release channel.*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png — Settings: Import -->
-![OpenCode Jesk — Settings: Import](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png)
-*Settings — Import: detected OpenCode sources, add folder and import selected (with backups).*
-
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png — Panel in Desktop (Web) mode -->
-![OpenCode Jesk — Desktop (Web) panel](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png)
+![OpenCode Jesk — Desktop (Web) panel](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png)
 *The panel in **Desktop (Web)** mode — the full OpenCode web UI inside the tool window.*
 
-<!-- SCREENSHOT: https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-cli.png — Panel in CLI (terminal) mode -->
-![OpenCode Jesk — CLI (terminal) panel](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-cli.png)
+![OpenCode Jesk — CLI (terminal) panel](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-cli.png)
 *The panel in **CLI (terminal)** mode — a plain terminal with OpenCode already running.*
-
 ## 🆕 What's new
 
 - **1.2.0** - **Desktop (Web)** and **CLI (terminal)** interface modes in the same panel; shared chat between modes; a dedicated **Settings** window (General, Terminal, Server, Updates, Import); auto-open on solution open; **web zoom**; terminal font, size, cursor and scrollback; server port/arguments/idle stop; marketplace update checks; **v1 / v2 preview** support; safe import with backups; and the rename to **OpenCode Jesk**.
@@ -115,6 +86,22 @@ Statistics are not part of this release yet. Use the statistics button in the Op
 - 🚫 no telemetry, no analytics
 - 📈 the usage overlay signs in to the OpenCode Console and reads your usage and limits from `opencode.ai` using your own session cookie (stored encrypted with DPAPI) — no other data leaves your machine.
 
+## ⚙️ Settings
+
+![OpenCode Jesk — Settings: General](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png)
+*Settings — General: interface mode, OpenCode version, web zoom and panel behavior.*
+
+![OpenCode Jesk — Settings: Terminal](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png)
+*Settings — Terminal: font, size, cursor, scrollback and CLI command options.*
+
+![OpenCode Jesk — Settings: Server](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png)
+*Settings — Server: opencode binary path, preferred port, serve arguments and idle stop.*
+
+![OpenCode Jesk — Settings: Updates](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png)
+*Settings — Updates: check for new versions, interval and release channel.*
+
+![OpenCode Jesk — Settings: Import](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png)
+*Settings — Import: detected OpenCode sources, add folder and import selected (with backups).*
 ## 💬 Contacts & Support
 
 - 📨 Telegram: https://t.me/eugenekray
