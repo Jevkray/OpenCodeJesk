@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
-using Microsoft.VisualStudio.PlatformUI;
 using OpenCodeStudio.Services;
 
 namespace OpenCodeStudio
@@ -17,11 +16,13 @@ namespace OpenCodeStudio
         /// <summary>Пользователь нажал «Not now» в этой сессии VS.</summary>
         public static bool Suppressed { get; private set; }
 
-        private System.Drawing.Color _bg = System.Drawing.Color.FromArgb(0x1e, 0x1e, 0x1e);
-        private System.Drawing.Color _panel = System.Drawing.Color.FromArgb(0x25, 0x25, 0x26);
-        private System.Drawing.Color _text = System.Drawing.Color.FromArgb(0xf1, 0xf1, 0xf1);
-        private System.Drawing.Color _muted = System.Drawing.Color.FromArgb(0x9a, 0x9a, 0x9a);
-        private System.Drawing.Color _accent = System.Drawing.Color.FromArgb(0x00, 0x78, 0xd4);
+        // Окно всегда тёмное, независимо от темы VS.
+        private readonly System.Drawing.Color _bg = System.Drawing.Color.FromArgb(0x1e, 0x1e, 0x1e);
+        private readonly System.Drawing.Color _panel = System.Drawing.Color.FromArgb(0x25, 0x25, 0x26);
+        private readonly System.Drawing.Color _text = System.Drawing.Color.FromArgb(0xf1, 0xf1, 0xf1);
+        private readonly System.Drawing.Color _muted = System.Drawing.Color.FromArgb(0x9a, 0x9a, 0x9a);
+        private readonly System.Drawing.Color _border = System.Drawing.Color.FromArgb(0x3a, 0x3a, 0x3a);
+        private readonly System.Drawing.Color _accent = System.Drawing.Color.FromArgb(0x2A, 0x78, 0xFC);
 
         private readonly Action _openExtensionManager;
 
@@ -48,16 +49,6 @@ namespace OpenCodeStudio
 
         private void ApplyTheme()
         {
-            try
-            {
-                _bg = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
-                _panel = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowTabGradientBeginColorKey);
-                _text = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowTextColorKey);
-                _muted = VSColorTheme.GetThemedColor(EnvironmentColors.CommandBarTextInactiveColorKey);
-                _accent = VSColorTheme.GetThemedColor(EnvironmentColors.AccentBorderColorKey);
-            }
-            catch { }
-
             Background = Brush(_bg);
             titleText.Foreground = Brush(_text);
             subtitleText.Foreground = Brush(_muted);
@@ -65,13 +56,13 @@ namespace OpenCodeStudio
             whatsNewLabel.Foreground = Brush(_text);
             notesText.Background = Brush(_bg);
             notesText.Foreground = Brush(_text);
-            notesText.BorderBrush = Brush(_muted);
+            notesText.BorderBrush = Brush(_border);
             notNowButton.Foreground = Brush(_text);
             notNowButton.Background = Brush(_panel);
-            notNowButton.BorderBrush = Brush(_muted);
+            notNowButton.BorderBrush = Brush(_border);
             marketplaceButton.Foreground = Brush(_text);
             marketplaceButton.Background = Brush(_panel);
-            marketplaceButton.BorderBrush = Brush(_muted);
+            marketplaceButton.BorderBrush = Brush(_border);
             extensionManagerButton.Foreground = Brushes.White;
             extensionManagerButton.Background = Brush(_accent);
             extensionManagerButton.BorderBrush = Brush(_accent);

@@ -85,6 +85,12 @@
     </Content>
   </ItemGroup>
 
+  <!-- Логотип как WPF-ресурс: нужен для Source="Resources/IconJesk.png" в XAML
+       (окно расширения исполняется внутри devenv.exe, файл из Content там не виден). -->
+  <ItemGroup>
+    <Resource Include="Resources\IconJesk.png" />
+  </ItemGroup>
+
   <ItemGroup>
     <EmbeddedResource Include="Resources\ErrorPage.html" />
     <EmbeddedResource Include="Resources\LoadingPage.html" />

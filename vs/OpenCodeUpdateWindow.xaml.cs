@@ -1,7 +1,6 @@
 using System;
 using System.Windows;
 using System.Windows.Media;
-using Microsoft.VisualStudio.PlatformUI;
 using OpenCodeStudio.Services;
 
 namespace OpenCodeStudio
@@ -17,11 +16,13 @@ namespace OpenCodeStudio
         private readonly OpenCodeUpdateService _service = new OpenCodeUpdateService();
         private readonly string _latest;
 
-        private System.Drawing.Color _bg = System.Drawing.Color.FromArgb(0x1e, 0x1e, 0x1e);
-        private System.Drawing.Color _panel = System.Drawing.Color.FromArgb(0x25, 0x25, 0x26);
-        private System.Drawing.Color _text = System.Drawing.Color.FromArgb(0xf1, 0xf1, 0xf1);
-        private System.Drawing.Color _muted = System.Drawing.Color.FromArgb(0x9a, 0x9a, 0x9a);
-        private System.Drawing.Color _accent = System.Drawing.Color.FromArgb(0x00, 0x78, 0xd4);
+        // Окно всегда тёмное, независимо от темы VS.
+        private readonly System.Drawing.Color _bg = System.Drawing.Color.FromArgb(0x1e, 0x1e, 0x1e);
+        private readonly System.Drawing.Color _panel = System.Drawing.Color.FromArgb(0x25, 0x25, 0x26);
+        private readonly System.Drawing.Color _text = System.Drawing.Color.FromArgb(0xf1, 0xf1, 0xf1);
+        private readonly System.Drawing.Color _muted = System.Drawing.Color.FromArgb(0x9a, 0x9a, 0x9a);
+        private readonly System.Drawing.Color _border = System.Drawing.Color.FromArgb(0x3a, 0x3a, 0x3a);
+        private readonly System.Drawing.Color _accent = System.Drawing.Color.FromArgb(0x2A, 0x78, 0xFC);
 
         private static SolidColorBrush Brush(System.Drawing.Color c)
             => new SolidColorBrush(Color.FromRgb(c.R, c.G, c.B));
@@ -47,16 +48,6 @@ namespace OpenCodeStudio
 
         private void ApplyTheme()
         {
-            try
-            {
-                _bg = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
-                _panel = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowTabGradientBeginColorKey);
-                _text = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowTextColorKey);
-                _muted = VSColorTheme.GetThemedColor(EnvironmentColors.CommandBarTextInactiveColorKey);
-                _accent = VSColorTheme.GetThemedColor(EnvironmentColors.AccentBorderColorKey);
-            }
-            catch { }
-
             Background = Brush(_bg);
             titleText.Foreground = Brush(_text);
             subtitleText.Foreground = Brush(_muted);
@@ -64,7 +55,7 @@ namespace OpenCodeStudio
             statusText.Foreground = Brush(_muted);
             notNowButton.Foreground = Brush(_text);
             notNowButton.Background = Brush(_panel);
-            notNowButton.BorderBrush = Brush(_muted);
+            notNowButton.BorderBrush = Brush(_border);
             closeButton.Foreground = Brushes.White;
             closeButton.Background = Brush(_accent);
             closeButton.BorderBrush = Brush(_accent);

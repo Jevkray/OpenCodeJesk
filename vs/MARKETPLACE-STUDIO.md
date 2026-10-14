@@ -4,9 +4,9 @@
 
 *Works with Visual Studio 2022 and 2026.*
 
-![Marketplace](https://img.shields.io/visual-studio-marketplace/v/jevkray.OpenCodeStudio?label=marketplace&color=7C3AED)
-![Visual Studio](https://img.shields.io/badge/Visual%20Studio-2022%20%7C%202026-7C3AED)
-![License](https://img.shields.io/badge/license-MIT-7C3AED)
+![Marketplace](https://img.shields.io/visual-studio-marketplace/v/jevkray.OpenCodeStudio?label=marketplace&color=2A78FC)
+![Visual Studio](https://img.shields.io/badge/Visual%20Studio-2022%20%7C%202026-2A78FC)
+![License](https://img.shields.io/badge/license-MIT-2A78FC)
 
 ---
 

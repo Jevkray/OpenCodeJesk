@@ -35,7 +35,7 @@ namespace OpenCodeStudio
 
         private static readonly SolidColorBrush TextBrush = Brush(0xf1, 0xf1, 0xf1);
         private static readonly SolidColorBrush MutedBrush = Brush(0x9a, 0x9a, 0x9a);
-        private static readonly SolidColorBrush AccentBrush = Brush(0x7C, 0x3A, 0xED);
+        private static readonly SolidColorBrush AccentBrush = Brush(0x2A, 0x78, 0xFC);
         private static readonly FontFamily MonoFont = new FontFamily("Consolas");
 
         private static SolidColorBrush Brush(byte r, byte g, byte b)

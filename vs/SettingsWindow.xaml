@@ -44,19 +44,19 @@
 
         <!-- Акцентный градиент (в цвете иконки: светлый -> насыщенный синий) -->
         <LinearGradientBrush x:Key="AccentGradient" StartPoint="0,0" EndPoint="0,1">
-            <GradientStop Color="#5EACFC" Offset="0" />
-            <GradientStop Color="#2A78FC" Offset="1" />
+            <GradientStop Color="#2A78FC" Offset="0" />
+            <GradientStop Color="#0A37B0" Offset="1" />
         </LinearGradientBrush>
         <LinearGradientBrush x:Key="AccentGradientHover" StartPoint="0,0" EndPoint="0,1">
-            <GradientStop Color="#7FBEFF" Offset="0" />
-            <GradientStop Color="#3B8FFC" Offset="1" />
+            <GradientStop Color="#5EACFC" Offset="0" />
+            <GradientStop Color="#2A78FC" Offset="1" />
         </LinearGradientBrush>
 
         <!-- Кнопка-акцент -->
         <Style x:Key="AccentButton" TargetType="Button">
             <Setter Property="Foreground" Value="White" />
             <Setter Property="Background" Value="{StaticResource AccentGradient}" />
-            <Setter Property="BorderBrush" Value="#3B8FFC" />
+            <Setter Property="BorderBrush" Value="#2A78FC" />
             <Setter Property="Padding" Value="18,6" />
             <Setter Property="Height" Value="34" />
             <Setter Property="Cursor" Value="Hand" />
@@ -101,7 +101,7 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="b" Property="Background" Value="#3a3a3a" />
-                                <Setter TargetName="b" Property="BorderBrush" Value="#3B8FFC" />
+                                <Setter TargetName="b" Property="BorderBrush" Value="#2A78FC" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -127,7 +127,7 @@
                         </StackPanel>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="track" Property="Background" Value="#3B8FFC" />
+                                <Setter TargetName="track" Property="Background" Value="#2A78FC" />
                                 <Setter TargetName="knob" Property="HorizontalAlignment" Value="Right" />
                                 <Setter TargetName="knob" Property="Margin" Value="0,0,3,0" />
                             </Trigger>
@@ -171,7 +171,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                                <Setter TargetName="b" Property="BorderBrush" Value="#3B8FFC" />
+                                <Setter TargetName="b" Property="BorderBrush" Value="#2A78FC" />
                             </Trigger>
                             <!-- Watermark виден только когда пусто И поле не в фокусе -->
                             <MultiTrigger>
@@ -202,7 +202,7 @@
                                 <Setter TargetName="b" Property="Background" Value="#3a3a3a" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="b" Property="Background" Value="#3B8FFC" />
+                                <Setter TargetName="b" Property="Background" Value="#2A78FC" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -252,7 +252,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                                <Setter TargetName="bd" Property="BorderBrush" Value="#3B8FFC" />
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#2A78FC" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -274,7 +274,7 @@
                                     <RepeatButton Command="Slider.DecreaseLarge">
                                         <RepeatButton.Template>
                                             <ControlTemplate TargetType="RepeatButton">
-                                                <Border Background="#3B8FFC" Height="4" CornerRadius="2"
+                                                <Border Background="#2A78FC" Height="4" CornerRadius="2"
                                                         VerticalAlignment="Center" />
                                             </ControlTemplate>
                                         </RepeatButton.Template>
@@ -293,7 +293,7 @@
                                     <Thumb Width="16" Height="16">
                                         <Thumb.Template>
                                             <ControlTemplate TargetType="Thumb">
-                                                <Ellipse Fill="#3B8FFC" Stroke="#5EACFC" StrokeThickness="1"
+                                                <Ellipse Fill="#2A78FC" Stroke="#5EACFC" StrokeThickness="1"
                                                          Width="16" Height="16" />
                                             </ControlTemplate>
                                         </Thumb.Template>
@@ -375,7 +375,7 @@
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="bg" Property="Background" Value="#252526" />
-                                <Setter TargetName="accent" Property="Background" Value="#3B8FFC" />
+                                <Setter TargetName="accent" Property="Background" Value="#2A78FC" />
                                 <Setter Property="Foreground" Value="#f1f1f1" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -394,8 +394,12 @@
         <!-- Боковое меню -->
         <Border Grid.Column="0" Background="#181818" BorderBrush="#3a3a3a" BorderThickness="0,0,1,0">
             <DockPanel>
-                <TextBlock Uid="menu.title" DockPanel.Dock="Top" Text="Settings" FontSize="18"
-                           FontWeight="SemiBold" Foreground="#f1f1f1" Margin="20,24,20,16" />
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="20,24,20,16">
+                    <Image Width="20" Height="20" Margin="0,0,8,0"
+                           VerticalAlignment="Center" Source="Resources/IconJesk.png" />
+                    <TextBlock Uid="menu.title" Text="Settings" FontSize="18"
+                               FontWeight="SemiBold" Foreground="#f1f1f1" VerticalAlignment="Center" />
+                </StackPanel>
                 <ListBox x:Name="menuList" Background="Transparent" BorderThickness="0"
                          ItemContainerStyle="{StaticResource MenuListBoxItem}"
                          SelectionChanged="OnMenuChanged">
@@ -508,7 +512,7 @@
                                     <ProgressBar x:Name="installProgress" Grid.Column="0"
                                                  Height="8" VerticalAlignment="Center"
                                                  IsIndeterminate="True" Visibility="Collapsed"
-                                                 Foreground="#3B8FFC" Background="#2d2d30" BorderThickness="0" />
+                                                 Foreground="#2A78FC" Background="#2d2d30" BorderThickness="0" />
                                     <Button x:Name="installCancelButton" Grid.Column="1" Uid="install.cancel"
                                             Content="Cancel" Margin="12,0,0,0"
                                             Style="{StaticResource GhostButton}"
@@ -627,10 +631,9 @@
                                           Style="{StaticResource ToggleCheckBox}"
                                           Content="Auto-open panel when a solution opens" />
                                 <TextBlock Uid="general.autoopen.hint" Style="{StaticResource CardHint}"
-                                           Margin="0,6,0,0"
                                            Text="Opens the OpenCode tool window automatically whenever you open a solution." />
                                 <Expander Uid="general.autoopen.details" Header="Details"
-                                          Style="{StaticResource MoreExpander}" Margin="0,8,0,0">
+                                           Style="{StaticResource MoreExpander}">
                                     <TextBlock Uid="general.autoopen.desc" Style="{StaticResource MoreText}"
                                                Text="When enabled, the OpenCode tool window opens automatically every time you open a solution, so you can start right away without using the menu. Turn it off if you prefer to open the panel manually. Example: disable it for large solutions where you do not always need OpenCode." />
                                 </Expander>
@@ -692,7 +695,7 @@
                                           Style="{StaticResource ToggleCheckBox}"
                                           Content="Cursor blink" />
                                 <Expander Uid="terminal.cursorblink.details" Header="Details"
-                                          Style="{StaticResource MoreExpander}" Margin="0,8,0,0">
+                                           Style="{StaticResource MoreExpander}">
                                     <TextBlock Uid="terminal.cursorblink.desc" Style="{StaticResource MoreText}"
                                                Text="Makes the terminal cursor blink so it is easy to spot. Turn it off if blinking distracts you. Example: some users prefer a steady cursor when reading long output." />
                                 </Expander>
@@ -830,10 +833,9 @@
                                           Style="{StaticResource ToggleCheckBox}"
                                           Content="Check for new versions" />
                                 <TextBlock Uid="updates.check.hint" Style="{StaticResource CardHint}"
-                                           Margin="0,6,0,0"
                                            Text="Looks for a newer OpenCode Studio version on the Marketplace and shows a notification." />
                                 <Expander Uid="updates.check.details" Header="Details"
-                                          Style="{StaticResource MoreExpander}" Margin="0,8,0,0">
+                                           Style="{StaticResource MoreExpander}">
                                     <TextBlock Uid="updates.check.desc" Style="{StaticResource MoreText}"
                                                Text="When on, OpenCode Studio periodically checks the Marketplace for a newer version and shows a notification. Example: keep it on to learn about updates; turn it off on offline machines." />
                                 </Expander>

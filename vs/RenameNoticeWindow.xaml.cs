@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
-using Microsoft.VisualStudio.PlatformUI;
 using OpenCodeStudio.Services;
 
 namespace OpenCodeStudio
@@ -17,9 +16,12 @@ namespace OpenCodeStudio
     {
         private const string DismissMarker = "rename-notice.done";
 
-        private static System.Drawing.Color _panel = System.Drawing.Color.FromArgb(0x25, 0x25, 0x26);
-        private static System.Drawing.Color _text = System.Drawing.Color.FromArgb(0xf1, 0xf1, 0xf1);
-        private static System.Drawing.Color _muted = System.Drawing.Color.FromArgb(0x9a, 0x9a, 0x9a);
+        // Окно всегда тёмное, независимо от темы VS.
+        private static readonly System.Drawing.Color _bg = System.Drawing.Color.FromArgb(0x1e, 0x1e, 0x1e);
+        private static readonly System.Drawing.Color _panel = System.Drawing.Color.FromArgb(0x25, 0x25, 0x26);
+        private static readonly System.Drawing.Color _text = System.Drawing.Color.FromArgb(0xf1, 0xf1, 0xf1);
+        private static readonly System.Drawing.Color _muted = System.Drawing.Color.FromArgb(0x9a, 0x9a, 0x9a);
+        private static readonly System.Drawing.Color _border = System.Drawing.Color.FromArgb(0x3a, 0x3a, 0x3a);
 
         private static SolidColorBrush Brush(System.Drawing.Color c)
             => new SolidColorBrush(Color.FromRgb(c.R, c.G, c.B));
@@ -37,21 +39,13 @@ namespace OpenCodeStudio
 
         private void ApplyTheme()
         {
-            try
-            {
-                var bg = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
-                _panel = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowTabGradientBeginColorKey);
-                _text = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowTextColorKey);
-                _muted = VSColorTheme.GetThemedColor(EnvironmentColors.CommandBarTextInactiveColorKey);
-                Background = Brush(bg);
-            }
-            catch { }
+            Background = Brush(_bg);
 
             foreach (var button in new[] { laterButton, getButton })
             {
                 button.Foreground = Brush(_text);
                 button.Background = Brush(_panel);
-                button.BorderBrush = Brush(_muted);
+                button.BorderBrush = Brush(_border);
             }
             getButton.Foreground = Brushes.White;
             getButton.Background = new SolidColorBrush(Color.FromRgb(0x2D, 0x6F, 0xD8));

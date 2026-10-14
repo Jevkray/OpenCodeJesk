@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
-using Microsoft.VisualStudio.PlatformUI;
 using OpenCodeStudio.Services;
 
 namespace OpenCodeStudio
@@ -16,9 +15,11 @@ namespace OpenCodeStudio
         /// <summary>Не показывать напоминание снова: чекбокс или «Я уже оставил».</summary>
         public bool DontShowAgain { get; private set; }
 
-        private System.Drawing.Color _panel = System.Drawing.Color.FromArgb(0x25, 0x25, 0x26);
-        private System.Drawing.Color _text = System.Drawing.Color.FromArgb(0xf1, 0xf1, 0xf1);
-        private System.Drawing.Color _muted = System.Drawing.Color.FromArgb(0x9a, 0x9a, 0x9a);
+        // Окно всегда тёмное, независимо от темы VS.
+        private readonly System.Drawing.Color _panel = System.Drawing.Color.FromArgb(0x25, 0x25, 0x26);
+        private readonly System.Drawing.Color _text = System.Drawing.Color.FromArgb(0xf1, 0xf1, 0xf1);
+        private readonly System.Drawing.Color _muted = System.Drawing.Color.FromArgb(0x9a, 0x9a, 0x9a);
+        private readonly System.Drawing.Color _border = System.Drawing.Color.FromArgb(0x3a, 0x3a, 0x3a);
 
         private static SolidColorBrush Brush(System.Drawing.Color c)
             => new SolidColorBrush(Color.FromRgb(c.R, c.G, c.B));
@@ -45,21 +46,13 @@ namespace OpenCodeStudio
 
         private void ApplyTheme()
         {
-            try
-            {
-                _panel = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowTabGradientBeginColorKey);
-                _text = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowTextColorKey);
-                _muted = VSColorTheme.GetThemedColor(EnvironmentColors.CommandBarTextInactiveColorKey);
-            }
-            catch { }
-
             titleText.Foreground = Brush(_text);
             bodyText.Foreground = Brush(_muted);
             alreadyButton.Foreground = Brush(_text);
             alreadyButton.Background = Brush(_panel);
-            alreadyButton.BorderBrush = Brush(_muted);
+            alreadyButton.BorderBrush = Brush(_border);
             reviewButton.Foreground = Brushes.White;
-            reviewButton.Background = new SolidColorBrush(Color.FromRgb(0x7C, 0x3A, 0xED));
+            reviewButton.Background = new SolidColorBrush(Color.FromRgb(0x2A, 0x78, 0xFC));
             reviewButton.BorderBrush = reviewButton.Background;
         }
 
