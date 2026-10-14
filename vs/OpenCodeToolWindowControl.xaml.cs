@@ -234,6 +234,23 @@ namespace OpenCodeStudio
             if (fromUrl != null) { directory = fromUrl.Item1 ?? directory; session = fromUrl.Item2; }
             if (string.IsNullOrEmpty(directory)) directory = Path.GetFullPath(_currentProjectRoot);
 
+            // Сессия могла остаться от другой версии opencode (например, v2 -> v1):
+            // на текущем сервере её нет, и CLI падает с "Session not found".
+            // Проверяем существование; если её нет — создаём новую ниже.
+            if (!string.IsNullOrEmpty(session))
+            {
+                try
+                {
+                    var existing = await _serverController.SessionService.GetSessionAsync(session, directory);
+                    if (existing == null) session = null;
+                }
+                catch (Exception ex)
+                {
+                    Services.Log.Info("CLI session lookup: " + ex.Message);
+                    session = null;
+                }
+            }
+
             // Общий сервер: чат создаётся один раз и передаётся в терминал, чтобы
             // в обоих режимах была одна и та же активная сессия.
             if (string.IsNullOrEmpty(session))
