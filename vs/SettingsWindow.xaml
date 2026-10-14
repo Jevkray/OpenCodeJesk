@@ -42,11 +42,21 @@
             <Setter Property="Margin" Value="0,16,0,6" />
         </Style>
 
+        <!-- Акцентный градиент (в цвете иконки: светлый -> насыщенный синий) -->
+        <LinearGradientBrush x:Key="AccentGradient" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#5EACFC" Offset="0" />
+            <GradientStop Color="#2A78FC" Offset="1" />
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="AccentGradientHover" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#7FBEFF" Offset="0" />
+            <GradientStop Color="#3B8FFC" Offset="1" />
+        </LinearGradientBrush>
+
         <!-- Кнопка-акцент -->
         <Style x:Key="AccentButton" TargetType="Button">
             <Setter Property="Foreground" Value="White" />
-            <Setter Property="Background" Value="#7C3AED" />
-            <Setter Property="BorderBrush" Value="#7C3AED" />
+            <Setter Property="Background" Value="{StaticResource AccentGradient}" />
+            <Setter Property="BorderBrush" Value="#3B8FFC" />
             <Setter Property="Padding" Value="18,6" />
             <Setter Property="Height" Value="34" />
             <Setter Property="Cursor" Value="Hand" />
@@ -60,8 +70,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="b" Property="Background" Value="#8b5cf6" />
-                                <Setter TargetName="b" Property="BorderBrush" Value="#8b5cf6" />
+                                <Setter TargetName="b" Property="Background" Value="{StaticResource AccentGradientHover}" />
+                                <Setter TargetName="b" Property="BorderBrush" Value="#5EACFC" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="b" Property="Opacity" Value="0.45" />
@@ -91,7 +101,7 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="b" Property="Background" Value="#3a3a3a" />
-                                <Setter TargetName="b" Property="BorderBrush" Value="#7C3AED" />
+                                <Setter TargetName="b" Property="BorderBrush" Value="#3B8FFC" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -117,7 +127,7 @@
                         </StackPanel>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="track" Property="Background" Value="#7C3AED" />
+                                <Setter TargetName="track" Property="Background" Value="#3B8FFC" />
                                 <Setter TargetName="knob" Property="HorizontalAlignment" Value="Right" />
                                 <Setter TargetName="knob" Property="Margin" Value="0,0,3,0" />
                             </Trigger>
@@ -161,7 +171,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                                <Setter TargetName="b" Property="BorderBrush" Value="#7C3AED" />
+                                <Setter TargetName="b" Property="BorderBrush" Value="#3B8FFC" />
                             </Trigger>
                             <!-- Watermark виден только когда пусто И поле не в фокусе -->
                             <MultiTrigger>
@@ -192,7 +202,7 @@
                                 <Setter TargetName="b" Property="Background" Value="#3a3a3a" />
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="b" Property="Background" Value="#7C3AED" />
+                                <Setter TargetName="b" Property="Background" Value="#3B8FFC" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -242,7 +252,7 @@
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                                <Setter TargetName="bd" Property="BorderBrush" Value="#7C3AED" />
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#3B8FFC" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -264,7 +274,7 @@
                                     <RepeatButton Command="Slider.DecreaseLarge">
                                         <RepeatButton.Template>
                                             <ControlTemplate TargetType="RepeatButton">
-                                                <Border Background="#7C3AED" Height="4" CornerRadius="2"
+                                                <Border Background="#3B8FFC" Height="4" CornerRadius="2"
                                                         VerticalAlignment="Center" />
                                             </ControlTemplate>
                                         </RepeatButton.Template>
@@ -283,7 +293,7 @@
                                     <Thumb Width="16" Height="16">
                                         <Thumb.Template>
                                             <ControlTemplate TargetType="Thumb">
-                                                <Ellipse Fill="#7C3AED" Stroke="#8b5cf6" StrokeThickness="1"
+                                                <Ellipse Fill="#3B8FFC" Stroke="#5EACFC" StrokeThickness="1"
                                                          Width="16" Height="16" />
                                             </ControlTemplate>
                                         </Thumb.Template>
@@ -365,7 +375,7 @@
                             </Trigger>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="bg" Property="Background" Value="#252526" />
-                                <Setter TargetName="accent" Property="Background" Value="#7C3AED" />
+                                <Setter TargetName="accent" Property="Background" Value="#3B8FFC" />
                                 <Setter Property="Foreground" Value="#f1f1f1" />
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -498,7 +508,7 @@
                                     <ProgressBar x:Name="installProgress" Grid.Column="0"
                                                  Height="8" VerticalAlignment="Center"
                                                  IsIndeterminate="True" Visibility="Collapsed"
-                                                 Foreground="#7C3AED" Background="#2d2d30" BorderThickness="0" />
+                                                 Foreground="#3B8FFC" Background="#2d2d30" BorderThickness="0" />
                                     <Button x:Name="installCancelButton" Grid.Column="1" Uid="install.cancel"
                                             Content="Cancel" Margin="12,0,0,0"
                                             Style="{StaticResource GhostButton}"
@@ -807,6 +817,7 @@
                                 <TextBlock Uid="updates.review.hint" Style="{StaticResource CardHint}"
                                            Text="A quick review on the Visual Studio Marketplace helps a lot and takes a minute." />
                                 <Button x:Name="reviewButton" Uid="updates.review.btn" Content="Leave a review"
+                                        Margin="0,16,0,0"
                                         HorizontalAlignment="Left" Style="{StaticResource AccentButton}"
                                         Click="OnLeaveReviewClick" />
                             </StackPanel>

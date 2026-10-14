@@ -11,7 +11,7 @@
             <TextBlock FontSize="20" FontWeight="SemiBold" Foreground="#f1f1f1"
                        TextWrapping="Wrap">
                 <Run Text="OpenCode Studio is now " />
-                <Run Text="OpenCode Jesk" Foreground="#5AA2FF" />
+                <Run Text="OpenCode Jesk" Foreground="#5EACFC" />
             </TextBlock>
 
             <TextBlock x:Name="introText" Margin="0,14,0,0" FontSize="12"
