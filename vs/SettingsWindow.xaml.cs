@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using OpenCodeStudio.Services;
 
@@ -29,6 +30,7 @@ namespace OpenCodeStudio
         private static readonly SolidColorBrush TextBrush = Brush(0xf1, 0xf1, 0xf1);
         private static readonly SolidColorBrush MutedBrush = Brush(0x9a, 0x9a, 0x9a);
         private static readonly SolidColorBrush AccentBrush = Brush(0x7C, 0x3A, 0xED);
+        private static readonly FontFamily MonoFont = new FontFamily("Consolas");
 
         private static SolidColorBrush Brush(byte r, byte g, byte b)
             => new SolidColorBrush(Color.FromRgb(r, g, b));
@@ -46,9 +48,15 @@ namespace OpenCodeStudio
             { "menu.import", "Import" },
 
             { "install.status.title", "OpenCode installation status" },
-            { "install.status.v1", "opencode (v1)" },
-            { "install.status.v2", "opencode2 (v2 preview)" },
-            { "install.status.missing", "not found (not installed)" },
+            { "install.status.v1", "OpenCode CLI (v1)" },
+            { "install.status.v2", "OpenCode CLI (v2 preview)" },
+            { "install.status.installed", "installed" },
+            { "install.status.notinstalled", "not installed" },
+            { "install.status.web", "Web interface" },
+            { "install.status.web.available", "available" },
+            { "install.status.web.unavailable", "unavailable — the web interface ships with the CLI; install the OpenCode CLI above." },
+            { "install.status.desktop", "OpenCode Desktop app" },
+            { "install.status.desktop.hint", "Download:" },
             { "install.guide.title", "Install OpenCode for Windows" },
             { "install.guide.hint", "OpenCode is distributed as an npm package. Install Node.js first, then run one of the commands below in a terminal." },
             { "install.guide.site", "Official site:" },
@@ -61,6 +69,10 @@ namespace OpenCodeStudio
             { "install.failed", "Installation failed:" },
             { "install.why.title", "Why OpenCode" },
             { "install.why.text", "Open source; works with many providers and models; runs from the terminal, IDE and desktop; shared history everywhere." },
+            { "install.about.title", "What is OpenCode" },
+            { "install.about.text", "OpenCode is an open-source AI coding agent that writes and edits code in your project, right where it lives." },
+            { "install.about.details", "More" },
+            { "install.about.desc", "OpenCode is an open-source AI coding agent for writing code. It runs in the terminal, in your IDE and as a desktop app.\n\nWhat it can do: writes and edits code in your project, understands your repository context, supports dozens of providers and models (including your own API keys), and keeps multiple sessions with shared history.\n\nHow to install:\n1. Install Node.js / npm.\n2. Run npm i -g opencode-ai (stable) — or npm i -g @opencode-ai/cli@next for the beta.\n3. Check it with opencode --version.\n4. Run opencode in a terminal, or come back to this extension.\n\nWhy it is handy: one account and shared history across the CLI, the desktop app and this extension; everything runs locally." },
 
             { "general.interface.title", "Interface" },
             { "general.interface.mode", "Interface mode" },
@@ -255,9 +267,15 @@ namespace OpenCodeStudio
             { "import.importbtn", "Импортировать выбранное" },
 
             { "install.status.title", "Статус установки OpenCode" },
-            { "install.status.v1", "opencode (v1)" },
-            { "install.status.v2", "opencode2 (v2 предпросмотр)" },
-            { "install.status.missing", "не найден (не установлен)" },
+            { "install.status.v1", "OpenCode CLI (v1)" },
+            { "install.status.v2", "OpenCode CLI (v2 предпросмотр)" },
+            { "install.status.installed", "установлено" },
+            { "install.status.notinstalled", "не установлено" },
+            { "install.status.web", "Веб-интерфейс" },
+            { "install.status.web.available", "доступен" },
+            { "install.status.web.unavailable", "недоступен — веб-интерфейс поставляется вместе с CLI; установите OpenCode CLI выше." },
+            { "install.status.desktop", "Приложение OpenCode Desktop" },
+            { "install.status.desktop.hint", "Скачать:" },
             { "install.guide.title", "Установка OpenCode для Windows" },
             { "install.guide.hint", "OpenCode распространяется как npm-пакет. Сначала установите Node.js, затем выполните одну из команд ниже в терминале." },
             { "install.guide.site", "Официальный сайт:" },
@@ -270,6 +288,10 @@ namespace OpenCodeStudio
             { "install.failed", "Установка не удалась:" },
             { "install.why.title", "Почему OpenCode" },
             { "install.why.text", "Открытый исходный код; множество провайдеров и моделей; работа из терминала, IDE и десктопа; общая история." },
+            { "install.about.title", "Что такое OpenCode" },
+            { "install.about.text", "OpenCode — открытый ИИ-агент для написания кода, который пишет и правит код прямо в вашем проекте." },
+            { "install.about.details", "Подробнее" },
+            { "install.about.desc", "OpenCode — открытый ИИ-агент для написания кода. Работает в терминале, в вашей IDE и как десктоп-приложение.\n\nЧто умеет: пишет и правит код в вашем проекте, понимает контекст репозитория, поддерживает десятки провайдеров и моделей (в том числе собственные ключи), несколько сессий с общей историей.\n\nКак установить:\n1. Установите Node.js / npm.\n2. Выполните npm i -g opencode-ai (стабильная ветка) — или npm i -g @opencode-ai/cli@next для беты.\n3. Проверьте: opencode --version.\n4. Запустите opencode в терминале или вернитесь в это расширение.\n\nПочему удобно: один аккаунт и общая история между CLI, десктопом и этим расширением; всё работает локально." },
 
             { "bottom.language", "Язык" },
             { "common.cancel", "Отмена" },
@@ -378,15 +400,123 @@ namespace OpenCodeStudio
             ApplyVersionLock();
         }
 
-        /// <summary>Обновляет текст статуса установки на вкладке Install.</summary>
+        /// <summary>Обновляет список статусов установки на вкладке Install.</summary>
         private void RefreshInstallStatus()
         {
-            if (installStatus == null) return;
+            if (installStatusPanel == null) return;
+            installStatusPanel.Children.Clear();
+
             var v1 = OpenCodeServerService.FindV1Path();
             var v2 = OpenCodeServerService.FindV2Path();
-            installStatus.Text =
-                Loc("install.status.v1") + ": " + (v1 ?? Loc("install.status.missing")) + "\n" +
-                Loc("install.status.v2") + ": " + (v2 ?? Loc("install.status.missing"));
+            var desktop = OpenCodeServerService.FindDesktopAppPath();
+
+            installStatusPanel.Children.Add(BuildCliRow(
+                Loc("install.status.v1"), v1, "npm i -g opencode-ai"));
+            installStatusPanel.Children.Add(BuildCliRow(
+                Loc("install.status.v2"), v2, "npm i -g @opencode-ai/cli@next"));
+
+            var webCli = v1 ?? v2;
+            bool webAvailable = OpenCodeServerService.SupportsWeb(webCli);
+            installStatusPanel.Children.Add(BuildSimpleRow(
+                Loc("install.status.web"),
+                webAvailable
+                    ? Loc("install.status.web.available") + " (" + webCli + ")"
+                    : Loc("install.status.web.unavailable"),
+                null));
+
+            installStatusPanel.Children.Add(BuildDesktopRow(desktop));
+        }
+
+        // Заголовок строки статуса: «пункт  статус».
+        private UIElement BuildHeader(string title, string status)
+        {
+            var head = new StackPanel { Orientation = Orientation.Horizontal };
+            head.Children.Add(new TextBlock
+            {
+                Text = title,
+                Foreground = TextBrush,
+                FontWeight = FontWeights.SemiBold
+            });
+            head.Children.Add(new TextBlock
+            {
+                Text = "  " + status,
+                Foreground = MutedBrush,
+                VerticalAlignment = VerticalAlignment.Center
+            });
+            return head;
+        }
+
+        // Строка CLI: при установке — моноширинный путь, иначе команда установки.
+        private UIElement BuildCliRow(string title, string path, string installCommand)
+        {
+            var row = new StackPanel { Margin = new Thickness(0, 0, 0, 12) };
+            row.Children.Add(BuildHeader(title,
+                path != null ? Loc("install.status.installed") : Loc("install.status.notinstalled")));
+            row.Children.Add(new TextBlock
+            {
+                Text = path ?? installCommand,
+                FontFamily = MonoFont,
+                FontSize = 12,
+                Foreground = MutedBrush,
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(0, 2, 0, 0)
+            });
+            return row;
+        }
+
+        private UIElement BuildSimpleRow(string title, string status, string detail)
+        {
+            var row = new StackPanel { Margin = new Thickness(0, 0, 0, 12) };
+            row.Children.Add(BuildHeader(title, status));
+            if (!string.IsNullOrEmpty(detail))
+                row.Children.Add(new TextBlock
+                {
+                    Text = detail,
+                    FontSize = 12,
+                    Foreground = MutedBrush,
+                    TextWrapping = TextWrapping.Wrap,
+                    Margin = new Thickness(0, 2, 0, 0)
+                });
+            return row;
+        }
+
+        // Строка Desktop: путь либо ссылка на скачивание.
+        private UIElement BuildDesktopRow(string path)
+        {
+            var row = new StackPanel { Margin = new Thickness(0, 0, 0, 4) };
+            row.Children.Add(BuildHeader(Loc("install.status.desktop"),
+                path != null ? Loc("install.status.installed") : Loc("install.status.notinstalled")));
+
+            if (path != null)
+            {
+                row.Children.Add(new TextBlock
+                {
+                    Text = path,
+                    FontFamily = MonoFont,
+                    FontSize = 12,
+                    Foreground = MutedBrush,
+                    TextWrapping = TextWrapping.Wrap,
+                    Margin = new Thickness(0, 2, 0, 0)
+                });
+            }
+            else
+            {
+                var line = new TextBlock
+                {
+                    FontSize = 12,
+                    Foreground = MutedBrush,
+                    Margin = new Thickness(0, 2, 0, 0)
+                };
+                line.Inlines.Add(new Run(Loc("install.status.desktop.hint") + " "));
+                var link = new Hyperlink(new Run("https://opencode.ai/download"))
+                {
+                    NavigateUri = new Uri("https://opencode.ai/download")
+                };
+                link.RequestNavigate += OnHyperlink;
+                line.Inlines.Add(link);
+                row.Children.Add(line);
+            }
+            return row;
         }
 
         private static void Localize(DependencyObject node, Dictionary<string, string> d)
@@ -609,6 +739,7 @@ namespace OpenCodeStudio
                     lock (log) { log.Add(line); if (log.Count > 200) log.RemoveAt(0); }
                 });
                 DetectInstalledVersions();
+                OpenCodeServerService.ResetWebSupportCache();
                 RefreshInstallStatus();
                 if (installResult != null)
                     installResult.Text = ok

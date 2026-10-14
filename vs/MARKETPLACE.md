@@ -24,6 +24,7 @@
 *The panel in **CLI (terminal)** mode — a plain terminal with OpenCode already running.*
 ## 🆕 What's new
 
+- **1.2.0.2** - Hotfix: fixed the CLI `--dir` error and the web `Unrecognised route!` error; OpenCode CLI v1/v2 are auto-detected (unavailable options are disabled); new **Install** tab with installation steps, links (opencode.ai, docs, download), a one-click CLI install and an explanation of what OpenCode is.
 - **1.2.0** - **Desktop (Web)** and **CLI (terminal)** interface modes in the same panel; shared chat between modes; a dedicated **Settings** window (General, Terminal, Server, Updates, Import); auto-open on solution open; **web zoom**; terminal font, size, cursor and scrollback; server port/arguments/idle stop; marketplace update checks; **v1 / v2 preview** support; safe import with backups; and the rename to **OpenCode Jesk**.
 - **1.1.5.1** (minor hotfix) - More reliable **Open Extension Manager** action (opens the Visual Studio extension manager, Updates page first); the update window now hides until the next Visual Studio restart on any action, and explains how to turn the notifications off in settings.
 - **1.1.5** - Fixed: closing the update window hides it until the next restart; "Open Extension Manager" opens the Visual Studio extension manager.

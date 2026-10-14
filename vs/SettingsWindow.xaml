@@ -450,8 +450,7 @@
                             <StackPanel>
                                 <TextBlock Uid="install.status.title" Text="OpenCode installation status"
                                            Style="{StaticResource CardTitle}" />
-                                <TextBlock x:Name="installStatus" Style="{StaticResource CardHint}"
-                                           Margin="0,8,0,0" TextWrapping="Wrap" />
+                                <StackPanel x:Name="installStatusPanel" Margin="0,10,0,0" />
                             </StackPanel>
                         </Border>
 
@@ -487,6 +486,30 @@
                                         Style="{StaticResource AccentButton}" Click="OnInstallOpenCodeClick" />
                                 <TextBlock x:Name="installResult" Style="{StaticResource CardHint}"
                                            Margin="0,10,0,0" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="install.about.title" Text="What is OpenCode"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="install.about.text" Style="{StaticResource CardHint}"
+                                           Text="OpenCode is an open-source AI coding agent that writes and edits code in your project, right where it lives." />
+                                <Expander Uid="install.about.details" Header="More"
+                                          Style="{StaticResource MoreExpander}">
+                                    <StackPanel>
+                                        <TextBlock Uid="install.about.desc" Style="{StaticResource MoreText}"
+                                                   Text="OpenCode is an open-source AI coding agent for writing code. It runs in the terminal, in your IDE and as a desktop app.&#x0a;&#x0a;What it can do: writes and edits code in your project, understands your repository context, supports dozens of providers and models (including your own API keys), and keeps multiple sessions with shared history.&#x0a;&#x0a;How to install:&#x0a;1. Install Node.js / npm.&#x0a;2. Run npm i -g opencode-ai (stable) — or npm i -g @opencode-ai/cli@next for the beta.&#x0a;3. Check it with opencode --version.&#x0a;4. Run opencode in a terminal, or come back to this extension.&#x0a;&#x0a;Why it is handy: one account and shared history across the CLI, the desktop app and this extension; everything runs locally." />
+                                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                            <TextBlock Margin="0,0,14,0"><Hyperlink NavigateUri="https://opencode.ai"
+                                                       RequestNavigate="OnHyperlink"><Run Text="opencode.ai" /></Hyperlink></TextBlock>
+                                            <TextBlock Margin="0,0,14,0"><Hyperlink NavigateUri="https://opencode.ai/docs"
+                                                       RequestNavigate="OnHyperlink"><Run Text="opencode.ai/docs" /></Hyperlink></TextBlock>
+                                            <TextBlock><Hyperlink NavigateUri="https://opencode.ai/download"
+                                                       RequestNavigate="OnHyperlink"><Run Text="opencode.ai/download" /></Hyperlink></TextBlock>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Expander>
                             </StackPanel>
                         </Border>
 

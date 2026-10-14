@@ -600,6 +600,83 @@ namespace OpenCodeStudio.Services
         /// <summary>Установлен ли v2 (opencode2).</summary>
         public static bool IsV2Available() => FindV2Path() != null;
 
+        /// <summary>
+        /// Полный путь к приложению OpenCode Desktop или null, если не найдено.
+        /// Проверяются стандартные каталоги установки.
+        /// </summary>
+        public static string FindDesktopAppPath()
+        {
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var programFiles = Environment.GetEnvironmentVariable("ProgramFiles") ?? "";
+            var programFilesX86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)") ?? "";
+
+            var candidates = new[]
+            {
+                Path.Combine(localAppData, "Programs", "@opencode-aidesktop", "OpenCode.exe"),
+                Path.Combine(programFiles, "OpenCode", "OpenCode.exe"),
+                Path.Combine(programFilesX86, "OpenCode", "OpenCode.exe"),
+            };
+            foreach (var path in candidates)
+            {
+                if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+                    return path;
+            }
+            return null;
+        }
+
+        // Кэш результата SupportsWeb: CLI-бинарь -> поддерживает ли подкоманду web.
+        private static string _webSupportPath;
+        private static bool _webSupportResult;
+
+        /// <summary>Сбросить кэш SupportsWeb (например, после установки CLI).</summary>
+        public static void ResetWebSupportCache()
+        {
+            _webSupportPath = null;
+            _webSupportResult = false;
+        }
+
+        /// <summary>
+        /// Поддерживает ли бинарь opencode веб-интерфейс: запускает
+        /// "&lt;cliPath&gt; --help" (скрытно, таймаут 5 c) и ищет "web" в выводе.
+        /// Результат кэшируется по пути.
+        /// </summary>
+        public static bool SupportsWeb(string cliPath)
+        {
+            if (string.IsNullOrWhiteSpace(cliPath)) return false;
+            if (_webSupportPath != null &&
+                string.Equals(_webSupportPath, cliPath, StringComparison.OrdinalIgnoreCase))
+                return _webSupportResult;
+
+            bool result = false;
+            try
+            {
+                var psi = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = "/c \"" + cliPath + "\" --help",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                using (var proc = System.Diagnostics.Process.Start(psi))
+                {
+                    if (proc != null)
+                    {
+                        var output = proc.StandardOutput.ReadToEnd();
+                        output += proc.StandardError.ReadToEnd();
+                        if (!proc.WaitForExit(5000)) { try { proc.Kill(); } catch { } }
+                        result = output.IndexOf("web", StringComparison.OrdinalIgnoreCase) >= 0;
+                    }
+                }
+            }
+            catch { result = false; }
+
+            _webSupportPath = cliPath;
+            _webSupportResult = result;
+            return result;
+        }
+
         private static string FindByName(string name, string[] dirs)
         {
             var direct = FindOnPath(name);
