@@ -23,8 +23,7 @@ namespace OpenCodeStudio
         private readonly string _solutionDir;
         private readonly Services.SpendSettings _settings;
         private readonly Action _onFinished;
-        private readonly Dictionary<ImportItem, CheckBox> _checks = new Dictionary<ImportItem, CheckBox>();
-        private string _customPath;
+        private readonly ImportPresenter _import;
         private bool _v1Available = true;
         private bool _v2Available = true;
         private System.Threading.CancellationTokenSource _installCts;
@@ -33,11 +32,6 @@ namespace OpenCodeStudio
         private string _lastNpmLine;
         private readonly CliInstallService _cliInstall = new CliInstallService();
         private readonly CliVersionStatusService _versionStatus = new CliVersionStatusService();
-
-        private static readonly SolidColorBrush TextBrush = Brush(0xf1, 0xf1, 0xf1);
-        private static readonly SolidColorBrush MutedBrush = Brush(0x9a, 0x9a, 0x9a);
-        private static readonly SolidColorBrush AccentBrush = Brush(0x2A, 0x78, 0xFC);
-        private static readonly FontFamily MonoFont = new FontFamily("Consolas");
 
         private static SolidColorBrush Brush(byte r, byte g, byte b)
             => new SolidColorBrush(Color.FromRgb(r, g, b));
@@ -50,6 +44,7 @@ namespace OpenCodeStudio
             _solutionDir = solutionDir;
             _settings = settings;
             _onFinished = onFinished;
+            _import = new ImportPresenter(_service, sourcesPanel, statusText, importButton, importWarning, _solutionDir);
             if (_settings != null) Services.SpendSettings.Current = _settings;
 
             LoadSettings();
@@ -59,7 +54,7 @@ namespace OpenCodeStudio
             ApplyLanguage();
             menuList.SelectedIndex = Math.Max(0, Math.Min(menuList.Items.Count - 1, initialTab));
             RenderChangelog();
-            Loaded += (_, __) => RebuildImport();
+            Loaded += (_, __) => _import.Rebuild();
 
             // Детекция версий и статуса установки — в фоне, чтобы открытие окна
             // не подвешивало IDE. Детекция одна, результат переиспользуется.
@@ -160,7 +155,7 @@ namespace OpenCodeStudio
             installStatusPanel.Children.Add(new TextBlock
             {
                 Text = Loc("install.status.checking"),
-                Foreground = MutedBrush
+                Foreground = UiPalette.Muted
             });
 
             try
@@ -176,117 +171,25 @@ namespace OpenCodeStudio
             if (installStatusPanel == null) return;
             installStatusPanel.Children.Clear();
 
-            installStatusPanel.Children.Add(BuildCliRow(
+            installStatusPanel.Children.Add(InstallStatusRenderer.CliRow(
                 Loc("install.status.v1"), info.V1Path, "npm i -g opencode-ai"));
-            installStatusPanel.Children.Add(BuildCliRow(
+            installStatusPanel.Children.Add(InstallStatusRenderer.CliRow(
                 Loc("install.status.v2"), info.V2Path, "npm i -g @opencode/cli"));
             installStatusPanel.Children.Add(new TextBlock
             {
                 Text = Loc("install.status.v2.plugins"),
                 FontSize = 12,
-                Foreground = MutedBrush,
+                Foreground = UiPalette.Muted,
                 TextWrapping = TextWrapping.Wrap,
                 Margin = new Thickness(0, -6, 0, 12)
             });
-            installStatusPanel.Children.Add(BuildSimpleRow(
+            installStatusPanel.Children.Add(InstallStatusRenderer.SimpleRow(
                 Loc("install.status.web"),
                 info.WebSupported
                     ? Loc("install.status.web.available") + " (" + info.WebBinaryPath + ")"
                     : Loc("install.status.web.unavailable"),
                 null));
-            installStatusPanel.Children.Add(BuildDesktopRow(info.DesktopAppPath));
-        }
-
-        // Заголовок строки статуса: «пункт  статус».
-        private UIElement BuildHeader(string title, string status)
-        {
-            var head = new StackPanel { Orientation = Orientation.Horizontal };
-            head.Children.Add(new TextBlock
-            {
-                Text = title,
-                Foreground = TextBrush,
-                FontWeight = FontWeights.SemiBold
-            });
-            head.Children.Add(new TextBlock
-            {
-                Text = "  " + status,
-                Foreground = MutedBrush,
-                VerticalAlignment = VerticalAlignment.Center
-            });
-            return head;
-        }
-
-        // Строка CLI: при установке — моноширинный путь, иначе команда установки.
-        private UIElement BuildCliRow(string title, string path, string installCommand)
-        {
-            var row = new StackPanel { Margin = new Thickness(0, 0, 0, 12) };
-            row.Children.Add(BuildHeader(title,
-                path != null ? Loc("install.status.installed") : Loc("install.status.notinstalled")));
-            row.Children.Add(new TextBlock
-            {
-                Text = path ?? installCommand,
-                FontFamily = MonoFont,
-                FontSize = 12,
-                Foreground = MutedBrush,
-                TextWrapping = TextWrapping.Wrap,
-                Margin = new Thickness(0, 2, 0, 0)
-            });
-            return row;
-        }
-
-        private UIElement BuildSimpleRow(string title, string status, string detail)
-        {
-            var row = new StackPanel { Margin = new Thickness(0, 0, 0, 12) };
-            row.Children.Add(BuildHeader(title, status));
-            if (!string.IsNullOrEmpty(detail))
-                row.Children.Add(new TextBlock
-                {
-                    Text = detail,
-                    FontSize = 12,
-                    Foreground = MutedBrush,
-                    TextWrapping = TextWrapping.Wrap,
-                    Margin = new Thickness(0, 2, 0, 0)
-                });
-            return row;
-        }
-
-        // Строка Desktop: путь либо ссылка на скачивание.
-        private UIElement BuildDesktopRow(string path)
-        {
-            var row = new StackPanel { Margin = new Thickness(0, 0, 0, 4) };
-            row.Children.Add(BuildHeader(Loc("install.status.desktop"),
-                path != null ? Loc("install.status.installed") : Loc("install.status.notinstalled")));
-
-            if (path != null)
-            {
-                row.Children.Add(new TextBlock
-                {
-                    Text = path,
-                    FontFamily = MonoFont,
-                    FontSize = 12,
-                    Foreground = MutedBrush,
-                    TextWrapping = TextWrapping.Wrap,
-                    Margin = new Thickness(0, 2, 0, 0)
-                });
-            }
-            else
-            {
-                var line = new TextBlock
-                {
-                    FontSize = 12,
-                    Foreground = MutedBrush,
-                    Margin = new Thickness(0, 2, 0, 0)
-                };
-                line.Inlines.Add(new Run(Loc("install.status.desktop.hint") + " "));
-                var link = new Hyperlink(new Run("https://opencode.ai/download"))
-                {
-                    NavigateUri = new Uri("https://opencode.ai/download")
-                };
-                link.RequestNavigate += OnHyperlink;
-                line.Inlines.Add(link);
-                row.Children.Add(line);
-            }
-            return row;
+            installStatusPanel.Children.Add(InstallStatusRenderer.DesktopRow(info.DesktopAppPath));
         }
 
         private static void Localize(DependencyObject node)
@@ -432,7 +335,7 @@ namespace OpenCodeStudio
                 switch (block.Kind)
                 {
                     case ChangelogBlockKind.Title:
-                        changelogPanel.Children.Add(Text(block.Text, 16, FontWeights.Bold, TextBrush, new Thickness(0, 0, 0, 10)));
+                        changelogPanel.Children.Add(Text(block.Text, 16, FontWeights.Bold, UiPalette.Text, new Thickness(0, 0, 0, 10)));
                         break;
                     case ChangelogBlockKind.Version:
                         changelogPanel.Children.Add(new Border
@@ -450,11 +353,11 @@ namespace OpenCodeStudio
                         break;
                     case ChangelogBlockKind.Bullet:
                         changelogPanel.Children.Add(Text("•  " + block.Text, 12, FontWeights.Normal,
-                            MutedBrush, new Thickness(8, 2, 0, 2)));
+                            UiPalette.Muted, new Thickness(8, 2, 0, 2)));
                         break;
                     default:
                         changelogPanel.Children.Add(Text(block.Text, 12, FontWeights.Normal,
-                            MutedBrush, new Thickness(0, 2, 0, 2)));
+                            UiPalette.Muted, new Thickness(0, 2, 0, 2)));
                         break;
                 }
             }
@@ -674,155 +577,8 @@ namespace OpenCodeStudio
 
         // ---- Import ------------------------------------------------------
 
-        private void RebuildImport()
-        {
-            sourcesPanel.Children.Clear();
-            _checks.Clear();
-            statusText.Text = "";
+        private void OnBrowseImportClick(object sender, RoutedEventArgs e) => _import.Browse(this);
 
-            var sources = _service.DetectSources(_customPath, _solutionDir);
-            if (sources.Count == 0)
-            {
-                sourcesPanel.Children.Add(new TextBlock
-                {
-                    Text = "No OpenCode data was found on this machine yet. " +
-                           "You can start using " + Brand.Name + " right away - settings will be created automatically.",
-                    TextWrapping = TextWrapping.Wrap,
-                    Foreground = MutedBrush,
-                    Margin = new Thickness(0, 4, 0, 4)
-                });
-                importButton.IsEnabled = true;
-                return;
-            }
-
-            importButton.IsEnabled = true;
-            if (importWarning != null)
-                importWarning.Visibility = ImportService.IsOpenCodeRunning()
-                    ? Visibility.Visible : Visibility.Collapsed;
-            foreach (var source in sources)
-                sourcesPanel.Children.Add(BuildSourceCard(source));
-        }
-
-        private UIElement BuildSourceCard(ImportSource source)
-        {
-            var card = new StackPanel { Margin = new Thickness(0, 0, 0, 18) };
-
-            var header = new StackPanel { Orientation = Orientation.Horizontal };
-            header.Children.Add(new TextBlock
-            {
-                Text = source.Name,
-                FontSize = 15,
-                FontWeight = FontWeights.SemiBold,
-                Foreground = TextBrush
-            });
-            if (source.IsActive)
-            {
-                header.Children.Add(new Border
-                {
-                    Margin = new Thickness(8, 0, 0, 0),
-                    Padding = new Thickness(6, 1, 6, 1),
-                    CornerRadius = new CornerRadius(3),
-                    Background = AccentBrush,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    Child = new TextBlock { Text = "in use", FontSize = 10, Foreground = Brushes.White }
-                });
-            }
-            card.Children.Add(header);
-
-            card.Children.Add(new TextBlock
-            {
-                Text = source.Summary,
-                FontSize = 11,
-                Foreground = MutedBrush,
-                Margin = new Thickness(0, 2, 0, 8),
-                TextWrapping = TextWrapping.Wrap
-            });
-
-            foreach (var item in source.Items)
-            {
-                var row = new Grid { Margin = new Thickness(0, 3, 0, 3) };
-                row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-                row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-
-                var check = new CheckBox
-                {
-                    Content = item.Label,
-                    IsChecked = item.Selected,
-                    IsEnabled = item.Importable,
-                    Foreground = item.Found ? TextBrush : MutedBrush,
-                    VerticalAlignment = VerticalAlignment.Center
-                };
-                if (item.Importable) _checks[item] = check;
-                Grid.SetColumn(check, 0);
-                row.Children.Add(check);
-
-                var detail = new TextBlock
-                {
-                    Text = item.Detail,
-                    FontSize = 11,
-                    Foreground = MutedBrush,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(12, 0, 0, 0),
-                    MaxWidth = 320,
-                    TextTrimming = TextTrimming.CharacterEllipsis
-                };
-                if (source.IsActive) detail.Text = item.Found ? item.Detail + "  (already active)" : item.Detail;
-                Grid.SetColumn(detail, 1);
-                row.Children.Add(detail);
-
-                card.Children.Add(row);
-            }
-
-            return card;
-        }
-
-        private void OnBrowseImportClick(object sender, RoutedEventArgs e)
-        {
-            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
-            {
-                dialog.Description = "Select a folder that contains OpenCode data (config, auth.json, opencode.db...)";
-                dialog.ShowNewFolderButton = false;
-                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    _customPath = dialog.SelectedPath;
-                    RebuildImport();
-                }
-            }
-        }
-
-        private void OnImportClick(object sender, RoutedEventArgs e)
-        {
-            var selected = _checks.Where(kv => kv.Value.IsChecked == true).Select(kv => kv.Key).ToList();
-            if (selected.Count == 0)
-            {
-                statusText.Text = "Nothing selected.";
-                return;
-            }
-
-            importButton.IsEnabled = false;
-            try
-            {
-                var result = _service.Import(null, selected);
-
-                var msg = $"Imported {result.Copied.Count} item(s).";
-                if (result.Backups.Count > 0) msg += $" {result.Backups.Count} backup(s) created.";
-                if (result.Errors.Count > 0)
-                {
-                    msg += $" {result.Errors.Count} error(s): " + string.Join("; ", result.Errors.Take(3));
-                    Log.Warn("Import errors: " + string.Join(" | ", result.Errors));
-                }
-                Log.Info("Settings import completed. " + msg);
-                statusText.Text = msg;
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Import failed", ex);
-                statusText.Text = "Import failed: " + ex.Message;
-            }
-            finally
-            {
-                importButton.IsEnabled = true;
-            }
-        }
+        private void OnImportClick(object sender, RoutedEventArgs e) => _import.ImportSelected();
     }
 }
