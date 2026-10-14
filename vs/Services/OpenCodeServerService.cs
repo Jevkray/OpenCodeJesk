@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using OpenCodeStudio.Models;
 
 namespace OpenCodeStudio.Services
@@ -144,7 +143,7 @@ namespace OpenCodeStudio.Services
                 resolvedInfo.Password = serverPass;
                 _serverInfo = resolvedInfo;
                 Log.Info($"Server listening on {resolvedInfo.BaseUrl}");
-                WriteSharedRegistry(resolvedInfo);
+                SharedServerRegistry.Write(resolvedInfo, _binaryPath, CurrentBinaryStamp(), _process?.Id ?? 0);
 
                 var healthy = await WaitForHealthAsync(ConnectTimeoutMs);
                 if (healthy)
@@ -214,7 +213,7 @@ namespace OpenCodeStudio.Services
                     try { _process.WaitForExit(3000); } catch { }
                 }
                 _process.Dispose();
-                RemoveSharedRegistry();
+                SharedServerRegistry.Remove();
             }
             _process = null;
             _ownsProcess = false;
@@ -228,28 +227,23 @@ namespace OpenCodeStudio.Services
         /// </summary>
         private async Task<bool> TryAdoptSharedServerAsync()
         {
-            var info = ReadSharedRegistry();
+            var info = SharedServerRegistry.Read();
             if (info == null) return false;
 
             // Не переиспользуем сервер, запущенный другим/старым бинарём opencode:
             // после обновления CLI поднимем свежий. Проверяем только при старте.
-            if (IsRecordedBinaryStale()) return false;
+            if (SharedServerRegistry.IsStale(CliBinaryLocator.Resolve(PreferV2), CurrentBinaryStamp())) return false;
 
             // Записанный сервер мог быть поднят неподходящей версией (v1/v2).
             // Если версию определить удалось и ветка не совпадает с выбранной —
             // не переиспользуем, поднимем свой сервер нужной версии.
-            try
+            var rec = SharedServerRegistry.ReadRecord();
+            if (rec != null)
             {
-                var rec = JsonConvert.DeserializeObject<SharedServerRecord>(
-                    File.ReadAllText(RegistryPath));
-                if (rec != null)
-                {
-                    var recMajor = CliCommand.DetectMajor(rec.Binary);
-                    bool recV2 = recMajor >= 2;
-                    if (recMajor != 0 && recV2 != PreferV2) return false;
-                }
+                var recMajor = CliCommand.DetectMajor(rec.Binary);
+                bool recV2 = recMajor >= 2;
+                if (recMajor != 0 && recV2 != PreferV2) return false;
             }
-            catch { }
 
             try
             {
@@ -270,48 +264,6 @@ namespace OpenCodeStudio.Services
             return true;
         }
 
-        private static string RegistryPath => Path.Combine(
-            OpenCodeEnvironment.StudioDir, "server.json");
-
-        private void WriteSharedRegistry(ServerInfo info)
-        {
-            try
-            {
-                Directory.CreateDirectory(OpenCodeEnvironment.StudioDir);
-                var record = new SharedServerRecord
-                {
-                    Host = info.Host,
-                    Port = info.Port,
-                    Username = info.Username,
-                    Password = info.Password,
-                    Binary = _binaryPath,
-                    BinaryStamp = CurrentBinaryStamp(),
-                    Pid = _process?.Id ?? 0
-                };
-                File.WriteAllText(RegistryPath, JsonConvert.SerializeObject(record));
-            }
-            catch { }
-        }
-
-        private bool IsRecordedBinaryStale()
-        {
-            try
-            {
-                if (!File.Exists(RegistryPath)) return false;
-                var rec = JsonConvert.DeserializeObject<SharedServerRecord>(File.ReadAllText(RegistryPath));
-                if (rec == null) return false;
-                var current = CliBinaryLocator.Resolve(PreferV2);
-                if (!string.IsNullOrEmpty(rec.Binary) && !string.IsNullOrEmpty(current)
-                    && !string.Equals(rec.Binary, current, StringComparison.OrdinalIgnoreCase))
-                    return true;
-                var stamp = CurrentBinaryStamp();
-                if (rec.BinaryStamp != 0 && stamp != 0 && rec.BinaryStamp != stamp)
-                    return true;
-            }
-            catch { }
-            return false;
-        }
-
         private long CurrentBinaryStamp()
         {
             try
@@ -322,30 +274,6 @@ namespace OpenCodeStudio.Services
             }
             catch { }
             return 0;
-        }
-
-        private static ServerInfo ReadSharedRegistry()
-        {
-            try
-            {
-                if (!File.Exists(RegistryPath)) return null;
-                var record = JsonConvert.DeserializeObject<SharedServerRecord>(
-                    File.ReadAllText(RegistryPath));
-                if (record == null || record.Port <= 0) return null;
-                return new ServerInfo(
-                    string.IsNullOrEmpty(record.Host) ? "127.0.0.1" : record.Host,
-                    record.Port)
-                {
-                    Username = record.Username,
-                    Password = record.Password
-                };
-            }
-            catch { return null; }
-        }
-
-        private static void RemoveSharedRegistry()
-        {
-            try { if (File.Exists(RegistryPath)) File.Delete(RegistryPath); } catch { }
         }
 
         public void UpdateConnectionState(bool connected)
@@ -511,17 +439,5 @@ namespace OpenCodeStudio.Services
                 StateChanged?.Invoke(newState);
             }
         }
-    }
-
-    /// <summary>Record of a running OpenCode server shared between clients.</summary>
-    internal sealed class SharedServerRecord
-    {
-        public string Host { get; set; }
-        public int Port { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Binary { get; set; }
-        public long BinaryStamp { get; set; }
-        public int Pid { get; set; }
     }
 }
