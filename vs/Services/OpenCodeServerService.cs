@@ -567,16 +567,9 @@ namespace OpenCodeStudio.Services
                 ? new[] { "opencode2", "opencode" }
                 : new[] { "opencode", "opencode2" };
 
-            var dirs = new[]
-            {
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "npm"),
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "nvmw", "nodejs"),
-                Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles") ?? "", "nodejs"),
-            };
-
             foreach (var name in names)
             {
-                var path = FindByName(name, dirs);
+                var path = FindByName(name, CommonDirs);
                 if (path == null) continue;
 
                 if (PreferV2 && name == "opencode")
@@ -586,6 +579,26 @@ namespace OpenCodeStudio.Services
 
             return null;
         }
+
+        /// <summary>Каталоги установки npm/node, где искать бинарь opencode.</summary>
+        private static readonly string[] CommonDirs =
+        {
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "npm"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "nvmw", "nodejs"),
+            Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles") ?? "", "nodejs"),
+        };
+
+        /// <summary>Полный путь к v1 (opencode) или null, если не найден.</summary>
+        public static string FindV1Path() => FindByName("opencode", CommonDirs);
+
+        /// <summary>Полный путь к v2 (opencode2) или null, если не найден.</summary>
+        public static string FindV2Path() => FindByName("opencode2", CommonDirs);
+
+        /// <summary>Установлен ли v1 (opencode).</summary>
+        public static bool IsV1Available() => FindV1Path() != null;
+
+        /// <summary>Установлен ли v2 (opencode2).</summary>
+        public static bool IsV2Available() => FindV2Path() != null;
 
         private static string FindByName(string name, string[] dirs)
         {

@@ -23,6 +23,8 @@ namespace OpenCodeStudio
         private readonly Dictionary<ImportItem, CheckBox> _checks = new Dictionary<ImportItem, CheckBox>();
         private string _customPath;
         private string _lang = "en";
+        private bool _v1Available = true;
+        private bool _v2Available = true;
 
         private static readonly SolidColorBrush TextBrush = Brush(0xf1, 0xf1, 0xf1);
         private static readonly SolidColorBrush MutedBrush = Brush(0x9a, 0x9a, 0x9a);
@@ -36,11 +38,29 @@ namespace OpenCodeStudio
         {
             { "window.title", Brand.Name + " Settings" },
             { "menu.title", "Settings" },
+            { "menu.install", "Install" },
             { "menu.general", "General" },
             { "menu.terminal", "Terminal" },
             { "menu.server", "Server" },
             { "menu.updates", "Updates" },
             { "menu.import", "Import" },
+
+            { "install.status.title", "OpenCode installation status" },
+            { "install.status.v1", "opencode (v1)" },
+            { "install.status.v2", "opencode2 (v2 preview)" },
+            { "install.status.missing", "not found (not installed)" },
+            { "install.guide.title", "Install OpenCode for Windows" },
+            { "install.guide.hint", "OpenCode is distributed as an npm package. Install Node.js first, then run one of the commands below in a terminal." },
+            { "install.guide.site", "Official site:" },
+            { "install.guide.v1", "Stable (v1):" },
+            { "install.guide.v2", "Beta (v2 preview):" },
+            { "install.guide.docs", "Documentation:" },
+            { "install.button", "Install latest OpenCode CLI" },
+            { "install.running", "Installing OpenCode CLI…" },
+            { "install.done", "OpenCode CLI installed. Status updated." },
+            { "install.failed", "Installation failed:" },
+            { "install.why.title", "Why OpenCode" },
+            { "install.why.text", "Open source; works with many providers and models; runs from the terminal, IDE and desktop; shared history everywhere." },
 
             { "general.interface.title", "Interface" },
             { "general.interface.mode", "Interface mode" },
@@ -132,6 +152,7 @@ namespace OpenCodeStudio
             { "combo.interface.1", "CLI (terminal)" },
             { "combo.version.0", "v1 (stable)" },
             { "combo.version.1", "v2 (preview)" },
+            { "combo.version.notinstalled", "(not installed)" },
             { "combo.startdir.0", "Git root" },
             { "combo.startdir.1", "Solution folder" },
             { "combo.startdir.2", ".csproj folder" },
@@ -144,6 +165,7 @@ namespace OpenCodeStudio
         {
             { "window.title", "Настройки " + Brand.Name },
             { "menu.title", "Настройки" },
+            { "menu.install", "Установка" },
             { "menu.general", "Основные" },
             { "menu.terminal", "Терминал" },
             { "menu.server", "Сервер" },
@@ -232,6 +254,23 @@ namespace OpenCodeStudio
             { "import.addfolder", "Добавить папку…" },
             { "import.importbtn", "Импортировать выбранное" },
 
+            { "install.status.title", "Статус установки OpenCode" },
+            { "install.status.v1", "opencode (v1)" },
+            { "install.status.v2", "opencode2 (v2 предпросмотр)" },
+            { "install.status.missing", "не найден (не установлен)" },
+            { "install.guide.title", "Установка OpenCode для Windows" },
+            { "install.guide.hint", "OpenCode распространяется как npm-пакет. Сначала установите Node.js, затем выполните одну из команд ниже в терминале." },
+            { "install.guide.site", "Официальный сайт:" },
+            { "install.guide.v1", "Стабильная (v1):" },
+            { "install.guide.v2", "Бета (v2 предпросмотр):" },
+            { "install.guide.docs", "Документация:" },
+            { "install.button", "Установить последний OpenCode CLI" },
+            { "install.running", "Установка OpenCode CLI…" },
+            { "install.done", "OpenCode CLI установлен. Статус обновлён." },
+            { "install.failed", "Установка не удалась:" },
+            { "install.why.title", "Почему OpenCode" },
+            { "install.why.text", "Открытый исходный код; множество провайдеров и моделей; работа из терминала, IDE и десктопа; общая история." },
+
             { "bottom.language", "Язык" },
             { "common.cancel", "Отмена" },
             { "common.save", "Сохранить" },
@@ -240,6 +279,7 @@ namespace OpenCodeStudio
             { "combo.interface.1", "CLI (терминал)" },
             { "combo.version.0", "v1 (стабильная)" },
             { "combo.version.1", "v2 (предпросмотр)" },
+            { "combo.version.notinstalled", "(не установлено)" },
             { "combo.startdir.0", "Корень Git" },
             { "combo.startdir.1", "Папка решения" },
             { "combo.startdir.2", "Папка .csproj" },
@@ -249,7 +289,7 @@ namespace OpenCodeStudio
         };
 
         public SettingsWindow(ImportService service, string solutionDir,
-            Services.SpendSettings settings = null, Action onFinished = null)
+            Services.SpendSettings settings = null, Action onFinished = null, int initialTab = 1)
         {
             InitializeComponent();
             _service = service ?? new ImportService();
@@ -259,11 +299,13 @@ namespace OpenCodeStudio
             if (_settings != null) Services.SpendSettings.Current = _settings;
 
             LoadSettings();
-            menuList.SelectedIndex = 0;
+            DetectInstalledVersions();
+            RefreshInstallStatus();
             _lang = _settings?.Language == "ru" ? "ru" : "en";
             languageCombo.SelectedIndex = _lang == "ru" ? 1 : 0;
             SetVersionText();
             ApplyLanguage();
+            menuList.SelectedIndex = Math.Max(0, Math.Min(menuList.Items.Count - 1, initialTab));
             Loaded += (_, __) => RebuildImport();
         }
 
@@ -276,10 +318,75 @@ namespace OpenCodeStudio
             Title = d["window.title"];
             Localize(this, d);
             SetItems(interfaceCombo, d["combo.interface.0"], d["combo.interface.1"]);
-            SetItems(versionCombo, d["combo.version.0"], d["combo.version.1"]);
+            SetVersionItems(d);
             SetItems(startDirCombo, d["combo.startdir.0"], d["combo.startdir.1"],
                 d["combo.startdir.2"], d["combo.startdir.3"]);
             SetItems(channelCombo, d["combo.channel.0"], d["combo.channel.1"]);
+            RefreshInstallStatus();
+        }
+
+        /// <summary>Локализованная строка по ключу для текущего языка.</summary>
+        private string Loc(string key)
+        {
+            var d = _lang == "ru" ? Ru : En;
+            return d.TryGetValue(key, out var v) ? v : key;
+        }
+
+        /// <summary>
+        /// Показывает оба пункта версии, неактивные — с пометкой «не установлено».
+        /// </summary>
+        private void SetVersionItems(Dictionary<string, string> d)
+        {
+            var v1 = d["combo.version.0"];
+            var v2 = d["combo.version.1"];
+            var missing = " " + d["combo.version.notinstalled"];
+            if (versionCombo.Items.Count >= 2
+                && versionCombo.Items[0] is ComboBoxItem i0
+                && versionCombo.Items[1] is ComboBoxItem i1)
+            {
+                i0.Content = _v1Available ? v1 : v1 + missing;
+                i1.Content = _v2Available ? v2 : v2 + missing;
+            }
+            else
+            {
+                SetItems(versionCombo, v1, v2);
+            }
+        }
+
+        /// <summary>
+        /// Определяет установленные ветки opencode и делает недоступные пункты
+        /// неактивными; выбирает доступную, если сохранённая недоступна.
+        /// </summary>
+        private void DetectInstalledVersions()
+        {
+            _v1Available = OpenCodeServerService.IsV1Available();
+            _v2Available = OpenCodeServerService.IsV2Available();
+
+            if (versionCombo.Items.Count >= 2
+                && versionCombo.Items[0] is ComboBoxItem v1
+                && versionCombo.Items[1] is ComboBoxItem v2)
+            {
+                v1.IsEnabled = _v1Available;
+                v2.IsEnabled = _v2Available;
+            }
+
+            if (versionCombo.SelectedIndex == 1 && !_v2Available)
+                versionCombo.SelectedIndex = _v1Available ? 0 : -1;
+            else if (versionCombo.SelectedIndex == 0 && !_v1Available)
+                versionCombo.SelectedIndex = _v2Available ? 1 : -1;
+
+            ApplyVersionLock();
+        }
+
+        /// <summary>Обновляет текст статуса установки на вкладке Install.</summary>
+        private void RefreshInstallStatus()
+        {
+            if (installStatus == null) return;
+            var v1 = OpenCodeServerService.FindV1Path();
+            var v2 = OpenCodeServerService.FindV2Path();
+            installStatus.Text =
+                Loc("install.status.v1") + ": " + (v1 ?? Loc("install.status.missing")) + "\n" +
+                Loc("install.status.v2") + ": " + (v2 ?? Loc("install.status.missing"));
         }
 
         private static void Localize(DependencyObject node, Dictionary<string, string> d)
@@ -392,11 +499,12 @@ namespace OpenCodeStudio
         {
             if (panelGeneral == null) return; // до полной инициализации
             int index = menuList.SelectedIndex;
-            panelGeneral.Visibility = index == 0 ? Visibility.Visible : Visibility.Collapsed;
-            panelTerminal.Visibility = index == 1 ? Visibility.Visible : Visibility.Collapsed;
-            panelServer.Visibility = index == 2 ? Visibility.Visible : Visibility.Collapsed;
-            panelUpdates.Visibility = index == 3 ? Visibility.Visible : Visibility.Collapsed;
-            panelImport.Visibility = index == 4 ? Visibility.Visible : Visibility.Collapsed;
+            panelInstall.Visibility = index == 0 ? Visibility.Visible : Visibility.Collapsed;
+            panelGeneral.Visibility = index == 1 ? Visibility.Visible : Visibility.Collapsed;
+            panelTerminal.Visibility = index == 2 ? Visibility.Visible : Visibility.Collapsed;
+            panelServer.Visibility = index == 3 ? Visibility.Visible : Visibility.Collapsed;
+            panelUpdates.Visibility = index == 4 ? Visibility.Visible : Visibility.Collapsed;
+            panelImport.Visibility = index == 5 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void OnWebZoomChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -421,8 +529,8 @@ namespace OpenCodeStudio
         {
             if (interfaceCombo == null || versionCombo == null) return;
             bool desktop = interfaceCombo.SelectedIndex == 0;
-            if (desktop) versionCombo.SelectedIndex = 0;
-            versionCombo.IsEnabled = !desktop;
+            if (desktop && _v1Available) versionCombo.SelectedIndex = 0;
+            versionCombo.IsEnabled = !desktop && (_v1Available || _v2Available);
             if (versionLockedHint != null)
                 versionLockedHint.Visibility = desktop ? Visibility.Visible : Visibility.Collapsed;
         }
@@ -478,6 +586,44 @@ namespace OpenCodeStudio
             };
             if (dialog.ShowDialog(this) == true)
                 openCodePathBox.Text = dialog.FileName;
+        }
+
+        /// <summary>Открывает внешние ссылки вкладки Install в браузере.</summary>
+        private void OnHyperlink(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true }); }
+            catch { }
+            e.Handled = true;
+        }
+
+        /// <summary>Кнопка Install: ставит opencode-ai@latest и обновляет статус.</summary>
+        private async void OnInstallOpenCodeClick(object sender, RoutedEventArgs e)
+        {
+            if (installButton != null) installButton.IsEnabled = false;
+            if (installResult != null) installResult.Text = Loc("install.running");
+            try
+            {
+                var log = new List<string>();
+                var ok = await new OpenCodeUpdateService().InstallLatestAsync(line =>
+                {
+                    lock (log) { log.Add(line); if (log.Count > 200) log.RemoveAt(0); }
+                });
+                DetectInstalledVersions();
+                RefreshInstallStatus();
+                if (installResult != null)
+                    installResult.Text = ok
+                        ? Loc("install.done")
+                        : Loc("install.failed") + "\n" + string.Join("\n",
+                            log.Skip(Math.Max(0, log.Count - 10)));
+            }
+            catch (Exception ex)
+            {
+                if (installResult != null) installResult.Text = Loc("install.failed") + " " + ex.Message;
+            }
+            finally
+            {
+                if (installButton != null) installButton.IsEnabled = true;
+            }
         }
 
         // ---- Import ------------------------------------------------------

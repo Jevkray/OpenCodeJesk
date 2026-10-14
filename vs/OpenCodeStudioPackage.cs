@@ -87,7 +87,10 @@ namespace OpenCodeStudio
                         // Let the shell finish initializing before showing a window.
                         await Task.Delay(2500);
                         await JoinableTaskFactory.SwitchToMainThreadAsync();
-                        await ShowSettingsWindowAsync();
+                        // Если opencode не найден — открываем окно на вкладке Install.
+                        var notInstalled = !OpenCodeServerService.IsV1Available()
+                            && !OpenCodeServerService.IsV2Available();
+                        await ShowSettingsWindowAsync(notInstalled ? 0 : 1);
                     }
                     catch (Exception ex)
                     {
@@ -517,7 +520,7 @@ namespace OpenCodeStudio
         /// Единственный экземпляр окна Settings. Повторные вызовы активируют уже
         /// открытое окно вместо создания нового.
         /// </summary>
-        internal async Task<SettingsWindow> ShowSettingsWindowAsync()
+        internal async Task<SettingsWindow> ShowSettingsWindowAsync(int initialTab = 1)
         {
             await JoinableTaskFactory.SwitchToMainThreadAsync();
             if (_settingsWindow != null)
@@ -526,7 +529,8 @@ namespace OpenCodeStudio
                 return _settingsWindow;
             }
 
-            var window = new SettingsWindow(new ImportService(), GetSolutionDir(), GetSpendSettings());
+            var window = new SettingsWindow(new ImportService(), GetSolutionDir(),
+                GetSpendSettings(), null, initialTab);
             window.Closed += (_, __) => _settingsWindow = null;
             _settingsWindow = window;
             window.Show();

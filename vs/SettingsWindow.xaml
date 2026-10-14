@@ -391,6 +391,13 @@
                          SelectionChanged="OnMenuChanged">
                     <ListBoxItem>
                         <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                       VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <TextBlock Uid="menu.install" Text="Install" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="16"
                                        VerticalAlignment="Center" Margin="0,0,12,0" />
                             <TextBlock Uid="menu.general" Text="General" VerticalAlignment="Center" />
@@ -437,8 +444,64 @@
 
             <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Padding="24,24,24,0">
                 <Grid>
+                    <!-- Install -->
+                    <StackPanel x:Name="panelInstall" Visibility="Collapsed">
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="install.status.title" Text="OpenCode installation status"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock x:Name="installStatus" Style="{StaticResource CardHint}"
+                                           Margin="0,8,0,0" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="install.guide.title" Text="Install OpenCode for Windows"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="install.guide.hint" Style="{StaticResource CardHint}"
+                                           Text="OpenCode is distributed as an npm package. Install Node.js first, then run one of the commands below in a terminal." />
+                                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                    <TextBlock Uid="install.guide.site" Text="Official site:"
+                                               Foreground="#cfcfcf" VerticalAlignment="Center" />
+                                    <TextBlock Margin="6,0,0,0"><Hyperlink NavigateUri="https://opencode.ai"
+                                               RequestNavigate="OnHyperlink"><Run Text="opencode.ai" /></Hyperlink></TextBlock>
+                                </StackPanel>
+                                <TextBlock Uid="install.guide.v1" Text="Stable (v1):"
+                                           Style="{StaticResource FieldLabel}" />
+                                <TextBox IsReadOnly="True" Style="{StaticResource FieldTextBox}"
+                                         Text="npm i -g opencode-ai" />
+                                <TextBlock Uid="install.guide.v2" Text="Beta (v2 preview):"
+                                           Style="{StaticResource FieldLabel}" />
+                                <TextBox IsReadOnly="True" Style="{StaticResource FieldTextBox}"
+                                         Text="npm i -g @opencode-ai/cli@next" />
+                                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                    <TextBlock Uid="install.guide.docs" Text="Documentation:"
+                                               Foreground="#cfcfcf" VerticalAlignment="Center" />
+                                    <TextBlock Margin="6,0,0,0"><Hyperlink NavigateUri="https://opencode.ai/docs"
+                                               RequestNavigate="OnHyperlink"><Run Text="opencode.ai/docs" /></Hyperlink></TextBlock>
+                                </StackPanel>
+                                <Button x:Name="installButton" Uid="install.button"
+                                        Content="Install latest OpenCode CLI"
+                                        Margin="0,16,0,0" HorizontalAlignment="Left"
+                                        Style="{StaticResource AccentButton}" Click="OnInstallOpenCodeClick" />
+                                <TextBlock x:Name="installResult" Style="{StaticResource CardHint}"
+                                           Margin="0,10,0,0" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="install.why.title" Text="Why OpenCode"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="install.why.text" Style="{StaticResource CardHint}"
+                                           Text="Open source; works with many providers and models; runs from the terminal, IDE and desktop; shared history everywhere." />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
                     <!-- General -->
-                    <StackPanel x:Name="panelGeneral">
+                    <StackPanel x:Name="panelGeneral" Visibility="Collapsed">
                         <Border Style="{StaticResource Card}">
                             <StackPanel>
                                 <TextBlock Uid="general.interface.title" Text="Interface"

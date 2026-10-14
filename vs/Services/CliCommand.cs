@@ -21,7 +21,9 @@ namespace OpenCodeStudio.Services
                 arguments = "--server " + q(server.BaseUrl) + " " + q(directory);
             }
             else
-                arguments = "attach " + q(server.BaseUrl) + " --dir " + q(directory);
+                // В новых версиях opencode флага --dir нет: рабочий каталог
+                // задаётся при запуске процесса (CreateProcess directory).
+                arguments = "attach " + q(server.BaseUrl);
             if (!string.IsNullOrEmpty(sessionId)) arguments += " --session " + q(sessionId);
             // Дополнительные аргументы CLI из настроек.
             var extra = SpendSettings.Current?.CliArguments;

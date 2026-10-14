@@ -165,10 +165,7 @@ namespace OpenCodeStudio.Services
         {
             if (_serverService.ServerInfo == null)
                 return null;
-            if (string.IsNullOrEmpty(_currentProjectDirectory))
-                return _serverService.ServerInfo.BaseUrl + "/";
-            return _serverService.ServerInfo.BaseUrl + "/"
-                + ToUrlSafeBase64(_currentProjectDirectory) + "/session";
+            return _serverService.ServerInfo.BaseUrl + "/";
         }
 
         /// <summary>

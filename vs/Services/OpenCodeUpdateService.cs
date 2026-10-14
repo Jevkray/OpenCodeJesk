@@ -61,9 +61,18 @@ namespace OpenCodeStudio.Services
         /// <summary>Запускает обновление opencode; true при коде выхода 0.</summary>
         public async Task<bool> UpdateAsync(Action<string> onLog = null)
         {
+            var target = Channel == UpdateChannel.Beta ? "@opencode-ai/cli@next" : "opencode-ai@latest";
+            return await RunNpmAsync(target, onLog);
+        }
+
+        /// <summary>Ставит/обновляет стабильный opencode-ai@latest (кнопка Install).</summary>
+        public Task<bool> InstallLatestAsync(Action<string> onLog = null)
+            => RunNpmAsync("opencode-ai@latest", onLog);
+
+        private static async Task<bool> RunNpmAsync(string target, Action<string> onLog)
+        {
             try
             {
-                var target = Channel == UpdateChannel.Beta ? "@opencode-ai/cli@next" : "opencode-ai@latest";
                 var psi = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",

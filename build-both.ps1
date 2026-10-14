@@ -1,4 +1,4 @@
-# Собирает оба бренда из одной кодовой базы: OpenCode Studio (без флага) и
+﻿# Собирает оба бренда из одной кодовой базы: OpenCode Studio (без флага) и
 # OpenCode Jesk (-p:Brand=Jesk). В рабочем дереве остаётся Jesk-манифест.
 $ErrorActionPreference = 'Stop'
 
@@ -36,16 +36,16 @@ function Build-Brand([string]$brand, [string]$manifestSource, [string]$destName)
 }
 
 # 2. Studio
-$studioVsix = Build-Brand '' $studio 'OpenCodeStudio-1.2.0.vsix'
+$studioVsix = Build-Brand '' $studio 'OpenCodeStudio-1.2.0.1.vsix'
 # 3. Jesk
-$jeskVsix = Build-Brand 'Jesk' $jesk 'OpenCodeJesk-1.2.0.vsix'
+$jeskVsix = Build-Brand 'Jesk' $jesk 'OpenCodeJesk-1.2.0.1.vsix'
 # 4. В дереве остаётся Jesk-манифест (после шага 3 он уже Jesk).
 
 # 5. Разложить и почистить прошлую версию.
-foreach ($dir in @($targetDir, $desktop)) {
+foreach ($dir in @($root, $targetDir, $desktop)) {
     if (-not (Test-Path -LiteralPath $dir)) { New-Item -ItemType Directory -Path $dir | Out-Null }
     Copy-Item -LiteralPath $studioVsix -Destination $dir -Force
     Copy-Item -LiteralPath $jeskVsix   -Destination $dir -Force
-    Get-ChildItem -LiteralPath $dir -Filter 'OpenCodeStudio-1.1.5.19.vsix' | Remove-Item -Force
+    Get-ChildItem -LiteralPath $dir -Filter 'OpenCode*-1.2.0.vsix' | Remove-Item -Force
 }
 Write-Host "Оба VSIX скопированы в: $targetDir и $desktop"

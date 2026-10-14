@@ -23,7 +23,7 @@ namespace OpenCodeStudio
     /// Unlike the original implementation, this control does <b>not</b> proxy
     /// requests through a fake origin nor inject scripts to fake per-project
     /// storage. It simply points WebView2 straight at the OpenCode server's own
-    /// web UI (http://127.0.0.1:port/{dir}/session/{id}), which is a
+    /// web UI (http://127.0.0.1:port/), which is a
     /// self-contained single-page app that manages projects, sessions and its
     /// own theming. This removes an entire, fragile translation layer.
     /// </para>
@@ -184,22 +184,19 @@ namespace OpenCodeStudio
                 // чтобы не сбивать собственную загрузку при старте.
                 if (_interfaceIsCli)
                 {
-                    // При возврате из CLI открываем самый свежий чат этой папки —
-                    // так подхватывается и чат, созданный или открытый в терминале.
+                    // При возврате из CLI запоминаем самый свежий чат этой папки,
+                    // чтобы передать его в CLI при следующем входе, но в веб
+                    // переходим на корень сервера: проектный/сессионный маршрут
+                    // (`/{base64}/session/...`) отдаёт «Unrecognised route!».
                     var webDirectory = _activeDirectory
                         ?? (string.IsNullOrEmpty(_currentProjectRoot) ? null : Path.GetFullPath(_currentProjectRoot));
-                    string target = null;
                     var latest = await _serverController.GetActiveSessionAsync(webDirectory);
                     if (latest != null)
                     {
                         _activeSessionId = latest.Id;
                         if (!string.IsNullOrEmpty(latest.Directory)) _activeDirectory = latest.Directory;
-                        target = _serverController.GetSessionUrl(_activeDirectory, _activeSessionId);
                     }
-                    else if (!string.IsNullOrEmpty(_activeSessionId))
-                    {
-                        target = _serverController.GetSessionUrl(_activeDirectory, _activeSessionId);
-                    }
+                    var target = _serverController.GetHomeUrl();
                     if (target != null && webView.CoreWebView2 != null)
                         NavigateToSession(target);
                     else
