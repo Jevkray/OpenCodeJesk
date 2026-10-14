@@ -25,11 +25,13 @@ namespace OpenCodeStudio
     /// own theming. This removes an entire, fragile translation layer.
     /// </para>
     /// </summary>
-    public partial class OpenCodeToolWindowControl : UserControl, IDisposable, IConsoleWebHost
+    public partial class OpenCodeToolWindowControl : UserControl, IDisposable, IConsoleWebHost, IReconnectHost, ICliModeHost
     {
         private IServiceProvider _serviceProvider;
 
         private ConsoleCoordinator _console;
+        private ReconnectCoordinator _reconnect;
+        private CliModeCoordinator _cliMode;
 
         private CoreWebView2Environment _environment;
         private IProjectRootResolver _projectRootResolver;
@@ -42,23 +44,10 @@ namespace OpenCodeStudio
         private System.Threading.Timer _projRootTimer;
 
         private SpendSettings _spendSettings;
-        private CliTerminalControl _cliTerminal;
         private string _activeSessionId;
         private string _activeDirectory;
         private bool _interfaceIsCli;
-        private string _cliSettingsKey;
 
-        /// <summary>Отпечаток настроек терминала: меняется — страницу пересоздаём.</summary>
-        private string TerminalSettingsKey()
-        {
-            var s = _spendSettings;
-            return string.Join("|",
-                s?.TerminalFontFamily ?? "Consolas",
-                (s?.TerminalFontSize ?? 13).ToString(),
-                (s?.TerminalCursorBlink ?? true).ToString(),
-                (s?.TerminalScrollback ?? 5000).ToString(),
-                s?.CliArguments ?? "");
-        }
         private string _pendingWebUrl;
 
         // Токен жизни окна: отменяет длительные операции (ожидание логина) при закрытии.
@@ -67,15 +56,12 @@ namespace OpenCodeStudio
         /// <summary>Последний полученный снапшот расходов (из координатора консоли).</summary>
         public SpendSnapshot LatestSnapshot => _console?.LatestSnapshot;
 
-        private bool _isReconnecting;
-        private System.Threading.CancellationTokenSource _reconnectCts;
-        private const int MaxReconnectAttempts = 30;
-        private const int ReconnectDelayMs = 3000;
-
         public OpenCodeToolWindowControl()
         {
             InitializeComponent();
             _console = new ConsoleCoordinator(this);
+            _reconnect = new ReconnectCoordinator(this);
+            _cliMode = new CliModeCoordinator(this);
             _ = InitWebViewCoreAsync()
                 .ContinueWith(_ => WaitServerAsync(), TaskScheduler.Current);
         }
@@ -87,6 +73,27 @@ namespace OpenCodeStudio
         void IConsoleWebHost.Navigate(string url) => webView?.CoreWebView2?.Navigate(url);
         Task IConsoleWebHost.ShowLoadingAsync(string message) => ShowLoadingPageAsync(message);
         SpendSettings IConsoleWebHost.GetSpendSettings() => _spendSettings;
+
+        // --- IReconnectHost: доступ координатора реконнекта к UI-части окна ---
+
+        string IReconnectHost.CurrentProjectRoot => _currentProjectRoot;
+        bool IReconnectHost.IsConnected => _serverController?.State == ConnectionState.Connected;
+        Task<bool> IReconnectHost.CheckHealthAsync() => _serverController.ServerService.CheckHealthAsync();
+        Task<bool> IReconnectHost.StartServerAsync(string projectRoot) => _serverController.StartAsync(projectRoot);
+        string IReconnectHost.GetHomeUrl() => _serverController?.GetHomeUrl();
+        bool IReconnectHost.CanNavigate => webView?.CoreWebView2 != null;
+        void IReconnectHost.NavigateHome(string url) => NavigateToSession(url);
+        Task IReconnectHost.ApplyInterfaceAsync() => ApplyInterfaceAsync();
+        Task IReconnectHost.StartFlowAsync() => StartFlowAsync();
+        Task IReconnectHost.ShowLoadingAsync(string message) => ShowLoadingPageAsync(message);
+        Task IReconnectHost.ShowErrorAsync(string message, bool showRetry) => ShowErrorPageAsync(message, showRetry);
+
+        // --- ICliModeHost: доступ координатора CLI-режима к UI-части окна ---
+
+        System.Windows.Controls.Panel ICliModeHost.TerminalPanel => rootGrid;
+        string ICliModeHost.CurrentUrl => webView?.CoreWebView2?.Source;
+        string ICliModeHost.PendingUrl => _pendingWebUrl;
+        SpendSettings ICliModeHost.GetSpendSettings() => _spendSettings;
 
         public void SetServiceProvider(IServiceProvider serviceProvider)
         {
@@ -141,12 +148,7 @@ namespace OpenCodeStudio
             if (!cli)
             {
                 // Возврат к веб-панели: терминал убираем.
-                if (_cliTerminal != null)
-                {
-                    rootGrid.Children.Remove(_cliTerminal);
-                    _cliTerminal.Dispose();
-                    _cliTerminal = null;
-                }
+                _cliMode.Hide();
                 webView.Visibility = System.Windows.Visibility.Visible;
                 // Перезагружаем веб-панель только при реальном возврате из CLI,
                 // чтобы не сбивать собственную загрузку при старте.
@@ -176,70 +178,16 @@ namespace OpenCodeStudio
             }
             _interfaceIsCli = true;
             webView.Visibility = System.Windows.Visibility.Collapsed;
-            if (_serverController?.State != ConnectionState.Connected || string.IsNullOrEmpty(_currentProjectRoot))
-                return;
 
-            // Настройки терминала (шрифт, размер, курсор, прокрутка, аргументы)
-            // применяются при пересоздании страницы — пересоздаём при их изменении.
-            var terminalKey = TerminalSettingsKey();
-            if (_cliTerminal != null && _cliSettingsKey != terminalKey)
-            {
-                rootGrid.Children.Remove(_cliTerminal);
-                _cliTerminal.Dispose();
-                _cliTerminal = null;
-            }
-            _cliSettingsKey = terminalKey;
-
-            // Создаём терминал только когда панель уже видима: WebView2, созданный
-            // внутри скрытого контейнера, не отрисовывается и не выполняет скрипты.
-            if (_cliTerminal == null)
-            {
-                _cliTerminal = new CliTerminalControl();
-                rootGrid.Children.Add(_cliTerminal);
-            }
-            _cliTerminal.Visibility = System.Windows.Visibility.Visible;
-
-            string directory = _activeDirectory;
-            string session = _activeSessionId;
-            var fromUrl = SessionUrlParser.Parse(_pendingWebUrl ?? webView.CoreWebView2?.Source, _serverController?.ServerService?.ServerInfo?.BaseUrl);
-            if (fromUrl != null) { directory = fromUrl.Item1 ?? directory; session = fromUrl.Item2; }
-            if (string.IsNullOrEmpty(directory)) directory = Path.GetFullPath(_currentProjectRoot);
-
-            // Сессия могла остаться от другой версии opencode (например, v2 -> v1):
-            // на текущем сервере её нет, и CLI падает с "Session not found".
-            // Проверяем существование; если её нет — создаём новую ниже.
-            if (!string.IsNullOrEmpty(session))
-            {
-                try
-                {
-                    var existing = await _serverController.SessionService.GetSessionAsync(session, directory);
-                    if (existing == null) session = null;
-                }
-                catch (Exception ex)
-                {
-                    Services.Log.Info("CLI session lookup: " + ex.Message);
-                    session = null;
-                }
-            }
-
-            // Общий сервер: чат создаётся один раз и передаётся в терминал, чтобы
-            // в обоих режимах была одна и та же активная сессия.
-            if (string.IsNullOrEmpty(session))
-            {
-                try
-                {
-                    var created = await _serverController.SessionService.CreateSessionAsync(directory, Brand.Name);
-                    session = created?.Id;
-                    if (!string.IsNullOrEmpty(created?.Directory)) directory = created.Directory;
-                }
-                catch (Exception ex) { Services.Log.Info("CLI session create: " + ex.Message); }
-            }
-            _activeSessionId = session;
-            _activeDirectory = directory;
-            await _cliTerminal.ActivateAsync(_serverController.ServerService, directory, session);
+            // CLI-ветку целиком ведёт координатор; он же возвращает актуальные
+            // сессию и каталог для сохранения в окне.
+            var resolved = await _cliMode.ShowAsync(
+                _serverController, _activeDirectory, _activeSessionId, _currentProjectRoot);
+            _activeSessionId = resolved.Item1;
+            _activeDirectory = resolved.Item2;
         }
 
-        public void StopCli() => _cliTerminal?.Stop();
+        public void StopCli() => _cliMode.Stop();
 
         /// <summary>
         /// Set the shared server controller. Must be called before StartAsync.
@@ -412,20 +360,20 @@ namespace OpenCodeStudio
             StopCli();
             _projRootTimer?.Dispose();
             _projRootTimer = null;
-            CancelReconnect();
+            _reconnect.Cancel();
         }
 
         private void OnServerConnectionLost()
         {
             var state = _serverController?.State ?? ConnectionState.Disconnected;
             Debug.WriteLine($"Server connection lost! State: {state}. Auto-reconnecting...");
-            BeginAutoReconnect();
+            _reconnect.Begin();
         }
 
         private void OnServerConnectionRestored()
         {
             Debug.WriteLine("Server connection restored!");
-            if (_isReconnecting)
+            if (_reconnect.IsActive)
                 return;
             _ = ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
             {
@@ -436,99 +384,6 @@ namespace OpenCodeStudio
                 else
                     await StartFlowAsync();
             });
-        }
-
-        /// <summary>
-        /// Automatically tries to restore the connection instead of showing an
-        /// error page that requires a manual Retry click. Shows a progress page
-        /// with the current attempt number and keeps retrying until the server
-        /// is healthy again (or the attempt budget is exhausted).
-        /// </summary>
-        private void BeginAutoReconnect()
-        {
-            if (_isReconnecting || _isDisposed) return;
-            _isReconnecting = true;
-
-            try { _reconnectCts?.Cancel(); } catch { }
-            _reconnectCts = new System.Threading.CancellationTokenSource();
-            var ct = _reconnectCts.Token;
-
-#pragma warning disable VSSDK007
-            _ = ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
-            {
-                try
-                {
-                    int consecutiveFailures = 0;
-                    for (int attempt = 1; attempt <= MaxReconnectAttempts && !ct.IsCancellationRequested; attempt++)
-                    {
-                        await ShowLoadingPageAsync($"{StringsHelper.UIReconnecting} ({attempt})");
-
-                        try
-                        {
-                            var healthy = await _serverController.ServerService.CheckHealthAsync();
-
-                            if (!healthy)
-                            {
-                                consecutiveFailures++;
-                                // Give the connection a few quick retries before doing the
-                                // heavy restart, so a transient blip does not kill a
-                                // perfectly healthy server.
-                                if (consecutiveFailures >= 3)
-                                {
-                                    var started = await _serverController.StartAsync(_currentProjectRoot);
-                                    healthy = started && _serverController.State == ConnectionState.Connected;
-                                    consecutiveFailures = 0;
-                                }
-                            }
-                            else
-                            {
-                                consecutiveFailures = 0;
-                            }
-
-                            if (healthy)
-                            {
-                                Debug.WriteLine($"Reconnected on attempt {attempt}");
-                                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                                var url = _serverController.GetHomeUrl();
-                                if (url != null && webView.CoreWebView2 != null)
-                                {
-                                    NavigateToSession(url);
-                                    await ApplyInterfaceAsync();
-                                }
-                                else
-                                    await StartFlowAsync();
-                                return;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine($"Reconnect attempt {attempt} failed: {ex}");
-                        }
-
-                        try { await Task.Delay(ReconnectDelayMs, ct); }
-                        catch (OperationCanceledException) { return; }
-                    }
-
-                    if (!ct.IsCancellationRequested)
-                    {
-                        await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                        await ShowErrorPageAsync(StringsHelper.ErrorConnectionLost, true);
-                    }
-                }
-                finally
-                {
-                    _isReconnecting = false;
-                }
-            });
-#pragma warning restore VSSDK007
-        }
-
-        private void CancelReconnect()
-        {
-            try { _reconnectCts?.Cancel(); } catch { }
-            _reconnectCts?.Dispose();
-            _reconnectCts = null;
-            _isReconnecting = false;
         }
 
         /// <summary>
@@ -598,9 +453,9 @@ namespace OpenCodeStudio
                         {
                             var healthy = await _serverController.ServerService.CheckHealthAsync();
                             if (!healthy && _serverController.State != ConnectionState.Connecting
-                                && !_isStarting && !_isReconnecting)
+                                && !_isStarting && !_reconnect.IsActive)
                             {
-                                BeginAutoReconnect();
+                                _reconnect.Begin();
                                 return;
                             }
                         }
@@ -765,11 +620,12 @@ namespace OpenCodeStudio
             _isDisposed = true;
             try { _lifetimeCts.Cancel(); _lifetimeCts.Dispose(); } catch { }
             _projRootTimer?.Dispose();
-            CancelReconnect();
+            _reconnect?.Dispose();
+            _reconnect = null;
             _console?.Dispose();
             _console = null;
-            _cliTerminal?.Dispose();
-            _cliTerminal = null;
+            _cliMode?.Dispose();
+            _cliMode = null;
             webView?.Dispose();
         }
     }
