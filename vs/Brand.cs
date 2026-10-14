@@ -17,5 +17,11 @@ namespace OpenCodeStudio
         public const string CommandSetGuid = "D91F3A72-6C40-4E8B-B25D-8A47F0C63E15";
         public const string MarketplaceUrl = "https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeStudio";
 #endif
+
+        /// <summary>Новое расширение, на которое переименован Studio (для окна-уведомления).</summary>
+        public const string SuccessorName = "OpenCode Jesk";
+        public const string SuccessorUrl = "https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk";
+        public const string ReleasesUrl = "https://github.com/Jevkray/OpenCodeStudio/releases";
+        public const string SupportEndsIso = "2026-10-20";
     }
 }
