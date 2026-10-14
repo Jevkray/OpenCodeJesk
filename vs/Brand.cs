@@ -18,6 +18,9 @@ namespace OpenCodeStudio
         public const string MarketplaceUrl = "https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeStudio";
 #endif
 
+        /// <summary>Прямая ссылка на форму отзыва текущего расширения в Marketplace.</summary>
+        public const string ReviewUrl = MarketplaceUrl + "&ssr=false#review-details";
+
         /// <summary>Новое расширение, на которое переименован Studio (для окна-уведомления).</summary>
         public const string SuccessorName = "OpenCode Jesk";
         public const string SuccessorUrl = "https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk";

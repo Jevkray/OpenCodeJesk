@@ -42,6 +42,8 @@ namespace OpenCodeStudio
         private volatile bool _updateWindowOpen;
         private CancellationTokenSource _openCodeUpdateCts;
         private volatile bool _openCodeUpdateWindowOpen;
+        private System.Windows.Threading.DispatcherTimer _ratingTimer;
+        private bool _ratingShown;
 
         protected override async Task InitializeAsync(
             CancellationToken cancellationToken,
@@ -142,6 +144,7 @@ namespace OpenCodeStudio
             {
                 StartExtensionUpdateLoop();
                 StartOpenCodeUpdateLoop();
+                StartRatingPopupTimer();
                 Services.Log.Info("InitializeAsync step 6: update loops started");
             }
             catch (Exception ex)
@@ -302,6 +305,45 @@ namespace OpenCodeStudio
         {
             var minutes = Math.Max(5, Math.Min(1440, GetSpendSettings()?.UpdateCheckMinutes ?? 60));
             return minutes * 60 * 1000;
+        }
+
+        /// <summary>
+        /// Напоминание об отзыве: таймер на 2 часа, срабатывает один раз за сессию.
+        /// Если расширение работало меньше — окно не появится.
+        /// </summary>
+        private void StartRatingPopupTimer()
+        {
+            _ratingTimer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromHours(2) };
+            _ratingTimer.Tick += (_, __) => OnRatingTimerTick();
+            _ratingTimer.Start();
+        }
+
+        private void OnRatingTimerTick()
+        {
+            // Один шанс за сессию: в любом случае таймер больше не нужен.
+            _ratingTimer?.Stop();
+            if (_ratingShown) return;
+
+            var settings = Services.SpendSettings.Current;
+            if (settings == null || !settings.ShowRatingPopup || settings.RatingPopupDismissed) return;
+
+            _ratingShown = true;
+            try
+            {
+                var window = new RatingWindow();
+                try { window.Owner = System.Windows.Application.Current?.MainWindow; } catch { }
+                window.ShowDialog();
+                if (window.DontShowAgain)
+                {
+                    settings.RatingPopupDismissed = true;
+                    settings.SaveSettingsToStorage();
+                    Services.Log.Info("Rating popup dismissed permanently");
+                }
+            }
+            catch (Exception ex)
+            {
+                Services.Log.Error("Rating popup failed", ex);
+            }
         }
 
         /// <summary>
@@ -636,6 +678,7 @@ namespace OpenCodeStudio
                 _extensionUpdateCts?.Dispose();
                 _openCodeUpdateCts?.Cancel();
                 _openCodeUpdateCts?.Dispose();
+                _ratingTimer?.Stop();
                 Services.SpendSettings.Applied -= OnSpendSettingsApplied;
                 Services.SpendSettings.CliInstallStarting -= OnCliInstallStarting;
                 _toolWindowControl?.Dispose();

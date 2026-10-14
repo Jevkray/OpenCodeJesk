@@ -162,6 +162,14 @@ namespace OpenCodeStudio
             { "updates.channel", "Channel" },
             { "updates.channel.details", "Details" },
             { "updates.channel.desc", "Which release channel to follow. Stable only offers tested versions; Beta (next) also offers preview builds with new features. Example: choose Beta if you want early features and can tolerate occasional issues." },
+            { "updates.review.title", "Enjoying " + Brand.Name + "?" },
+            { "updates.review.hint", "A quick review on the Visual Studio Marketplace helps a lot and takes a minute." },
+            { "updates.review.btn", "Leave a review" },
+            { "updates.rating.show", "Show the review reminder" },
+            { "updates.rating.show.hint", "Occasionally, after a couple of hours of use, a small window asks you to rate the extension." },
+            { "updates.log.title", "Update log" },
+            { "updates.log.hint", "Recent update checks and installs." },
+            { "updates.log.refresh", "Refresh" },
 
             { "import.title", "Import OpenCode data" },
             { "import.hint", "Bring in settings, commands, themes, credentials and chat history from a detected OpenCode environment." },
@@ -271,6 +279,14 @@ namespace OpenCodeStudio
             { "updates.channel", "Канал" },
             { "updates.channel.details", "Подробнее" },
             { "updates.channel.desc", "Какой канал выпусков отслеживать. Стабильный предлагает только проверенные версии; Бета (следующая) — ещё и предварительные сборки с новыми возможностями. Пример: выберите Бету, если хотите новые функции раньше и готовы к редким проблемам." },
+            { "updates.review.title", "Нравится " + Brand.Name + "?" },
+            { "updates.review.hint", "Отзыв в Visual Studio Marketplace очень помогает и занимает минуту." },
+            { "updates.review.btn", "Оставить отзыв" },
+            { "updates.rating.show", "Показывать напоминание об отзыве" },
+            { "updates.rating.show.hint", "Иногда, после пары часов работы, появляется небольшое окно с просьбой оценить расширение." },
+            { "updates.log.title", "Журнал обновлений" },
+            { "updates.log.hint", "Последние проверки и установки обновлений." },
+            { "updates.log.refresh", "Обновить" },
 
             { "import.title", "Импорт данных OpenCode" },
             { "import.hint", "Перенести настройки, команды, темы, учётные данные и историю чатов из обнаруженного окружения OpenCode." },
@@ -645,6 +661,7 @@ namespace OpenCodeStudio
             checkUpdatesCheck.IsChecked = _settings?.CheckForUpdates ?? true;
             updateMinutesBox.Text = (_settings?.UpdateCheckMinutes ?? 60).ToString();
             channelCombo.SelectedIndex = (int)(_settings?.Channel ?? UpdateChannel.Stable);
+            ratingPopupCheck.IsChecked = _settings?.ShowRatingPopup ?? true;
         }
 
         private void SaveSettingsToStorage()
@@ -673,6 +690,7 @@ namespace OpenCodeStudio
             _settings.CheckForUpdates = checkUpdatesCheck.IsChecked == true;
             _settings.UpdateCheckMinutes = ParseInt(updateMinutesBox.Text, 60, 5, 1440);
             _settings.Channel = (UpdateChannel)Math.Max(0, channelCombo.SelectedIndex);
+            _settings.ShowRatingPopup = ratingPopupCheck.IsChecked == true;
 
             _settings.SaveSettingsToStorage();
         }
@@ -694,7 +712,20 @@ namespace OpenCodeStudio
             panelServer.Visibility = index == 3 ? Visibility.Visible : Visibility.Collapsed;
             panelUpdates.Visibility = index == 4 ? Visibility.Visible : Visibility.Collapsed;
             panelImport.Visibility = index == 5 ? Visibility.Visible : Visibility.Collapsed;
+            if (index == 4 && updateLogBox != null)
+                updateLogBox.Text = UpdateLog.ReadTail(200);
         }
+
+        /// <summary>Кнопка «Оставить отзыв»: открывает форму отзыва в браузере.</summary>
+        private void OnLeaveReviewClick(object sender, RoutedEventArgs e)
+        {
+            try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Brand.ReviewUrl) { UseShellExecute = true }); }
+            catch (Exception ex) { Log.Error("Open review link failed", ex); }
+        }
+
+        /// <summary>Кнопка Refresh: перечитывает хвост журнала обновлений.</summary>
+        private void OnRefreshUpdateLogClick(object sender, RoutedEventArgs e)
+            => updateLogBox.Text = UpdateLog.ReadTail(200);
 
         private void OnWebZoomChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {

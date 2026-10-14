@@ -803,6 +803,16 @@
                     <StackPanel x:Name="panelUpdates" Visibility="Collapsed">
                         <Border Style="{StaticResource Card}">
                             <StackPanel>
+                                <TextBlock Uid="updates.review.title" Text="Enjoying OpenCode Jesk?" Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="updates.review.hint" Style="{StaticResource CardHint}"
+                                           Text="A quick review on the Visual Studio Marketplace helps a lot and takes a minute." />
+                                <Button x:Name="reviewButton" Uid="updates.review.btn" Content="Leave a review"
+                                        HorizontalAlignment="Left" Style="{StaticResource AccentButton}"
+                                        Click="OnLeaveReviewClick" />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
                                 <TextBlock Uid="updates.title" Text="Updates"
                                            Style="{StaticResource CardTitle}" />
                                 <CheckBox x:Name="checkUpdatesCheck" Uid="updates.check"
@@ -837,6 +847,25 @@
                                     <TextBlock Uid="updates.channel.desc" Style="{StaticResource MoreText}"
                                                Text="Which release channel to follow. Stable only offers tested versions; Beta (next) also offers preview builds with new features. Example: choose Beta if you want early features and can tolerate occasional issues." />
                                 </Expander>
+                                <CheckBox x:Name="ratingPopupCheck" Uid="updates.rating.show"
+                                          Style="{StaticResource ToggleCheckBox}"
+                                          Content="Show the review reminder" />
+                                <TextBlock Uid="updates.rating.show.hint" Style="{StaticResource CardHint}"
+                                           Text="Occasionally, after a couple of hours of use, a small window asks you to rate the extension." />
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="updates.log.title" Text="Update log" Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="updates.log.hint" Style="{StaticResource CardHint}"
+                                           Text="Recent update checks and installs." />
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="260" Margin="0,8,0,0">
+                                    <TextBox x:Name="updateLogBox" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True"
+                                             Background="#1b1b1b" Foreground="#d0d0d0" BorderBrush="#3a3a3a"
+                                             FontFamily="Consolas" FontSize="12" Padding="8" MinHeight="120" />
+                                </ScrollViewer>
+                                <Button Uid="updates.log.refresh" Content="Refresh" HorizontalAlignment="Left"
+                                        Style="{StaticResource GhostButton}" Click="OnRefreshUpdateLogClick" />
                             </StackPanel>
                         </Border>
                     </StackPanel>

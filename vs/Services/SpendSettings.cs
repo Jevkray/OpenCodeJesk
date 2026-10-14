@@ -78,6 +78,12 @@ namespace OpenCodeStudio.Services
         [Browsable(false)]
         public UpdateChannel Channel { get; set; } = UpdateChannel.Stable;
 
+        [Browsable(false)]
+        public bool ShowRatingPopup { get; set; } = true;
+
+        [Browsable(false)]
+        public bool RatingPopupDismissed { get; set; } = false;
+
         public static event Action Applied;
 
         /// <summary>Сигнал перед установкой CLI: расширение освобождает файлы npm-шимов.</summary>
