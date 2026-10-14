@@ -197,7 +197,7 @@ namespace OpenCodeStudio
                         _activeSessionId = latest.Id;
                         if (!string.IsNullOrEmpty(latest.Directory)) _activeDirectory = latest.Directory;
                     }
-                    var target = _serverController.GetHomeUrl();
+                    var target = await ResolveWebUrlAsync();
                     if (target != null && webView.CoreWebView2 != null)
                         NavigateToSession(target);
                     else
@@ -641,6 +641,18 @@ namespace OpenCodeStudio
             _isReconnecting = false;
         }
 
+        /// <summary>
+        /// URL для открытия веб-панели: для v2 — свежая pairing-ссылка (ставит
+        /// cookie), иначе — обычный адрес главной. Код одноразовый, поэтому
+        /// вызывается перед каждой навигацией.
+        /// </summary>
+        private async Task<string> ResolveWebUrlAsync()
+        {
+            if (_serverController == null) return null;
+            var pair = await _serverController.GetPairingConnectUrlAsync();
+            return pair ?? _serverController.GetHomeUrl();
+        }
+
         private async Task StartFlowAsync()
         {
             await ShowLoadingPageAsync(StringsHelper.UIConnecting);
@@ -657,7 +669,7 @@ namespace OpenCodeStudio
                 && _serverController.State == ConnectionState.Connected
                 && !string.IsNullOrEmpty(_serverController.CurrentSessionId))
             {
-                var existingUrl = _serverController.GetHomeUrl();
+                var existingUrl = await ResolveWebUrlAsync();
                 if (existingUrl != null)
                 {
                     await EnsureWebViewCacheFreshAsync();
@@ -676,7 +688,7 @@ namespace OpenCodeStudio
                 return;
             }
 
-            var sessionUrl = _serverController.GetHomeUrl();
+            var sessionUrl = await ResolveWebUrlAsync();
             if (sessionUrl != null)
             {
                 await EnsureWebViewCacheFreshAsync();

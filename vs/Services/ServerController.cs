@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using OpenCodeStudio.Models;
 
 namespace OpenCodeStudio.Services
@@ -167,6 +168,41 @@ namespace OpenCodeStudio.Services
                 return null;
             return _serverService.ServerInfo.BaseUrl + "/";
         }
+
+        /// <summary>
+        /// Для v2 возвращает одноразовую pairing-ссылку
+        /// (baseUrl + /auth/connect/&lt;code&gt;), переход на которую ставит
+        /// сессионную cookie и открывает веб-приложение. Для v1 — null.
+        /// </summary>
+        public async Task<string> GetPairingConnectUrlAsync()
+        {
+            try
+            {
+                if (!CliCommand.IsV2(_serverService.BinaryPath)) return null;
+                var client = _serverService.GetClient();
+                if (client == null || _serverService.ServerInfo == null) return null;
+
+                using (var body = new System.Net.Http.StringContent("", Encoding.UTF8, "application/json"))
+                using (var response = await client.PostAsync("/api/pair", body))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Log.Info($"Pair request failed: {(int)response.StatusCode}");
+                        return null;
+                    }
+                    var json = await response.Content.ReadAsStringAsync();
+                    var code = JObject.Parse(json)["code"]?.ToString();
+                    if (string.IsNullOrEmpty(code)) return null;
+                    return _serverService.ServerInfo.BaseUrl + "/auth/connect/" + code;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Info("Pair request error: " + ex.Message);
+                return null;
+            }
+        }
+
 
         /// <summary>
         /// URL конкретного чата в веб-интерфейсе — используется при возврате
