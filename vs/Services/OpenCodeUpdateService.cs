@@ -81,33 +81,40 @@ namespace OpenCodeStudio.Services
                 var psi = new ProcessStartInfo
                 {
                     FileName = "cmd.exe",
-                    Arguments = "/c npm i -g " + target,
+                    Arguments = "/c npm i -g " + target + " --no-fund --no-audit --loglevel=info",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 };
                 using (var p = Process.Start(psi))
-                using (ct.Register(() => { try { p.Kill(); } catch { } }))
                 {
-                    p.OutputDataReceived += (_, e) => { if (e.Data != null) onLog?.Invoke(e.Data); };
-                    p.ErrorDataReceived += (_, e) => { if (e.Data != null) onLog?.Invoke(e.Data); };
-                    p.BeginOutputReadLine();
-                    p.BeginErrorReadLine();
-                    var completed = await Task.Run(() => p.WaitForExit(300000));
-                    if (!completed)
+                    if (p == null) return false;
+                    // Запоминаем PID: убивать нужно всё дерево (cmd -> node -> ...),
+                    // иначе дочерний node остаётся жив и держит блокировку npm.
+                    var pid = p.Id;
+                    using (ct.Register(() => KillTree(pid)))
                     {
-                        try { p.Kill(); } catch { }
+                        p.OutputDataReceived += (_, e) => { if (e.Data != null) onLog?.Invoke(e.Data); };
+                        p.ErrorDataReceived += (_, e) => { if (e.Data != null) onLog?.Invoke(e.Data); };
+                        p.BeginOutputReadLine();
+                        p.BeginErrorReadLine();
+                        // 15 минут на установку: v2 тянет бинарники под все платформы.
+                        var completed = await Task.Run(() => p.WaitForExit(900000));
+                        if (!completed || ct.IsCancellationRequested)
+                        {
+                            KillTree(pid);
+                            return false;
+                        }
+                        if (p.ExitCode == 0)
+                        {
+                            // Бинарь мог смениться — сбрасываем кэши определения.
+                            CliCommand.ResetVersionCache();
+                            OpenCodeServerService.ResetWebSupportCache();
+                            return true;
+                        }
                         return false;
                     }
-                    if (p.ExitCode == 0)
-                    {
-                        // Бинарь мог смениться — сбрасываем кэши определения.
-                        CliCommand.ResetVersionCache();
-                        OpenCodeServerService.ResetWebSupportCache();
-                        return true;
-                    }
-                    return false;
                 }
             }
             catch (Exception ex)
@@ -115,6 +122,19 @@ namespace OpenCodeStudio.Services
                 onLog?.Invoke(ex.Message);
                 return false;
             }
+        }
+
+        /// <summary>Убивает процесс вместе со всеми дочерними (taskkill /T).</summary>
+        private static void KillTree(int pid)
+        {
+            try
+            {
+                using (var k = Process.Start(new ProcessStartInfo(
+                    "taskkill.exe", "/T /F /PID " + pid)
+                    { UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true }))
+                    k?.WaitForExit(5000);
+            }
+            catch { }
         }
 
         /// <summary>Корректное (не строковое) сравнение версий: latest &gt; installed.</summary>

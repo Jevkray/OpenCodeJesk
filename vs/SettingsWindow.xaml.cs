@@ -27,6 +27,7 @@ namespace OpenCodeStudio
         private string _lang = "en";
         private bool _v1Available = true;
         private bool _v2Available = true;
+        private System.Threading.CancellationTokenSource _installCts;
 
         private static readonly SolidColorBrush TextBrush = Brush(0xf1, 0xf1, 0xf1);
         private static readonly SolidColorBrush MutedBrush = Brush(0x9a, 0x9a, 0x9a);
@@ -68,9 +69,12 @@ namespace OpenCodeStudio
             { "install.button.v1", "Install v1" },
             { "install.button.v2", "Install v2" },
             { "install.note", "v2 installs both opencode and opencode2 and overwrites opencode from v1. To run both versions side by side, install v2 first, then v1 — then opencode = v1 and opencode2 = v2." },
+            { "install.v2.size", "v2 is a large package (binaries for all platforms); installation may take several minutes." },
+            { "install.cancel", "Cancel" },
             { "install.running", "Installing OpenCode CLI…" },
             { "install.done", "OpenCode CLI installed. Status updated." },
             { "install.failed", "Installation failed:" },
+            { "install.cancelled", "Installation cancelled." },
             { "install.why.title", "Why OpenCode" },
             { "install.why.text", "Open source; works with many providers and models; runs from the terminal, IDE and desktop; shared history everywhere." },
             { "install.about.title", "What is OpenCode" },
@@ -290,9 +294,12 @@ namespace OpenCodeStudio
             { "install.button.v1", "Установить v1" },
             { "install.button.v2", "Установить v2" },
             { "install.note", "v2 ставит и opencode, и opencode2 и перекрывает opencode у v1. Чтобы обе версии работали рядом, установите сначала v2, затем v1 — тогда opencode = v1, а opencode2 = v2." },
+            { "install.v2.size", "v2 — большой пакет (бинарники под все платформы), установка может занять несколько минут." },
+            { "install.cancel", "Отмена" },
             { "install.running", "Установка OpenCode CLI…" },
             { "install.done", "OpenCode CLI установлен. Статус обновлён." },
             { "install.failed", "Установка не удалась:" },
+            { "install.cancelled", "Установка отменена." },
             { "install.why.title", "Почему OpenCode" },
             { "install.why.text", "Открытый исходный код; множество провайдеров и моделей; работа из терминала, IDE и десктопа; общая история." },
             { "install.about.title", "Что такое OpenCode" },
@@ -777,17 +784,31 @@ namespace OpenCodeStudio
         /// <summary>Ставит указанный npm-пакет, сбрасывает кэши и обновляет статус.</summary>
         private async Task InstallCliAsync(string packageSpec)
         {
-            // На время установки блокируем все действия вкладки Install.
-            if (panelInstall != null) panelInstall.IsEnabled = false;
-            if (installProgress != null) installProgress.Visibility = Visibility.Visible;
+            // На время установки блокируем кнопки установки и ссылки; Cancel доступен.
+            SetInstallBusy(true);
             if (installResult != null) installResult.Text = Loc("install.running");
+
+            _installCts = new System.Threading.CancellationTokenSource();
             try
             {
                 var log = new List<string>();
                 var ok = await new OpenCodeUpdateService().InstallAsync(packageSpec, line =>
                 {
                     lock (log) { log.Add(line); if (log.Count > 200) log.RemoveAt(0); }
-                });
+                    // Живой вывод: последняя строка npm на UI-потоке.
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (installResult != null) installResult.Text = "npm: " + line;
+                    });
+                }, _installCts.Token);
+
+                if (_installCts.IsCancellationRequested)
+                {
+                    Log.Info("OpenCode install (" + packageSpec + ") cancelled");
+                    if (installResult != null) installResult.Text = Loc("install.cancelled");
+                    return;
+                }
+
                 CliCommand.ResetVersionCache();
                 OpenCodeServerService.ResetWebSupportCache();
                 await DetectInstalledVersionsAsync();
@@ -806,9 +827,30 @@ namespace OpenCodeStudio
             }
             finally
             {
-                if (installProgress != null) installProgress.Visibility = Visibility.Collapsed;
-                if (panelInstall != null) panelInstall.IsEnabled = true;
+                SetInstallBusy(false);
+                _installCts?.Dispose();
+                _installCts = null;
             }
+        }
+
+        /// <summary>Кнопка Cancel: отменяет текущую установку и убивает дерево процессов.</summary>
+        private void OnInstallCancelClick(object sender, RoutedEventArgs e)
+        {
+            if (installResult != null) installResult.Text = Loc("install.cancelled");
+            _installCts?.Cancel();
+        }
+
+        /// <summary>Переключает вкладку Install между рабочим и свободным состоянием.</summary>
+        private void SetInstallBusy(bool busy)
+        {
+            if (installButton != null) installButton.IsEnabled = !busy;
+            if (installV2Button != null) installV2Button.IsEnabled = !busy;
+            if (installSiteLink != null) installSiteLink.IsEnabled = !busy;
+            if (installDocsLink != null) installDocsLink.IsEnabled = !busy;
+            if (installProgress != null)
+                installProgress.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
+            if (installCancelButton != null)
+                installCancelButton.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
         }
 
         // ---- Import ------------------------------------------------------

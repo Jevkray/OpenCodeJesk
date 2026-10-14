@@ -460,7 +460,7 @@
                                            Style="{StaticResource CardTitle}" />
                                 <TextBlock Uid="install.guide.hint" Style="{StaticResource CardHint}"
                                            Text="OpenCode is distributed as an npm package. Install Node.js first, then run one of the commands below in a terminal." />
-                                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                <StackPanel x:Name="installSiteLink" Orientation="Horizontal" Margin="0,12,0,0">
                                     <TextBlock Uid="install.guide.site" Text="Official site:"
                                                Foreground="#cfcfcf" VerticalAlignment="Center" />
                                     <TextBlock Margin="6,0,0,0"><Hyperlink NavigateUri="https://opencode.ai"
@@ -474,7 +474,7 @@
                                            Style="{StaticResource FieldLabel}" />
                                 <TextBox IsReadOnly="True" Style="{StaticResource FieldTextBox}"
                                          Text="npm i -g @opencode/cli" />
-                                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                <StackPanel x:Name="installDocsLink" Orientation="Horizontal" Margin="0,12,0,0">
                                     <TextBlock Uid="install.guide.docs" Text="Documentation:"
                                                Foreground="#cfcfcf" VerticalAlignment="Center" />
                                     <TextBlock Margin="6,0,0,0"><Hyperlink NavigateUri="https://opencode.ai/docs"
@@ -488,9 +488,22 @@
                                             Content="Install v2"
                                             Style="{StaticResource GhostButton}" Click="OnInstallV2Click" />
                                 </StackPanel>
-                                <ProgressBar x:Name="installProgress" Height="4" Margin="0,12,0,0"
-                                             IsIndeterminate="True" Visibility="Collapsed"
-                                             Foreground="#7C3AED" Background="#2d2d30" BorderThickness="0" />
+                                <TextBlock Uid="install.v2.size" Style="{StaticResource CardHint}"
+                                           Text="v2 — большой пакет (бинарники под все платформы), установка может занять несколько минут." />
+                                <Grid Margin="0,12,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <ProgressBar x:Name="installProgress" Grid.Column="0"
+                                                 Height="8" VerticalAlignment="Center"
+                                                 IsIndeterminate="True" Visibility="Collapsed"
+                                                 Foreground="#7C3AED" Background="#2d2d30" BorderThickness="0" />
+                                    <Button x:Name="installCancelButton" Grid.Column="1" Uid="install.cancel"
+                                            Content="Cancel" Margin="12,0,0,0"
+                                            Style="{StaticResource GhostButton}"
+                                            Visibility="Collapsed" Click="OnInstallCancelClick" />
+                                </Grid>
                                 <TextBlock Uid="install.note" Style="{StaticResource CardHint}"
                                            Foreground="#c9a24a" Margin="0,12,0,0"
                                            Text="v2 installs both opencode and opencode2 and overwrites opencode from v1. To run both versions side by side, install v2 first, then v1 — then opencode = v1 and opencode2 = v2." />
