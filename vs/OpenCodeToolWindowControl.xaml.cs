@@ -38,6 +38,7 @@ namespace OpenCodeStudio
 
         private string _currentProjectRoot;
         private bool _isDisposed;
+        private bool _cacheChecked;
         private bool _isStarting;
         private bool _retryDisabled;
         private System.Threading.Timer _projRootTimer;
@@ -659,6 +660,7 @@ namespace OpenCodeStudio
                 var existingUrl = _serverController.GetHomeUrl();
                 if (existingUrl != null)
                 {
+                    await EnsureWebViewCacheFreshAsync();
                     NavigateToSession(existingUrl);
                     await ApplyInterfaceAsync();
                     return;
@@ -676,7 +678,10 @@ namespace OpenCodeStudio
 
             var sessionUrl = _serverController.GetHomeUrl();
             if (sessionUrl != null)
+            {
+                await EnsureWebViewCacheFreshAsync();
                 NavigateToSession(sessionUrl);
+            }
 
             await ApplyInterfaceAsync();
 
@@ -945,6 +950,21 @@ namespace OpenCodeStudio
                 });
 #pragma warning restore VSSDK007
             }
+            if (message == "settings")
+            {
+#pragma warning disable VSSDK007
+                _ = ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+                {
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    try
+                    {
+                        if (_serviceProvider is OpenCodeStudioPackage pkg)
+                            await pkg.ShowSettingsWindowAsync(0);
+                    }
+                    catch (Exception ex) { Services.Log.Error("Open settings from page failed", ex); }
+                });
+#pragma warning restore VSSDK007
+            }
         }
 
         private async Task ShowLoadingPageAsync(string message)
@@ -959,7 +979,7 @@ namespace OpenCodeStudio
             }
         }
 
-        private async Task ShowErrorPageAsync(string message, bool showRetry)
+        private async Task ShowErrorPageAsync(string message, bool showRetry, bool showSettings = false)
         {
             var escapedMessage = System.Net.WebUtility.HtmlEncode(message)
                 .Replace("\n", "<br>")
@@ -970,18 +990,79 @@ namespace OpenCodeStudio
             var retryScript = showRetry
                 ? @"var disabled=false;function handleRetry(){if(disabled)return;disabled=true;var b=document.getElementById('retryBtn');b.disabled=true;b.style.opacity='0.5';b.style.cursor='not-allowed';try{window.chrome.webview.postMessage('retry')}catch(e){}}"
                 : "";
+            var settingsButton = showSettings
+                ? $@"<button id=""settingsBtn"" onclick=""openSettings()"" style=""margin-left:8px"">{System.Net.WebUtility.HtmlEncode(WebSettingsLabel())}</button>"
+                : "";
+            var settingsScript = showSettings
+                ? @"function openSettings(){try{window.chrome.webview.postMessage('settings')}catch(e){}}"
+                : "";
 
             var html = ErrorPageTemplate
                 .Replace("{theme-style}", GetThemeStyleBlock())
                 .Replace("{message}", escapedMessage)
                 .Replace("{retryButton}", retryButton)
-                .Replace("{retryScript}", retryScript);
+                .Replace("{retryScript}", retryScript)
+                .Replace("{settingsButton}", settingsButton)
+                .Replace("{settingsScript}", settingsScript);
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             if (webView.CoreWebView2 != null)
             {
                 webView.CoreWebView2.NavigateToString(html);
             }
+        }
+
+        /// <summary>Подпись кнопки перехода в настройки (RU/EN).</summary>
+        private string WebSettingsLabel()
+            => _spendSettings?.Language == "ru" ? "Открыть настройки" : "Open Settings";
+
+        /// <summary>
+        /// Очищает только кэш WebView2 (не cookie), если сменилась мажорная
+        /// версия OpenCode (v1 ↔ v2). Иначе WebView2 отдаёт закэшированные
+        /// ассеты старой версии с того же адреса 127.0.0.1:4096, и веб-клиент
+        /// падает с UnsupportedContentType. Выполняется один раз за сессию.
+        /// </summary>
+        private async Task EnsureWebViewCacheFreshAsync()
+        {
+            if (_cacheChecked) return;
+            var core = webView?.CoreWebView2;
+            if (core == null) return;
+
+            int major;
+            try { major = CliCommand.DetectMajor(_serverController?.ServerService?.BinaryPath); }
+            catch { major = 0; }
+            if (major <= 0) major = 1;
+            _cacheChecked = true;
+
+            var stamp = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "OpenCodeStudio", "webview-major.txt");
+            int saved = 0;
+            try
+            {
+                if (File.Exists(stamp) && int.TryParse(File.ReadAllText(stamp).Trim(), out var v))
+                    saved = v;
+            }
+            catch { }
+
+            if (saved == major) return;
+
+            var kinds = CoreWebView2BrowsingDataKinds.DiskCache
+                | CoreWebView2BrowsingDataKinds.ServiceWorkers
+                | CoreWebView2BrowsingDataKinds.CacheStorage;
+            try
+            {
+                await core.Profile.ClearBrowsingDataAsync(kinds);
+                Services.Log.Info("WebView cache cleared for opencode major " + major);
+            }
+            catch { }
+
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(stamp));
+                File.WriteAllText(stamp, major.ToString());
+            }
+            catch { }
         }
 
         public void Dispose()

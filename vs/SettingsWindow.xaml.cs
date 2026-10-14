@@ -56,6 +56,7 @@ namespace OpenCodeStudio
             { "install.status.title", "OpenCode installation status" },
             { "install.status.v1", "OpenCode CLI (v1)" },
             { "install.status.v2", "OpenCode CLI (v2)" },
+            { "install.status.v2.plugins", "v1 plugins are not compatible with v2 (v2 has its own plugin API)." },
             { "install.status.installed", "installed" },
             { "install.status.notinstalled", "not installed" },
             { "install.status.checking", "Checking…" },
@@ -94,7 +95,6 @@ namespace OpenCodeStudio
             { "general.version.hint", "Choose the OpenCode branch to run." },
             { "general.version.details", "Details" },
             { "general.version.desc", "v1 is the stable branch, updated rarely and best for daily work. v2 (preview) is a newer branch with a reworked API and early features that may have rough edges. Example: if v2 fails to start or misbehaves, switch back to v1 — your settings stay the same." },
-            { "general.version.locked", "v2 (preview) is available only in CLI mode: the Desktop web interface does not support it." },
             { "general.zoom.title", "Web zoom" },
             { "general.zoom.hint", "Scales the OpenCode web panel (50–200%)." },
             { "general.zoom.details", "Details" },
@@ -204,7 +204,6 @@ namespace OpenCodeStudio
             { "general.version.hint", "Выберите ветку OpenCode для запуска." },
             { "general.version.details", "Подробнее" },
             { "general.version.desc", "v1 — стабильная ветка, меняется редко и подходит для повседневной работы. v2 (предпросмотр) — новая ветка с переработанным API и ранними возможностями, где могут быть шероховатости. Пример: если v2 не запускается или ведёт себя странно — вернитесь на v1, настройки сохранятся." },
-            { "general.version.locked", "v2 (предпросмотр) доступна только в режиме CLI: веб-интерфейс Desktop её не поддерживает." },
             { "general.zoom.title", "Масштаб веб-панели" },
             { "general.zoom.hint", "Масштабирует веб-панель OpenCode (50–200%)." },
             { "general.zoom.details", "Подробнее" },
@@ -281,6 +280,7 @@ namespace OpenCodeStudio
             { "install.status.title", "Статус установки OpenCode" },
             { "install.status.v1", "OpenCode CLI (v1)" },
             { "install.status.v2", "OpenCode CLI (v2)" },
+            { "install.status.v2.plugins", "v1-плагины не совместимы с v2 (у v2 свой API плагинов)." },
             { "install.status.installed", "установлено" },
             { "install.status.notinstalled", "не установлено" },
             { "install.status.checking", "Проверка…" },
@@ -469,6 +469,14 @@ namespace OpenCodeStudio
                 Loc("install.status.v1"), v1, "npm i -g opencode-ai"));
             installStatusPanel.Children.Add(BuildCliRow(
                 Loc("install.status.v2"), v2, "npm i -g @opencode/cli"));
+            installStatusPanel.Children.Add(new TextBlock
+            {
+                Text = Loc("install.status.v2.plugins"),
+                FontSize = 12,
+                Foreground = MutedBrush,
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(0, -6, 0, 12)
+            });
             installStatusPanel.Children.Add(BuildSimpleRow(
                 Loc("install.status.web"),
                 webAvailable
@@ -644,7 +652,7 @@ namespace OpenCodeStudio
             if (_settings == null) return;
 
             _settings.InterfaceMode = interfaceCombo.SelectedIndex == 1 ? InterfaceMode.CLI : InterfaceMode.Web;
-            _settings.UseOpenCodeV2 = interfaceCombo.SelectedIndex == 1 && versionCombo.SelectedIndex == 1;
+            _settings.UseOpenCodeV2 = versionCombo.SelectedIndex == 1;
             _settings.WebZoomPercent = Clamp((int)webZoom.Value, 50, 200);
             _settings.AutoOpenOnSolutionOpen = autoOpenCheck.IsChecked == true;
             _settings.ShowConsoleButton = consoleButtonCheck.IsChecked == true;
@@ -703,17 +711,13 @@ namespace OpenCodeStudio
         private void OnInterfaceChanged(object sender, SelectionChangedEventArgs e) => ApplyVersionLock();
 
         /// <summary>
-        /// В режиме Desktop веб-интерфейс не поддерживает ветку v2, поэтому там
-        /// выбор версии ограничивается v1.
+        /// Доступность выбора версии зависит только от установленных версий;
+        /// v2 разрешена и в Desktop (Web), и в CLI.
         /// </summary>
         private void ApplyVersionLock()
         {
             if (interfaceCombo == null || versionCombo == null) return;
-            bool desktop = interfaceCombo.SelectedIndex == 0;
-            if (desktop && _v1Available) versionCombo.SelectedIndex = 0;
-            versionCombo.IsEnabled = !desktop && (_v1Available || _v2Available);
-            if (versionLockedHint != null)
-                versionLockedHint.Visibility = desktop ? Visibility.Visible : Visibility.Collapsed;
+            versionCombo.IsEnabled = _v1Available || _v2Available;
         }
 
         /// <summary>Выбирает шрифт в списке; если его там нет — добавляет.</summary>

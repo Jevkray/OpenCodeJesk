@@ -57,10 +57,9 @@ namespace OpenCodeStudio
                 // Единый экземпляр настроек для сервисов (сервер, терминал, апдейты).
                 Services.SpendSettings.Current = GetSpendSettings();
 
-                // v2 доступна только в режиме CLI: веб-интерфейс Desktop её не поддерживает.
+                // v2 разрешена в любом режиме (и Desktop/Web, и CLI).
                 _serverController = new ServerController(() =>
-                    GetSpendSettings()?.InterfaceMode == InterfaceMode.CLI &&
-                    (GetSpendSettings()?.UseOpenCodeV2 ?? false));
+                    GetSpendSettings()?.UseOpenCodeV2 ?? false);
                 _configuredV2 = GetSpendSettings().UseOpenCodeV2;
                 _configuredInterface = GetSpendSettings().InterfaceMode;
                 _configuredShowConsole = GetSpendSettings().ShowConsoleButton;
@@ -474,7 +473,7 @@ namespace OpenCodeStudio
                 try
                 {
                     await JoinableTaskFactory.SwitchToMainThreadAsync();
-                    var useV2 = GetSpendSettings().UseOpenCodeV2 && GetSpendSettings().InterfaceMode == InterfaceMode.CLI;
+                    var useV2 = GetSpendSettings().UseOpenCodeV2;
                     var mode = GetSpendSettings().InterfaceMode;
                     var showConsole = GetSpendSettings().ShowConsoleButton;
                     if (showConsole != _configuredShowConsole)

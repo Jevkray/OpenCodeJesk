@@ -576,10 +576,6 @@
                                 </ComboBox>
                                 <TextBlock Uid="general.version.hint" Style="{StaticResource CardHint}"
                                            Text="Choose the OpenCode branch to run." />
-                                <TextBlock x:Name="versionLockedHint" Uid="general.version.locked"
-                                           Style="{StaticResource CardHint}" Foreground="#c9a24a"
-                                           Visibility="Collapsed"
-                                           Text="v2 (preview) is available only in CLI mode." />
                                 <Expander Uid="general.version.details" Header="Details"
                                           Style="{StaticResource MoreExpander}">
                                     <TextBlock Uid="general.version.desc" Style="{StaticResource MoreText}"
