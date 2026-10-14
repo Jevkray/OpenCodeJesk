@@ -338,66 +338,63 @@ namespace OpenCodeStudio
 
         private void LoadSettings()
         {
-            interfaceCombo.SelectedIndex = _settings?.InterfaceMode == InterfaceMode.CLI ? 1 : 0;
-            versionCombo.SelectedIndex = _settings?.UseOpenCodeV2 == true ? 1 : 0;
+            var f = SettingsEditor.FromSettings(_settings);
+            interfaceCombo.SelectedIndex = f.InterfaceIndex;
+            versionCombo.SelectedIndex = f.UseOpenCodeV2 ? 1 : 0;
             ApplyVersionLock();
-            webZoom.Value = _settings?.WebZoomPercent ?? 100;
-            autoOpenCheck.IsChecked = _settings?.AutoOpenOnSolutionOpen ?? false;
-            consoleButtonCheck.IsChecked = _settings?.ShowConsoleButton ?? true;
+            webZoom.Value = f.WebZoom;
+            autoOpenCheck.IsChecked = f.AutoOpen;
+            consoleButtonCheck.IsChecked = f.ShowConsoleButton;
 
-            SelectFont(_settings?.TerminalFontFamily ?? "Consolas");
-            fontSize.Value = _settings?.TerminalFontSize ?? 13;
-            cursorBlinkCheck.IsChecked = _settings?.TerminalCursorBlink ?? true;
-            scrollbackBox.Text = (_settings?.TerminalScrollback ?? 5000).ToString();
-            cliArgsBox.Text = _settings?.CliArguments ?? "";
-            startDirCombo.SelectedIndex = (int)(_settings?.StartDirectory ?? StartDirectoryMode.GitRoot);
+            SelectFont(f.FontFamily);
+            fontSize.Value = f.FontSize;
+            cursorBlinkCheck.IsChecked = f.CursorBlink;
+            scrollbackBox.Text = f.ScrollbackText;
+            cliArgsBox.Text = f.CliArguments;
+            startDirCombo.SelectedIndex = f.StartDirectoryIndex;
 
-            openCodePathBox.Text = _settings?.OpenCodePath ?? "";
-            portBox.Text = (_settings?.PreferredPort ?? 4096).ToString();
-            serveArgsBox.Text = _settings?.ServeArguments ?? "";
-            idleBox.Text = (_settings?.IdleStopMinutes ?? 0).ToString();
+            openCodePathBox.Text = f.OpenCodePath;
+            portBox.Text = f.PortText;
+            serveArgsBox.Text = f.ServeArguments;
+            idleBox.Text = f.IdleStopText;
 
-            checkUpdatesCheck.IsChecked = _settings?.CheckForUpdates ?? true;
-            updateMinutesBox.Text = (_settings?.UpdateCheckMinutes ?? 60).ToString();
-            channelCombo.SelectedIndex = (int)(_settings?.Channel ?? UpdateChannel.Stable);
-            ratingPopupCheck.IsChecked = _settings?.ShowRatingPopup ?? true;
+            checkUpdatesCheck.IsChecked = f.CheckForUpdates;
+            updateMinutesBox.Text = f.UpdateMinutesText;
+            channelCombo.SelectedIndex = f.ChannelIndex;
+            ratingPopupCheck.IsChecked = f.ShowRatingPopup;
         }
 
         private void SaveSettingsToStorage()
         {
             if (_settings == null) return;
 
-            _settings.InterfaceMode = interfaceCombo.SelectedIndex == 1 ? InterfaceMode.CLI : InterfaceMode.Web;
-            _settings.UseOpenCodeV2 = versionCombo.SelectedIndex == 1;
-            _settings.WebZoomPercent = Clamp((int)webZoom.Value, 50, 200);
-            _settings.AutoOpenOnSolutionOpen = autoOpenCheck.IsChecked == true;
-            _settings.ShowConsoleButton = consoleButtonCheck.IsChecked == true;
-            _settings.Language = Services.Localization.IsRussian ? "ru" : "en";
+            var f = new SettingsForm
+            {
+                InterfaceIndex = interfaceCombo.SelectedIndex,
+                UseOpenCodeV2 = versionCombo.SelectedIndex == 1,
+                WebZoom = webZoom.Value,
+                AutoOpen = autoOpenCheck.IsChecked == true,
+                ShowConsoleButton = consoleButtonCheck.IsChecked == true,
+                FontFamily = (fontCombo.SelectedItem as ComboBoxItem)?.Content as string,
+                FontSize = fontSize.Value,
+                CursorBlink = cursorBlinkCheck.IsChecked == true,
+                ScrollbackText = scrollbackBox.Text,
+                CliArguments = cliArgsBox.Text,
+                StartDirectoryIndex = startDirCombo.SelectedIndex,
+                OpenCodePath = openCodePathBox.Text,
+                PortText = portBox.Text,
+                ServeArguments = serveArgsBox.Text,
+                IdleStopText = idleBox.Text,
+                CheckForUpdates = checkUpdatesCheck.IsChecked == true,
+                UpdateMinutesText = updateMinutesBox.Text,
+                ChannelIndex = channelCombo.SelectedIndex,
+                ShowRatingPopup = ratingPopupCheck.IsChecked == true,
+                RussianLanguage = Services.Localization.IsRussian,
+            };
 
-            _settings.TerminalFontFamily = (fontCombo.SelectedItem as ComboBoxItem)?.Content as string ?? "Consolas";
-            _settings.TerminalFontSize = Clamp((int)fontSize.Value, 8, 28);
-            _settings.TerminalCursorBlink = cursorBlinkCheck.IsChecked == true;
-            _settings.TerminalScrollback = ParseInt(scrollbackBox.Text, 5000, 500, 50000);
-            _settings.CliArguments = cliArgsBox.Text ?? "";
-            _settings.StartDirectory = (StartDirectoryMode)Math.Max(0, startDirCombo.SelectedIndex);
-
-            _settings.OpenCodePath = openCodePathBox.Text?.Trim() ?? "";
-            _settings.PreferredPort = ParseInt(portBox.Text, 4096, 1, 65535);
-            _settings.ServeArguments = serveArgsBox.Text ?? "";
-            _settings.IdleStopMinutes = ParseInt(idleBox.Text, 0, 0, 100000);
-
-            _settings.CheckForUpdates = checkUpdatesCheck.IsChecked == true;
-            _settings.UpdateCheckMinutes = ParseInt(updateMinutesBox.Text, 60, 5, 1440);
-            _settings.Channel = (UpdateChannel)Math.Max(0, channelCombo.SelectedIndex);
-            _settings.ShowRatingPopup = ratingPopupCheck.IsChecked == true;
-
+            SettingsEditor.Apply(f, _settings);
             _settings.SaveSettingsToStorage();
         }
-
-        private static int Clamp(int value, int min, int max) => Math.Max(min, Math.Min(max, value));
-
-        private static int ParseInt(string text, int fallback, int min, int max)
-            => int.TryParse((text ?? "").Trim(), out var v) ? Clamp(v, min, max) : fallback;
 
         // ---- события UI --------------------------------------------------
 
