@@ -489,7 +489,7 @@
                                             Style="{StaticResource GhostButton}" Click="OnInstallV2Click" />
                                 </StackPanel>
                                 <TextBlock Uid="install.v2.size" Style="{StaticResource CardHint}"
-                                           Text="v2 — большой пакет (бинарники под все платформы), установка может занять несколько минут." />
+                                           Text="The v2 package is large (~300 MB); installation may take several minutes — progress and time are shown below." />
                                 <Grid Margin="0,12,0,0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />

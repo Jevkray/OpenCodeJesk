@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Threading;
 using OpenCodeStudio.Services;
 
 namespace OpenCodeStudio
@@ -28,6 +29,9 @@ namespace OpenCodeStudio
         private bool _v1Available = true;
         private bool _v2Available = true;
         private System.Threading.CancellationTokenSource _installCts;
+        private DispatcherTimer _installTimer;
+        private DateTime _installStartedAt;
+        private string _lastNpmLine;
 
         private static readonly SolidColorBrush TextBrush = Brush(0xf1, 0xf1, 0xf1);
         private static readonly SolidColorBrush MutedBrush = Brush(0x9a, 0x9a, 0x9a);
@@ -69,7 +73,7 @@ namespace OpenCodeStudio
             { "install.button.v1", "Install v1" },
             { "install.button.v2", "Install v2" },
             { "install.note", "v2 installs both opencode and opencode2 and overwrites opencode from v1. To run both versions side by side, install v2 first, then v1 — then opencode = v1 and opencode2 = v2." },
-            { "install.v2.size", "v2 is a large package (binaries for all platforms); installation may take several minutes." },
+            { "install.v2.size", "The v2 package is large (~300 MB); installation may take several minutes — progress and time are shown below." },
             { "install.cancel", "Cancel" },
             { "install.running", "Installing OpenCode CLI…" },
             { "install.done", "OpenCode CLI installed. Status updated." },
@@ -294,7 +298,7 @@ namespace OpenCodeStudio
             { "install.button.v1", "Установить v1" },
             { "install.button.v2", "Установить v2" },
             { "install.note", "v2 ставит и opencode, и opencode2 и перекрывает opencode у v1. Чтобы обе версии работали рядом, установите сначала v2, затем v1 — тогда opencode = v1, а opencode2 = v2." },
-            { "install.v2.size", "v2 — большой пакет (бинарники под все платформы), установка может занять несколько минут." },
+            { "install.v2.size", "Пакет v2 большой (~300 МБ), установка может занять несколько минут — прогресс и время видны ниже." },
             { "install.cancel", "Отмена" },
             { "install.running", "Установка OpenCode CLI…" },
             { "install.done", "OpenCode CLI установлен. Статус обновлён." },
@@ -786,11 +790,17 @@ namespace OpenCodeStudio
         {
             // На время установки блокируем кнопки установки и ссылки; Cancel доступен.
             SetInstallBusy(true);
-            if (installResult != null) installResult.Text = Loc("install.running");
+            _lastNpmLine = null;
+            StartInstallTimer();
 
             _installCts = new System.Threading.CancellationTokenSource();
             try
             {
+                // Просим расширение остановить свои процессы и службу opencode,
+                // чтобы npm мог перезаписать shim-файлы в %APPDATA%\npm.
+                Services.SpendSettings.RaiseCliInstallStarting();
+                await Task.Delay(1500);
+
                 var log = new List<string>();
                 var ok = await new OpenCodeUpdateService().InstallAsync(packageSpec, line =>
                 {
@@ -798,10 +808,12 @@ namespace OpenCodeStudio
                     // Живой вывод: последняя строка npm на UI-потоке.
                     Dispatcher.Invoke(() =>
                     {
-                        if (installResult != null) installResult.Text = "npm: " + line;
+                        _lastNpmLine = line;
+                        UpdateInstallStatus();
                     });
                 }, _installCts.Token);
 
+                StopInstallTimer();
                 if (_installCts.IsCancellationRequested)
                 {
                     Log.Info("OpenCode install (" + packageSpec + ") cancelled");
@@ -827,15 +839,44 @@ namespace OpenCodeStudio
             }
             finally
             {
+                StopInstallTimer();
                 SetInstallBusy(false);
                 _installCts?.Dispose();
                 _installCts = null;
             }
         }
 
+        /// <summary>Запускает таймер прошедшего времени установки (тик 1 c).</summary>
+        private void StartInstallTimer()
+        {
+            _installStartedAt = DateTime.Now;
+            if (_installTimer == null)
+            {
+                _installTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+                _installTimer.Tick += (_, __) => UpdateInstallStatus();
+            }
+            _installTimer.Start();
+            UpdateInstallStatus();
+        }
+
+        /// <summary>Останавливает таймер по завершении/ошибке/отмене.</summary>
+        private void StopInstallTimer() => _installTimer?.Stop();
+
+        /// <summary>Показывает прошедшее время хода установки и последнюю строку npm.</summary>
+        private void UpdateInstallStatus()
+        {
+            if (installResult == null) return;
+            var elapsed = DateTime.Now - _installStartedAt;
+            var time = (int)elapsed.TotalMinutes + ":" + elapsed.Seconds.ToString("00");
+            var text = Loc("install.running") + " " + time;
+            if (!string.IsNullOrEmpty(_lastNpmLine)) text += "\n" + "npm: " + _lastNpmLine;
+            installResult.Text = text;
+        }
+
         /// <summary>Кнопка Cancel: отменяет текущую установку и убивает дерево процессов.</summary>
         private void OnInstallCancelClick(object sender, RoutedEventArgs e)
         {
+            StopInstallTimer();
             if (installResult != null) installResult.Text = Loc("install.cancelled");
             _installCts?.Cancel();
         }

@@ -80,6 +80,11 @@ namespace OpenCodeStudio.Services
 
         public static event Action Applied;
 
+        /// <summary>Сигнал перед установкой CLI: расширение освобождает файлы npm-шимов.</summary>
+        public static event Action CliInstallStarting;
+
+        public static void RaiseCliInstallStarting() { try { CliInstallStarting?.Invoke(); } catch { } }
+
         public void NotifyApplied() => Applied?.Invoke();
 
         protected override void OnApply(PageApplyEventArgs e)
