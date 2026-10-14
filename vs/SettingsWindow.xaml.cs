@@ -49,7 +49,7 @@ namespace OpenCodeStudio
 
             { "install.status.title", "OpenCode installation status" },
             { "install.status.v1", "OpenCode CLI (v1)" },
-            { "install.status.v2", "OpenCode CLI (v2 preview)" },
+            { "install.status.v2", "OpenCode CLI (v2)" },
             { "install.status.installed", "installed" },
             { "install.status.notinstalled", "not installed" },
             { "install.status.web", "Web interface" },
@@ -61,7 +61,7 @@ namespace OpenCodeStudio
             { "install.guide.hint", "OpenCode is distributed as an npm package. Install Node.js first, then run one of the commands below in a terminal." },
             { "install.guide.site", "Official site:" },
             { "install.guide.v1", "Stable (v1):" },
-            { "install.guide.v2", "Beta (v2 preview):" },
+            { "install.guide.v2", "v2:" },
             { "install.guide.docs", "Documentation:" },
             { "install.button", "Install latest OpenCode CLI" },
             { "install.running", "Installing OpenCode CLI…" },
@@ -72,7 +72,7 @@ namespace OpenCodeStudio
             { "install.about.title", "What is OpenCode" },
             { "install.about.text", "OpenCode is an open-source AI coding agent that writes and edits code in your project, right where it lives." },
             { "install.about.details", "More" },
-            { "install.about.desc", "OpenCode is an open-source AI coding agent for writing code. It runs in the terminal, in your IDE and as a desktop app.\n\nWhat it can do: writes and edits code in your project, understands your repository context, supports dozens of providers and models (including your own API keys), and keeps multiple sessions with shared history.\n\nHow to install:\n1. Install Node.js / npm.\n2. Run npm i -g opencode-ai (stable) — or npm i -g @opencode-ai/cli@next for the beta.\n3. Check it with opencode --version.\n4. Run opencode in a terminal, or come back to this extension.\n\nWhy it is handy: one account and shared history across the CLI, the desktop app and this extension; everything runs locally." },
+            { "install.about.desc", "OpenCode is an open-source AI coding agent for writing code. It runs in the terminal, in your IDE and as a desktop app.\n\nWhat it can do: writes and edits code in your project, understands your repository context, supports dozens of providers and models (including your own API keys), and keeps multiple sessions with shared history.\n\nHow to install:\n1. Install Node.js / npm.\n2. Run npm i -g opencode-ai (stable) — or npm i -g @opencode/cli for v2.\n3. Check it with opencode --version.\n4. Run opencode in a terminal, or come back to this extension.\n\nWhy it is handy: one account and shared history across the CLI, the desktop app and this extension; everything runs locally." },
 
             { "general.interface.title", "Interface" },
             { "general.interface.mode", "Interface mode" },
@@ -268,7 +268,7 @@ namespace OpenCodeStudio
 
             { "install.status.title", "Статус установки OpenCode" },
             { "install.status.v1", "OpenCode CLI (v1)" },
-            { "install.status.v2", "OpenCode CLI (v2 предпросмотр)" },
+            { "install.status.v2", "OpenCode CLI (v2)" },
             { "install.status.installed", "установлено" },
             { "install.status.notinstalled", "не установлено" },
             { "install.status.web", "Веб-интерфейс" },
@@ -280,7 +280,7 @@ namespace OpenCodeStudio
             { "install.guide.hint", "OpenCode распространяется как npm-пакет. Сначала установите Node.js, затем выполните одну из команд ниже в терминале." },
             { "install.guide.site", "Официальный сайт:" },
             { "install.guide.v1", "Стабильная (v1):" },
-            { "install.guide.v2", "Бета (v2 предпросмотр):" },
+            { "install.guide.v2", "v2:" },
             { "install.guide.docs", "Документация:" },
             { "install.button", "Установить последний OpenCode CLI" },
             { "install.running", "Установка OpenCode CLI…" },
@@ -291,7 +291,7 @@ namespace OpenCodeStudio
             { "install.about.title", "Что такое OpenCode" },
             { "install.about.text", "OpenCode — открытый ИИ-агент для написания кода, который пишет и правит код прямо в вашем проекте." },
             { "install.about.details", "Подробнее" },
-            { "install.about.desc", "OpenCode — открытый ИИ-агент для написания кода. Работает в терминале, в вашей IDE и как десктоп-приложение.\n\nЧто умеет: пишет и правит код в вашем проекте, понимает контекст репозитория, поддерживает десятки провайдеров и моделей (в том числе собственные ключи), несколько сессий с общей историей.\n\nКак установить:\n1. Установите Node.js / npm.\n2. Выполните npm i -g opencode-ai (стабильная ветка) — или npm i -g @opencode-ai/cli@next для беты.\n3. Проверьте: opencode --version.\n4. Запустите opencode в терминале или вернитесь в это расширение.\n\nПочему удобно: один аккаунт и общая история между CLI, десктопом и этим расширением; всё работает локально." },
+            { "install.about.desc", "OpenCode — открытый ИИ-агент для написания кода. Работает в терминале, в вашей IDE и как десктоп-приложение.\n\nЧто умеет: пишет и правит код в вашем проекте, понимает контекст репозитория, поддерживает десятки провайдеров и моделей (в том числе собственные ключи), несколько сессий с общей историей.\n\nКак установить:\n1. Установите Node.js / npm.\n2. Выполните npm i -g opencode-ai (стабильная ветка) — или npm i -g @opencode/cli для v2.\n3. Проверьте: opencode --version.\n4. Запустите opencode в терминале или вернитесь в это расширение.\n\nПочему удобно: один аккаунт и общая история между CLI, десктопом и этим расширением; всё работает локально." },
 
             { "bottom.language", "Язык" },
             { "common.cancel", "Отмена" },
@@ -413,7 +413,7 @@ namespace OpenCodeStudio
             installStatusPanel.Children.Add(BuildCliRow(
                 Loc("install.status.v1"), v1, "npm i -g opencode-ai"));
             installStatusPanel.Children.Add(BuildCliRow(
-                Loc("install.status.v2"), v2, "npm i -g @opencode-ai/cli@next"));
+                Loc("install.status.v2"), v2, "npm i -g @opencode/cli"));
 
             var webCli = v1 ?? v2;
             bool webAvailable = OpenCodeServerService.SupportsWeb(webCli);

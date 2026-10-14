@@ -561,20 +561,34 @@ namespace OpenCodeStudio.Services
             if (!string.IsNullOrWhiteSpace(configured) && File.Exists(configured))
                 return configured;
 
-            // v1 ставится как "opencode"; v2-бета — отдельным бинарём "opencode2".
-            // Порядок имён зависит от настройки PreferV2.
+            // Определяем бинарь по фактической версии ("opencode --version"), а
+            // не по имени: пакет v2 ставит и "opencode", и "opencode2".
+            var v2Path = FindV2Path();
+            var v1Path = FindV1Path();
+
+            if (PreferV2)
+            {
+                if (v2Path != null) return v2Path;
+                if (v1Path != null)
+                {
+                    Log.Warn("OpenCode v2 not found; falling back to opencode v1");
+                    return v1Path;
+                }
+            }
+            else
+            {
+                if (v1Path != null) return v1Path;
+                if (v2Path != null) return v2Path;
+            }
+
+            // Версии определить не удалось — прежний порядок по именам.
             var names = PreferV2
                 ? new[] { "opencode2", "opencode" }
                 : new[] { "opencode", "opencode2" };
-
             foreach (var name in names)
             {
                 var path = FindByName(name, CommonDirs);
-                if (path == null) continue;
-
-                if (PreferV2 && name == "opencode")
-                    Log.Warn("OpenCode v2 (opencode2) not found; falling back to opencode v1");
-                return path;
+                if (path != null) return path;
             }
 
             return null;
@@ -588,16 +602,44 @@ namespace OpenCodeStudio.Services
             Path.Combine(Environment.GetEnvironmentVariable("ProgramFiles") ?? "", "nodejs"),
         };
 
-        /// <summary>Полный путь к v1 (opencode) или null, если не найден.</summary>
-        public static string FindV1Path() => FindByName("opencode", CommonDirs);
+        /// <summary>
+        /// Полный путь к v1-бинарю или null. v1 — бинарь с major==1; если версию
+        /// определить не удалось, считаем v1 по имени "opencode".
+        /// </summary>
+        public static string FindV1Path()
+        {
+            foreach (var name in new[] { "opencode", "opencode2" })
+            {
+                var path = FindByName(name, CommonDirs);
+                if (path == null) continue;
+                var major = CliCommand.DetectMajor(path);
+                if (major == 1) return path;
+                if (major == 0 && name == "opencode") return path;
+            }
+            return null;
+        }
 
-        /// <summary>Полный путь к v2 (opencode2) или null, если не найден.</summary>
-        public static string FindV2Path() => FindByName("opencode2", CommonDirs);
+        /// <summary>
+        /// Полный путь к v2-бинарю или null. v2 — бинарь с major&gt;=2; если версию
+        /// определить не удалось, считаем v2 по имени "opencode2".
+        /// </summary>
+        public static string FindV2Path()
+        {
+            foreach (var name in new[] { "opencode", "opencode2" })
+            {
+                var path = FindByName(name, CommonDirs);
+                if (path == null) continue;
+                var major = CliCommand.DetectMajor(path);
+                if (major >= 2) return path;
+                if (major == 0 && name == "opencode2") return path;
+            }
+            return null;
+        }
 
-        /// <summary>Установлен ли v1 (opencode).</summary>
+        /// <summary>Установлен ли v1 (major==1, иначе по имени opencode).</summary>
         public static bool IsV1Available() => FindV1Path() != null;
 
-        /// <summary>Установлен ли v2 (opencode2).</summary>
+        /// <summary>Установлен ли v2 (major&gt;=2, иначе по имени opencode2).</summary>
         public static bool IsV2Available() => FindV2Path() != null;
 
         /// <summary>

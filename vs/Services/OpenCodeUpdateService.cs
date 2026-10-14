@@ -13,7 +13,7 @@ namespace OpenCodeStudio.Services
     public sealed class OpenCodeUpdateService
     {
         private const string NpmLatestUrl = "https://registry.npmjs.org/opencode-ai/latest";
-        private const string NpmBetaUrl = "https://registry.npmjs.org/@opencode-ai/cli/next";
+        private const string NpmBetaUrl = "https://registry.npmjs.org/@opencode/cli/latest";
 
         /// <summary>Канал обновлений (из настроек): stable или beta.</summary>
         private static UpdateChannel Channel => SpendSettings.Current?.Channel ?? UpdateChannel.Stable;
@@ -61,7 +61,7 @@ namespace OpenCodeStudio.Services
         /// <summary>Запускает обновление opencode; true при коде выхода 0.</summary>
         public async Task<bool> UpdateAsync(Action<string> onLog = null)
         {
-            var target = Channel == UpdateChannel.Beta ? "@opencode-ai/cli@next" : "opencode-ai@latest";
+            var target = Channel == UpdateChannel.Beta ? "@opencode/cli" : "opencode-ai@latest";
             return await RunNpmAsync(target, onLog);
         }
 
@@ -94,7 +94,14 @@ namespace OpenCodeStudio.Services
                         try { p.Kill(); } catch { }
                         return false;
                     }
-                    return p.ExitCode == 0;
+                    if (p.ExitCode == 0)
+                    {
+                        // Бинарь мог смениться — сбрасываем кэши определения.
+                        CliCommand.ResetVersionCache();
+                        OpenCodeServerService.ResetWebSupportCache();
+                        return true;
+                    }
+                    return false;
                 }
             }
             catch (Exception ex)
