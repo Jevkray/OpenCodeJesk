@@ -1,10 +1,7 @@
-﻿using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.Shell;
+﻿using Microsoft.VisualStudio.Shell;
 using Microsoft.Web.WebView2.Core;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -78,25 +75,6 @@ namespace OpenCodeStudio
         private System.Threading.CancellationTokenSource _reconnectCts;
         private const int MaxReconnectAttempts = 30;
         private const int ReconnectDelayMs = 3000;
-
-        private static readonly string ErrorPageTemplate;
-        private static readonly string LoadingPageTemplate;
-
-        static OpenCodeToolWindowControl()
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            ErrorPageTemplate = LoadResourceString(assembly, "OpenCodeStudio.Resources.ErrorPage.html");
-            LoadingPageTemplate = LoadResourceString(assembly, "OpenCodeStudio.Resources.LoadingPage.html");
-        }
-
-        private static string LoadResourceString(Assembly assembly, string name)
-        {
-            using (var stream = assembly.GetManifestResourceStream(name))
-            using (var reader = new StreamReader(stream))
-            {
-                return reader.ReadToEnd();
-            }
-        }
 
         public OpenCodeToolWindowControl()
         {
@@ -230,7 +208,7 @@ namespace OpenCodeStudio
 
             string directory = _activeDirectory;
             string session = _activeSessionId;
-            var fromUrl = ParseSessionFromUrl(_pendingWebUrl ?? webView.CoreWebView2?.Source);
+            var fromUrl = SessionUrlParser.Parse(_pendingWebUrl ?? webView.CoreWebView2?.Source, _serverController?.ServerService?.ServerInfo?.BaseUrl);
             if (fromUrl != null) { directory = fromUrl.Item1 ?? directory; session = fromUrl.Item2; }
             if (string.IsNullOrEmpty(directory)) directory = Path.GetFullPath(_currentProjectRoot);
 
@@ -268,29 +246,6 @@ namespace OpenCodeStudio
             await _cliTerminal.ActivateAsync(_serverController.ServerService, directory, session);
         }
 
-        private Tuple<string, string> ParseSessionFromUrl(string url)
-        {
-            var info = _serverController?.ServerService?.ServerInfo;
-            if (info == null || !Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
-                uri.Authority != new Uri(info.BaseUrl).Authority) return null;
-            var segments = uri.AbsolutePath.Trim('/').Split('/');
-            var session = segments.LastOrDefault(s => s.StartsWith("ses_", StringComparison.Ordinal));
-            if (session == null) return null;
-            string directory = null;
-            if (segments.Length >= 2 && segments[1] == "session")
-            {
-                try
-                {
-                    var encoded = segments[0].Replace('-', '+').Replace('_', '/');
-                    encoded = encoded.PadRight((encoded.Length + 3) / 4 * 4, '=');
-                    var decoded = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(encoded));
-                    if (Path.IsPathRooted(decoded) && Directory.Exists(decoded)) directory = decoded;
-                }
-                catch (FormatException) { }
-            }
-            return Tuple.Create(directory, session);
-        }
-
         public void StopCli() => _cliTerminal?.Stop();
 
         /// <summary>
@@ -318,62 +273,6 @@ namespace OpenCodeStudio
         {
             _currentProjectRoot = root;
         }
-
-        private Dictionary<string, string> GetThemeColors()
-        {
-            var colors = new Dictionary<string, string>();
-            try
-            {
-                colors["bg"] = ToHtml(VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey));
-                colors["textPrimary"] = ToHtml(VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowTextColorKey));
-                colors["textSecondary"] = ToHtml(VSColorTheme.GetThemedColor(EnvironmentColors.CommandBarTextInactiveColorKey));
-                colors["textAccent"] = ToHtml(VSColorTheme.GetThemedColor(EnvironmentColors.AccentBorderColorKey));
-                colors["border"] = ToHtml(VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBorderColorKey));
-            }
-            catch { }
-            return colors;
-        }
-
-        private string GetThemeStyleBlock()
-        {
-            var c = GetThemeColors();
-            string bg = c.TryGetValue("bg", out var v0) ? v0 : "#252526";
-            string text = c.TryGetValue("textPrimary", out var v1) ? v1 : "#f1f1f1";
-            string textMuted = c.TryGetValue("textSecondary", out var v2) ? v2 : "#999999";
-            string accent = c.TryGetValue("textAccent", out var v3) ? v3 : "#007acc";
-            string border = c.TryGetValue("border", out var v4) ? v4 : "#434346";
-            var accentHover = LighterHex(accent, 0.20);
-            var spinnerTrack = LighterHex(bg, 0.12);
-
-            return $@"<style id=""ocstudio-page-theme"">
-    :root {{
-        --vs-bg: {bg};
-        --vs-text: {text};
-        --vs-text-muted: {textMuted};
-        --vs-accent: {accent};
-        --vs-accent-hover: {accentHover};
-        --vs-border: {border};
-        --vs-spinner-track: {spinnerTrack};
-    }}
-</style>";
-        }
-
-        private static string LighterHex(string hex, double amount)
-        {
-            try
-            {
-                int r = Convert.ToInt32(hex.Substring(1, 2), 16);
-                int g = Convert.ToInt32(hex.Substring(3, 2), 16);
-                int b = Convert.ToInt32(hex.Substring(5, 2), 16);
-                r = Math.Min(255, (int)(r + (255 - r) * amount));
-                g = Math.Min(255, (int)(g + (255 - g) * amount));
-                b = Math.Min(255, (int)(b + (255 - b) * amount));
-                return $"#{r:X2}{g:X2}{b:X2}";
-            }
-            catch { return hex; }
-        }
-
-        private static string ToHtml(Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}";
 
         private async Task InitWebViewCoreAsync()
         {
@@ -475,7 +374,7 @@ namespace OpenCodeStudio
             }
             _pendingWebUrl = null;
             // Запоминаем активный чат веб-панели, чтобы передать его в CLI.
-            var parsed = ParseSessionFromUrl(webView?.CoreWebView2?.Source);
+            var parsed = SessionUrlParser.Parse(webView?.CoreWebView2?.Source, _serverController?.ServerService?.ServerInfo?.BaseUrl);
             if (parsed != null)
             {
                 _activeSessionId = parsed.Item2;
@@ -993,9 +892,7 @@ namespace OpenCodeStudio
 
         private async Task ShowLoadingPageAsync(string message)
         {
-            var html = LoadingPageTemplate
-                .Replace("{theme-style}", GetThemeStyleBlock())
-                .Replace("{message}", message);
+            var html = WebPageRenderer.BuildLoadingPage(message);
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             if (webView.CoreWebView2 != null)
             {
@@ -1005,29 +902,7 @@ namespace OpenCodeStudio
 
         private async Task ShowErrorPageAsync(string message, bool showRetry, bool showSettings = false)
         {
-            var escapedMessage = System.Net.WebUtility.HtmlEncode(message)
-                .Replace("\n", "<br>")
-                .Replace("\\n", "<br>");
-            var retryButton = showRetry
-                ? $@"<button id=""retryBtn"" onclick=""handleRetry()"">{StringsHelper.UIRetry}</button>"
-                : "";
-            var retryScript = showRetry
-                ? @"var disabled=false;function handleRetry(){if(disabled)return;disabled=true;var b=document.getElementById('retryBtn');b.disabled=true;b.style.opacity='0.5';b.style.cursor='not-allowed';try{window.chrome.webview.postMessage('retry')}catch(e){}}"
-                : "";
-            var settingsButton = showSettings
-                ? $@"<button id=""settingsBtn"" onclick=""openSettings()"" style=""margin-left:8px"">{System.Net.WebUtility.HtmlEncode(WebSettingsLabel())}</button>"
-                : "";
-            var settingsScript = showSettings
-                ? @"function openSettings(){try{window.chrome.webview.postMessage('settings')}catch(e){}}"
-                : "";
-
-            var html = ErrorPageTemplate
-                .Replace("{theme-style}", GetThemeStyleBlock())
-                .Replace("{message}", escapedMessage)
-                .Replace("{retryButton}", retryButton)
-                .Replace("{retryScript}", retryScript)
-                .Replace("{settingsButton}", settingsButton)
-                .Replace("{settingsScript}", settingsScript);
+            var html = WebPageRenderer.BuildErrorPage(message, showRetry, showSettings, WebSettingsLabel());
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             if (webView.CoreWebView2 != null)
