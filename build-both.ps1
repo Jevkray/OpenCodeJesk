@@ -1,5 +1,5 @@
-п»ї# РЎРѕР±РёСЂР°РµС‚ РѕР±Р° Р±СЂРµРЅРґР° РёР· РѕРґРЅРѕР№ РєРѕРґРѕРІРѕР№ Р±Р°Р·С‹: OpenCode Studio (Р±РµР· С„Р»Р°РіР°) Рё
-# OpenCode Jesk (-p:Brand=Jesk). Р’ СЂР°Р±РѕС‡РµРј РґРµСЂРµРІРµ РѕСЃС‚Р°С‘С‚СЃСЏ Jesk-РјР°РЅРёС„РµСЃС‚.
+# Собирает оба бренда из одной кодовой базы: OpenCode Studio (без флага) и
+# OpenCode Jesk (-p:Brand=Jesk). В рабочем дереве остаётся Jesk-манифест.
 $ErrorActionPreference = 'Stop'
 
 $root      = $PSScriptRoot
@@ -9,13 +9,13 @@ $studio    = Join-Path $vsDir 'source.studio.extension.vsixmanifest'
 $jesk      = Join-Path $vsDir 'source.jesk.extension.vsixmanifest'
 $project   = Join-Path $vsDir 'OpenCodeStudio.csproj'
 $outDir    = Join-Path $vsDir 'bin\Release\net472'
-$targetDir = 'C:\Users\semmi\Desktop\РўРµРєСѓС‰РёРµ РїСЂРѕРµРєС‚С‹ (СЃР±РѕСЂРєРё)\OpenCodeStudio'
+$targetDir = 'C:\Users\semmi\Desktop\Текущие проекты (сборки)\OpenCodeStudio'
 $desktop   = [Environment]::GetFolderPath('Desktop')
 
-# 1. РЎРѕС…СЂР°РЅРёС‚СЊ С‚РµРєСѓС‰РёР№ (Jesk) РјР°РЅРёС„РµСЃС‚, РµСЃР»Рё РєРѕРїРёРё РµС‰С‘ РЅРµС‚.
+# 1. Сохранить текущий (Jesk) манифест, если копии ещё нет.
 if (-not (Test-Path -LiteralPath $jesk)) {
     Copy-Item -LiteralPath $manifest -Destination $jesk
-    Write-Host "РЎРѕР·РґР°РЅ Jesk-РјР°РЅРёС„РµСЃС‚: $jesk"
+    Write-Host "Создан Jesk-манифест: $jesk"
 }
 
 function Build-Brand([string]$brand, [string]$manifestSource, [string]$destName) {
@@ -25,30 +25,30 @@ function Build-Brand([string]$brand, [string]$manifestSource, [string]$destName)
     } else {
         dotnet build $project -c Release -t:Rebuild | Out-Host
     }
-    if ($LASTEXITCODE -ne 0) { throw "РЎР±РѕСЂРєР° ($brand) РЅРµ СѓРґР°Р»Р°СЃСЊ (РєРѕРґ $LASTEXITCODE)" }
+    if ($LASTEXITCODE -ne 0) { throw "Сборка ($brand) не удалась (код $LASTEXITCODE)" }
 
     $vsix = Join-Path $outDir 'OpenCodeStudio.vsix'
-    if (-not (Test-Path -LiteralPath $vsix)) { throw "VSIX РЅРµ РЅР°Р№РґРµРЅ: $vsix" }
+    if (-not (Test-Path -LiteralPath $vsix)) { throw "VSIX не найден: $vsix" }
     $dest = Join-Path $root $destName
     Copy-Item -LiteralPath $vsix -Destination $dest -Force
-    Write-Host "Р“РѕС‚РѕРІРѕ: $dest ($([math]::Round((Get-Item -LiteralPath $dest).Length/1MB,2)) MB)"
+    Write-Host "Готово: $dest ($([math]::Round((Get-Item -LiteralPath $dest).Length/1MB,2)) MB)"
     return $dest
 }
 
 # 2. Studio
-$studioVsix = Build-Brand '' $studio 'OpenCodeStudio-1.2.0.35.vsix'
+$studioVsix = Build-Brand '' $studio 'OpenCodeStudio-1.2.0.36.vsix'
 # 3. Jesk
-$jeskVsix = Build-Brand 'Jesk' $jesk 'OpenCodeJesk-1.2.0.35.vsix'
-# 4. Р’ РґРµСЂРµРІРµ РѕСЃС‚Р°С‘С‚СЃСЏ Jesk-РјР°РЅРёС„РµСЃС‚ (РїРѕСЃР»Рµ С€Р°РіР° 3 РѕРЅ СѓР¶Рµ Jesk).
+$jeskVsix = Build-Brand 'Jesk' $jesk 'OpenCodeJesk-1.2.0.36.vsix'
+# 4. В дереве остаётся Jesk-манифест (после шага 3 он уже Jesk).
 
-# 5. Р Р°Р·Р»РѕР¶РёС‚СЊ Рё РїРѕС‡РёСЃС‚РёС‚СЊ РїСЂРѕС€Р»СѓСЋ РІРµСЂСЃРёСЋ.
+# 5. Разложить и почистить прошлую версию.
 foreach ($dir in @($root, $targetDir, $desktop)) {
     if (-not (Test-Path -LiteralPath $dir)) { New-Item -ItemType Directory -Path $dir | Out-Null }
-    # Studio РєР»Р°РґС‘Рј С‚РѕР»СЊРєРѕ РІ РїР°РїРєСѓ СЃР±РѕСЂРѕРє; РІ РєРѕСЂРµРЅСЊ Рё РЅР° СЂР°Р±РѕС‡РёР№ СЃС‚РѕР» вЂ” С‚РѕР»СЊРєРѕ Jesk.
+    # Studio кладём только в папку сборок; в корень и на рабочий стол — только Jesk.
     if (-not [string]::Equals($dir, $root, [System.StringComparison]::OrdinalIgnoreCase)) {
         if ([string]::Equals($dir, $targetDir, [System.StringComparison]::OrdinalIgnoreCase)) { Copy-Item -LiteralPath $studioVsix -Destination $dir -Force }
         Copy-Item -LiteralPath $jeskVsix   -Destination $dir -Force
     }
-    Get-ChildItem -LiteralPath $dir -Filter 'OpenCode*-1.2.0.34.vsix' | Remove-Item -Force
+    Get-ChildItem -LiteralPath $dir -Filter 'OpenCode*-1.2.0.35.vsix' | Remove-Item -Force
 }
-Write-Host "VSIX СЂР°Р·Р»РѕР¶РµРЅС‹: $targetDir (Studio + Jesk), СЂР°Р±РѕС‡РёР№ СЃС‚РѕР» (Jesk)"
+Write-Host "VSIX разложены: $targetDir (Studio + Jesk), рабочий стол (Jesk)"

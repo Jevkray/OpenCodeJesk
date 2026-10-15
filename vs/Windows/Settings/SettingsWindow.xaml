@@ -976,6 +976,9 @@
                                            Text="Support development with crypto" />
 
                                 <TextBlock Text="TON" Style="{StaticResource FieldLabel}" />
+                                <Image Width="140" Height="140" HorizontalAlignment="Left"
+                                       Margin="0,4,0,6" RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                       Source="/OpenCodeStudio;component/Resources/qr/ton.png" />
                                 <TextBox IsReadOnly="True" FontFamily="Consolas" FontSize="12"
                                          Background="#2d2d30" Foreground="#f1f1f1" BorderBrush="#3a3a3a"
                                          BorderThickness="1" Padding="8,6" TextWrapping="Wrap"
@@ -986,6 +989,9 @@
                                         Click="OnCopyWalletClick" />
 
                                 <TextBlock Text="BTC" Style="{StaticResource FieldLabel}" />
+                                <Image Width="140" Height="140" HorizontalAlignment="Left"
+                                       Margin="0,4,0,6" RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                       Source="/OpenCodeStudio;component/Resources/qr/btc.png" />
                                 <TextBox IsReadOnly="True" FontFamily="Consolas" FontSize="12"
                                          Background="#2d2d30" Foreground="#f1f1f1" BorderBrush="#3a3a3a"
                                          BorderThickness="1" Padding="8,6" TextWrapping="Wrap"
@@ -996,6 +1002,9 @@
                                         Click="OnCopyWalletClick" />
 
                                 <TextBlock Text="ETH" Style="{StaticResource FieldLabel}" />
+                                <Image Width="140" Height="140" HorizontalAlignment="Left"
+                                       Margin="0,4,0,6" RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                       Source="/OpenCodeStudio;component/Resources/qr/eth.png" />
                                 <TextBox IsReadOnly="True" FontFamily="Consolas" FontSize="12"
                                          Background="#2d2d30" Foreground="#f1f1f1" BorderBrush="#3a3a3a"
                                          BorderThickness="1" Padding="8,6" TextWrapping="Wrap"

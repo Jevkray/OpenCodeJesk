@@ -89,6 +89,9 @@
        (окно расширения исполняется внутри devenv.exe, файл из Content там не виден). -->
   <ItemGroup>
     <Resource Include="Resources\IconJesk.png" />
+    <Resource Include="Resources\qr\ton.png" />
+    <Resource Include="Resources\qr\btc.png" />
+    <Resource Include="Resources\qr\eth.png" />
   </ItemGroup>
 
   <ItemGroup>
