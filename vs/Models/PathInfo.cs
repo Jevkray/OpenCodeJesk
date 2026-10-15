@@ -3,7 +3,7 @@
 namespace OpenCodeJesk.Models
 {
     /// <summary>
-    /// Path information returned by GET /path.
+    /// Информация о путях, возвращаемая GET /path.
     /// </summary>
     public class PathInfo
     {

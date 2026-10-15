@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,10 +35,10 @@ namespace OpenCodeJesk.Services
             Stop();
             SetState(ConnectionState.Connecting);
 
-            // Reuse an OpenCode server that is already running - for example one
-            // started by another Visual Studio window, or the OpenCode desktop
-            // app. Sharing a single server keeps every client on the same live
-            // session/event stream, so chats stay in sync everywhere.
+            // Переиспользуем уже запущенный сервер OpenCode — например,
+            // поднятый другим окном Visual Studio или приложением OpenCode
+            // Desktop. Один сервер держит всех клиентов на одном живом потоке
+            // сессий/событий, поэтому чаты синхронны везде.
             if (await TryAdoptSharedServerAsync())
             {
                 Log.Info($"Reusing existing OpenCode server at {_serverInfo.BaseUrl}");
@@ -83,15 +81,15 @@ namespace OpenCodeJesk.Services
                 }
                 catch { }
 
-                // NOTE: we deliberately do NOT override XDG_* here. Using the
-                // user's default OpenCode environment keeps history, settings and
-                // credentials in sync with the OpenCode CLI and Desktop app.
+                // ВАЖНО: XDG_* здесь специально НЕ переопределяем. Окружение
+                // OpenCode пользователя по умолчанию сохраняет историю,
+                // настройки и учётные данные синхронными с CLI и Desktop.
 
-                // .cmd/.bat shims cannot be started directly with UseShellExecute=false,
-                // so launch them through cmd.exe.
-                // A stable port keeps the WebView2 origin (http://127.0.0.1:PORT)
-                // constant across restarts, so the OpenCode web UI keeps its
-                // local state (selected server/project) like the desktop app.
+                // .cmd/.bat шимы нельзя запускать напрямую с UseShellExecute=false,
+                // поэтому запускаем их через cmd.exe.
+                // Стабильный порт сохраняет origin WebView2 (http://127.0.0.1:PORT)
+                // неизменным между перезапусками, поэтому веб-UI OpenCode хранит
+                // своё локальное состояние (выбранный сервер/проект), как Desktop.
                 var port = ServerPortResolver.Resolve();
                 Log.Info($"Using port {port}");
                 var serveArgs = "serve --port " + port;
@@ -186,8 +184,8 @@ namespace OpenCodeJesk.Services
             _httpClient = null;
             _serverInfo = null;
 
-            // Only kill the server if this instance started it. When we merely
-            // adopted a server started elsewhere, leave it running.
+            // Убиваем сервер, только если его запустил именно этот экземпляр.
+            // Сервер, подхваченный у другого процесса, оставляем работать.
             if (_ownsProcess && _process != null)
             {
                 Log.Info("Stopping OpenCode server");
@@ -221,9 +219,9 @@ namespace OpenCodeJesk.Services
         }
 
         /// <summary>
-        /// Tries to reuse a server recorded by another OpenCode Jesk instance
-        /// (other Visual Studio windows). Returns true when a healthy server was
-        /// found and adopted.
+        /// Пытается переиспользовать сервер, записанный другим экземпляром
+        /// OpenCode Jesk (другим окном Visual Studio). Возвращает true, если
+        /// найден рабочий сервер и он подхвачен.
         /// </summary>
         private async Task<bool> TryAdoptSharedServerAsync()
         {
@@ -294,10 +292,10 @@ namespace OpenCodeJesk.Services
             {
                 try
                 {
-                    // Keep the same pending read across timeout ticks. Calling
-                    // ReadLineAsync() again while a previous read is still in
-                    // flight throws InvalidOperationException, which would abort
-                    // detection entirely.
+                    // Сохраняем один и тот же незавершённый запрос чтения между
+                    // тиками таймаута: повторный ReadLineAsync(), пока предыдущее
+                    // чтение ещё не завершено, бросает InvalidOperationException
+                    // и срывает всю детекцию.
                     Task<string> lineTask = null;
                     while (DateTime.UtcNow < deadline)
                     {

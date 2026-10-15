@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -9,7 +8,7 @@ namespace OpenCodeJesk.Services
 {
     public enum ImportKind { Settings, Commands, Theme, Auth, History, State, Desktop }
 
-    /// <summary>A single importable (or informational) item inside a source.</summary>
+    /// <summary>Один импортируемый (или информационный) элемент внутри источника.</summary>
     public sealed class ImportItem
     {
         public ImportKind Kind { get; set; }
@@ -25,7 +24,7 @@ namespace OpenCodeJesk.Services
             !string.Equals(Path.GetFullPath(Source), Path.GetFullPath(Target), StringComparison.OrdinalIgnoreCase);
     }
 
-    /// <summary>A detected OpenCode environment / app / folder.</summary>
+    /// <summary>Обнаруженное окружение / приложение / папка OpenCode.</summary>
     public sealed class ImportSource
     {
         public string Name { get; set; }
@@ -44,9 +43,9 @@ namespace OpenCodeJesk.Services
     }
 
     /// <summary>
-    /// Discovers OpenCode data sources and copies settings / commands / themes /
-    /// credentials / chat history between them and the environment used by the
-    /// embedded server. Every overwrite is backed up.
+    /// Находит источники данных OpenCode и переносит настройки / команды / темы /
+    /// учётные данные / историю чатов между ними и окружением встроенного сервера.
+    /// Каждая перезапись сопровождается резервной копией.
     /// </summary>
     public sealed class ImportService
     {
@@ -54,10 +53,9 @@ namespace OpenCodeJesk.Services
 
         public ImportService(OpenCodeEnvironment env = null)
         {
-            // OpenCode Jesk now shares the user's default OpenCode
-            // environment with the CLI and the desktop app, so history and
-            // settings stay in sync everywhere. The wizard therefore targets the
-            // shared (global) environment; custom folders can still be imported.
+            // OpenCode Jesk использует общее с CLI и Desktop окружение OpenCode,
+            // поэтому история и настройки синхронны везде. Мастер нацелен на
+            // общее (глобальное) окружение; произвольные папки тоже можно импортировать.
             _env = env ?? OpenCodeEnvironment.Global();
         }
 
@@ -87,7 +85,7 @@ namespace OpenCodeJesk.Services
             return sources;
         }
 
-        /// <summary>The shared OpenCode environment (already active).</summary>
+        /// <summary>Общее окружение OpenCode (уже активное).</summary>
         private ImportSource BuildStudioSource()
         {
             var s = new ImportSource
@@ -212,7 +210,7 @@ namespace OpenCodeJesk.Services
                     else
                         CopyFileWithBackup(item.Source, item.Target, result);
 
-                    // SQLite sidecar files travel with the database.
+                    // Служебные файлы SQLite (-wal/-shm) переносятся вместе с базой.
                     if (item.Kind == ImportKind.History)
                     {
                         foreach (var side in new[] { "-wal", "-shm" })
@@ -282,7 +280,7 @@ namespace OpenCodeJesk.Services
             }
         }
 
-        // ---- item helpers -------------------------------------------------
+        // ---- вспомогательные методы элементов -----------------------------
 
         private static void Add(ImportSource src, ImportKind kind, string label,
             string source, string target, bool isDir, Func<string, string> describe)
@@ -363,7 +361,7 @@ namespace OpenCodeJesk.Services
             return $"{bytes} B";
         }
 
-        // ---- discovery helpers -------------------------------------------
+        // ---- вспомогательные методы поиска -------------------------------
 
         private static string FindFile(string root, IEnumerable<string> candidates)
         {

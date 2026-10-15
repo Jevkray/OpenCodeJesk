@@ -40,27 +40,27 @@ namespace OpenCodeJesk.Services
                     return Remember(NormalizePath(projectDir));
             }
 
-            // Try git root from solution directory (higher priority)
+            // Корень Git из каталога решения (высший приоритет)
             string gitRoot = FindGitRoot(solutionDir);
             if (!string.IsNullOrEmpty(gitRoot))
                 return Remember(NormalizePath(gitRoot));
 
-            // Fallback to solution directory
+            // Иначе — каталог решения
             if (!string.IsNullOrEmpty(solutionDir))
                 return Remember(NormalizePath(solutionDir));
 
-            // Try git root from user profile directory
+            // Корень Git из каталога профиля пользователя
             gitRoot = FindGitRoot(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
             if (!string.IsNullOrEmpty(gitRoot))
                 return Remember(NormalizePath(gitRoot));
 
-            // No solution is open. Reuse the last known project so the chat
-            // history does not appear to reset when a solution is closed.
+            // Решение не открыто. Переиспользуем последний известный проект,
+            // чтобы история чатов не «сбрасывалась» при закрытии решения.
             var remembered = ReadRememberedRoot();
             if (!string.IsNullOrEmpty(remembered) && Directory.Exists(remembered))
                 return remembered;
 
-            // Use user documents directory as last resort
+            // В крайнем случае — каталог «Документы»
             return NormalizePath(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
         }
 
@@ -120,7 +120,7 @@ namespace OpenCodeJesk.Services
             }
             catch
             {
-                // DTE may not be available (e.g., in tests)
+                // DTE может быть недоступен (например, в тестах)
             }
 
             return null;
@@ -151,7 +151,7 @@ namespace OpenCodeJesk.Services
         }
 
         /// <summary>
-        /// Normalizes a path to use forward slashes and ensures it's a full path.
+        /// Приводит путь к прямым слэшам и делает его полным.
         /// </summary>
         public static string NormalizePath(string path)
         {

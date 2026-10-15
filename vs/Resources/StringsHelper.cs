@@ -5,7 +5,7 @@ using System.Resources;
 namespace OpenCodeJesk.Resources
 {
     /// <summary>
-    /// Provides localized strings from the resources assembly.
+    /// Предоставляет локализованные строки из сборки ресурсов.
     /// </summary>
     internal static class StringsHelper
     {
@@ -22,7 +22,7 @@ namespace OpenCodeJesk.Resources
             return _resourceManager.GetString(name, culture) ?? name;
         }
 
-        // Error messages
+        // Сообщения об ошибках
         public static string ErrorWebViewInitFailed => GetString("Error.WebViewInitFailed");
         public static string ErrorServerStartFailed => GetString("Error.ServerStartFailed");
         public static string ErrorSessionCreateFailed => GetString("Error.SessionCreateFailed");
@@ -30,7 +30,7 @@ namespace OpenCodeJesk.Resources
         public static string ErrorSessionListFailed => GetString("Error.SessionListFailed");
         public static string ErrorServerNotConnected => GetString("Error.ServerNotConnected");
 
-        // UI Labels
+        // Подписи интерфейса
         public static string UIRetry => GetString("UI.Retry");
         public static string UILoading => GetString("UI.Loading");
         public static string UIConnecting => GetString("UI.Connecting");

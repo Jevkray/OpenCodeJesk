@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using EnvDTE;
-using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using OpenCodeJesk.Commands;
@@ -116,7 +115,7 @@ namespace OpenCodeJesk
                     {
                         try
                         {
-                            // Let the shell finish initializing before showing a window.
+                            // Даём оболочке завершить инициализацию перед показом окна.
                             await Task.Delay(2500);
                             await JoinableTaskFactory.SwitchToMainThreadAsync();
                             // Первый запуск — открываем окно на вкладке Quick Start (индекс 0).
@@ -617,8 +616,8 @@ namespace OpenCodeJesk
         }
 
         /// <summary>
-        /// Opens the import/setup wizard on demand (also shown automatically on
-        /// first run).
+        /// Открывает мастер импорта/настройки по требованию (также показывается
+        /// автоматически при первом запуске).
         /// </summary>
         internal Task ShowImportWindowAsync() => ShowSettingsWindowAsync();
 

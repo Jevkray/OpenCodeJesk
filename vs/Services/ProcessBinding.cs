@@ -1,12 +1,12 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace OpenCodeJesk.Services
 {
     /// <summary>
-    /// Binds child processes to the VS process lifecycle via Windows Job Objects.
-    /// When VS exits (including crash), the child process is auto-terminated.
+    /// Привязывает дочерние процессы к жизненному циклу VS через Job Objects
+    /// Windows. При выходе VS (в том числе при падении) дочерний процесс
+    /// завершается автоматически.
     /// </summary>
     internal static class ProcessBinding
     {

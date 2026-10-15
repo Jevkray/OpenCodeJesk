@@ -3,32 +3,32 @@
 namespace OpenCodeJesk.Services
 {
     /// <summary>
-    /// Monitors the connection to the OpenCode server and fires events on state changes.
+    /// Следит за соединением с сервером OpenCode и шлёт события при смене состояния.
     /// </summary>
     public interface IConnectionMonitor : IDisposable
     {
         /// <summary>
-        /// Starts periodic health checking.
+        /// Запускает периодическую проверку доступности.
         /// </summary>
         void Start();
 
         /// <summary>
-        /// Stops periodic health checking.
+        /// Останавливает периодическую проверку доступности.
         /// </summary>
         void Stop();
 
         /// <summary>
-        /// Raised when the connection is lost.
+        /// Событие потери соединения.
         /// </summary>
         event Action ConnectionLost;
 
         /// <summary>
-        /// Raised when the connection is restored.
+        /// Событие восстановления соединения.
         /// </summary>
         event Action ConnectionRestored;
 
         /// <summary>
-        /// Whether the server is currently reachable.
+        /// Доступен ли сервер в данный момент.
         /// </summary>
         bool IsConnected { get; }
     }

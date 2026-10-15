@@ -3,26 +3,23 @@ using Microsoft.Web.WebView2.Core;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using OpenCodeJesk.Commands;
-using OpenCodeJesk.Models;
 using OpenCodeJesk.Resources;
 using OpenCodeJesk.Services;
 
 namespace OpenCodeJesk
 {
     /// <summary>
-    /// Hosts the OpenCode web UI inside a WebView2.
+    /// Размещает веб-UI OpenCode внутри WebView2.
     /// <para>
-    /// Unlike the original implementation, this control does <b>not</b> proxy
-    /// requests through a fake origin nor inject scripts to fake per-project
-    /// storage. It simply points WebView2 straight at the OpenCode server's own
-    /// web UI (http://127.0.0.1:port/), which is a
-    /// self-contained single-page app that manages projects, sessions and its
-    /// own theming. This removes an entire, fragile translation layer.
+    /// В отличие от прежней реализации, этот контрол <b>не</b> проксирует
+    /// запросы через поддельный origin и не внедряет скрипты для подмены
+    /// хранилища по проектам. Он просто направляет WebView2 на собственный
+    /// веб-UI сервера OpenCode (http://127.0.0.1:port/) — самодостаточное
+    /// одностраничное приложение, которое само управляет проектами, сессиями
+    /// и темой. Это убирает целый хрупкий слой трансляции.
     /// </para>
     /// </summary>
     public partial class OpenCodeToolWindowControl : UserControl, IDisposable, IConsoleWebHost, IReconnectHost, ICliModeHost
@@ -190,7 +187,7 @@ namespace OpenCodeJesk
         public void StopCli() => _cliMode.Stop();
 
         /// <summary>
-        /// Set the shared server controller. Must be called before StartAsync.
+        /// Задаёт общий контроллер сервера. Вызывать до StartAsync.
         /// </summary>
         public void SetServerController(ServerController controller)
         {
@@ -267,8 +264,8 @@ namespace OpenCodeJesk
                 return;
             }
 
-            // Let target=_blank links open in the user's real browser instead of
-            // spawning an unmanaged popup inside the tool window.
+            // Ссылки target=_blank открываем в настоящем браузере пользователя,
+            // а не в неуправляемом popup внутри tool window.
             try
             {
                 e.Handled = true;

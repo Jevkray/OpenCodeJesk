@@ -1031,8 +1031,7 @@
                                 <TextBlock Uid="terminal.font" Text="Font family"
                                            Style="{StaticResource FieldLabel}" />
                                 <ComboBox x:Name="fontCombo" Style="{StaticResource DarkCombo}" Width="260"
-                                          HorizontalAlignment="Left"
-                                          SelectionChanged="OnFontChanged">
+                                          HorizontalAlignment="Left">
                                     <ComboBoxItem Content="Consolas" />
                                     <ComboBoxItem Content="Cascadia Mono" />
                                     <ComboBoxItem Content="Courier New" />

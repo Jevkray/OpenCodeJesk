@@ -11,7 +11,7 @@ using OpenCodeJesk.Resources;
 namespace OpenCodeJesk.Services
 {
     /// <summary>
-    /// Manages OpenCode sessions via the HTTP API.
+    /// Управляет сессиями OpenCode через HTTP API.
     /// </summary>
     public class OpenCodeSessionService : IOpenCodeSessionService
     {
@@ -66,10 +66,10 @@ namespace OpenCodeJesk.Services
         }
 
         /// <summary>
-        /// Reads response content as UTF-8 explicitly. .NET Framework's
-        /// ReadAsStringAsync falls back to the system codepage when the server
-        /// omits a charset, which corrupts non-ASCII project paths (e.g. Cyrillic)
-        /// and makes session matching fail.
+        /// Читает содержимое ответа явно как UTF-8. В .NET Framework
+        /// ReadAsStringAsync при отсутствии charset у сервера откатывается к
+        /// системной кодировке, что портит пути к проектам с не-ASCII символами
+        /// (например, кириллицей) и ломает сопоставление сессий.
         /// </summary>
         private static async Task<string> ReadUtf8Async(HttpContent content)
         {

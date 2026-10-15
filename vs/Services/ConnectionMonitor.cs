@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace OpenCodeJesk.Services
 {
     /// <summary>
-    /// Periodically checks OpenCode server health and fires connection state events.
+    /// Периодически проверяет доступность сервера OpenCode и шлёт события смены
+    /// состояния соединения.
     /// </summary>
     public class ConnectionMonitor : IConnectionMonitor
     {

@@ -1,7 +1,7 @@
 ﻿namespace OpenCodeJesk.Models
 {
     /// <summary>
-    /// Server connection info.
+    /// Данные подключения к серверу.
     /// </summary>
     public class ServerInfo
     {
@@ -10,19 +10,19 @@
         public int Port { get; set; }
 
         /// <summary>
-        /// Basic Auth username (opencode defaults to "opencode").
+        /// Имя пользователя Basic Auth (в opencode по умолчанию "opencode").
         /// </summary>
         public string Username { get; set; }
 
         /// <summary>
-        /// Basic Auth password. Empty when the server is unsecured (v1 default).
+        /// Пароль Basic Auth. Пусто, когда сервер без защиты (по умолчанию у v1).
         /// </summary>
         public string Password { get; set; }
 
         public bool HasAuth => !string.IsNullOrEmpty(Password);
 
         /// <summary>
-        /// Full base URL (e.g., http://localhost:4096).
+        /// Полный базовый URL (например, http://localhost:4096).
         /// </summary>
         public string BaseUrl => $"http://{Host}:{Port}";
 

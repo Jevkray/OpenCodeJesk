@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace OpenCodeJesk.Models
 {
     /// <summary>
-    /// Represents an OpenCode session.
+    /// Сессия OpenCode.
     /// </summary>
     public class Session
     {

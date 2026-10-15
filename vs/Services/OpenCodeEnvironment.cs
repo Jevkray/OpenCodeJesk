@@ -4,12 +4,12 @@ using System.IO;
 namespace OpenCodeJesk.Services
 {
     /// <summary>
-    /// Represents an OpenCode data environment (config / data / state / cache).
-    /// OpenCode honours the XDG base-directory variables on every OS, so an
-    /// environment is fully described by these four directories.
+    /// Окружение данных OpenCode (config / data / state / cache).
+    /// OpenCode учитывает переменные базовых каталогов XDG во всех ОС, поэтому
+    /// окружение полностью описывается этими четырьмя каталогами.
     ///
     /// <list type="bullet">
-    ///   <item><see cref="Global"/> - the default CLI/desktop environment
+    ///   <item><see cref="Global"/> — стандартное окружение CLI/Desktop
     ///   (~/.config/opencode, ~/.local/share/opencode, ...).</item>
     /// </list>
     /// </summary>
@@ -20,7 +20,7 @@ namespace OpenCodeJesk.Services
         public string StateDir { get; }
         public string CacheDir { get; }
 
-        /// <summary>Human-readable label for this environment.</summary>
+        /// <summary>Читаемое человеком название этого окружения.</summary>
         public string Name { get; set; }
 
         public OpenCodeEnvironment(string configDir, string dataDir, string stateDir, string cacheDir)
@@ -31,7 +31,7 @@ namespace OpenCodeJesk.Services
             CacheDir = cacheDir;
         }
 
-        /// <summary>The default global CLI / desktop environment (XDG defaults).</summary>
+        /// <summary>Стандартное глобальное окружение CLI / Desktop (значения XDG по умолчанию).</summary>
         public static OpenCodeEnvironment Global()
         {
             var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -75,7 +75,7 @@ namespace OpenCodeJesk.Services
         public string AuthFile => Path.Combine(DataDir, "auth.json");
         public string DatabaseFile => Path.Combine(DataDir, "opencode.db");
 
-        /// <summary>Directory of the currently running extension assembly.</summary>
+        /// <summary>Каталог текущей запущенной сборки расширения.</summary>
         public static string ExtensionDir
         {
             get

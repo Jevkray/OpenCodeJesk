@@ -1,13 +1,13 @@
 ﻿namespace OpenCodeJesk.Services
 {
     /// <summary>
-    /// Resolves the project root directory from Visual Studio solution or Git repository.
+    /// Определяет корневой каталог проекта по решению Visual Studio или Git-репозиторию.
     /// </summary>
     public interface IProjectRootResolver
     {
         /// <summary>
-        /// Returns the project root path with normalized forward slashes.
-        /// Git root has higher priority than solution root.
+        /// Возвращает корневой путь проекта с нормализованными прямыми слэшами.
+        /// Корень Git имеет приоритет над корнем решения.
         /// </summary>
         string ResolveProjectRoot();
     }

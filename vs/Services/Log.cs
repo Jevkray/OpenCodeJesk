@@ -4,9 +4,9 @@ using System.IO;
 namespace OpenCodeJesk.Services
 {
     /// <summary>
-    /// Minimal, dependency-free file logger for OpenCode Jesk. Writes to
-    /// %LOCALAPPDATA%\OpenCodeJesk\logs\opencode-jesk.log so users can
-    /// diagnose connection issues without a debugger attached.
+    /// Простой файловый логгер без зависимостей. Пишет в
+    /// %LOCALAPPDATA%\OpenCodeJesk\logs\opencode-jesk.log, чтобы пользователь
+    /// мог разобраться с проблемами соединения без отладчика.
     /// </summary>
     public static class Log
     {

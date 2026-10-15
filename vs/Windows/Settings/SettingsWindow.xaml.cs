@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -461,8 +460,6 @@ namespace OpenCodeJesk
             if (fontSizeText != null) fontSizeText.Text = ((int)e.NewValue).ToString();
         }
 
-        private void OnFontChanged(object sender, RoutedEventArgs e) { }
-
         private void OnInterfaceChanged(object sender, SelectionChangedEventArgs e)
         {
             ApplyVersionLock();
@@ -918,7 +915,7 @@ namespace OpenCodeJesk
             }
         }
 
-        // ---- Import ------------------------------------------------------
+        // ---- Импорт ------------------------------------------------------
 
         private void OnBrowseImportClick(object sender, RoutedEventArgs e) => _import.Browse(this);
 

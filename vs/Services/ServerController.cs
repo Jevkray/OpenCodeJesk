@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,8 +8,8 @@ using OpenCodeJesk.Models;
 namespace OpenCodeJesk.Services
 {
     /// <summary>
-    /// Manages OpenCode server lifecycle independently of any tool window.
-    /// Supports ownership transfer between windows with mutual exclusion.
+    /// Управляет жизненным циклом сервера OpenCode независимо от tool window.
+    /// Поддерживает передачу владения между окнами с взаимным исключением.
     /// </summary>
     public class ServerController : IDisposable
     {
@@ -55,7 +54,7 @@ namespace OpenCodeJesk.Services
         }
 
         /// <summary>
-        /// Start server for the given project root, creating or finding a session.
+        /// Запускает сервер для заданного корня проекта и подбирает активную сессию.
         /// </summary>
         public async Task<bool> StartAsync(string projectRoot)
         {
@@ -92,10 +91,10 @@ namespace OpenCodeJesk.Services
                     return false;
             }
 
-            // Find an existing session for this project. We deliberately do NOT
-            // create one here: the OpenCode web UI does that on demand, and
-            // auto-creating an empty session on every project change only adds
-            // clutter. If nothing is found we simply open the web UI home.
+            // Ищем существующую сессию проекта. Специально НЕ создаём здесь новую:
+            // веб-UI OpenCode делает это по требованию, а автосоздание пустой
+            // сессии при каждой смене проекта только засоряет список.
+            // Если ничего не найдено — просто открываем главную веб-UI.
             Models.Session curSession = null;
             try
             {
@@ -116,7 +115,7 @@ namespace OpenCodeJesk.Services
 
             _currentSessionId = curSession?.Id;
 
-            // Start connection monitoring
+            // Запускаем мониторинг соединения
             if (_connectionMonitor == null)
             {
                 _connectionMonitor = new ConnectionMonitor(_serverService, 5000);

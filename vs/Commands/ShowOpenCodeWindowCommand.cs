@@ -34,7 +34,7 @@ namespace OpenCodeJesk.Commands
 
         public void RefreshWindow()
         {
-            _  = _package.RefreshOpenCodeWindowAsync();
+            _ = _package.RefreshOpenCodeWindowAsync();
         }
 
         private void Execute(object sender, EventArgs e)

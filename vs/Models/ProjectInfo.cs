@@ -3,7 +3,7 @@
 namespace OpenCodeJesk.Models
 {
     /// <summary>
-    /// Project info from GET /project or /project/current.
+    /// Информация о проекте из GET /project или /project/current.
     /// </summary>
     public class ProjectInfo
     {
