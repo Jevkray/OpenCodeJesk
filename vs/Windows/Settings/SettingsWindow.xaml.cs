@@ -31,7 +31,6 @@ namespace OpenCodeJesk
         private DateTime _installStartedAt;
         private string _lastNpmLine;
         private DispatcherTimer _qsProgressTimer;
-        private double _qsProgressTarget;
         private readonly CliInstallService _cliInstall = new CliInstallService();
         private readonly CliVersionStatusService _versionStatus = new CliVersionStatusService();
         private readonly Action _onOpenPanel;
@@ -781,25 +780,24 @@ namespace OpenCodeJesk
         /// <summary>Останавливает таймер по завершении/ошибке/отмене.</summary>
         private void StopInstallTimer() => _installTimer?.Stop();
 
-        /// <summary>Запускает таймер прогресса Quick Start: рост асимптотически к потолку ~95%.</summary>
+        /// <summary>Запускает общий таймер прогресса: обе полосы линейно идут к 95% за ~15 c.</summary>
         private void StartQsProgressTimer()
         {
-            _qsProgressTarget = 0;
             if (_qsProgressTimer == null)
             {
                 _qsProgressTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(120) };
                 _qsProgressTimer.Tick += (_, __) =>
                 {
-                    // Потолок медленно растёт до 95: до фактического завершения 100 не достигается.
-                    _qsProgressTarget = Math.Min(95, _qsProgressTarget + 0.4);
-                    // Чем ближе к потолку, тем медленнее рост (асимптота).
-                    qsProgress.Value += (_qsProgressTarget - qsProgress.Value) * 0.05;
+                    // 95% примерно за 15 секунд; 100% — только по факту завершения.
+                    var pct = Math.Min(95, (DateTime.Now - _installStartedAt).TotalSeconds / 15.0 * 95.0);
+                    if (qsProgress != null) qsProgress.Value = pct;
+                    if (installProgress != null) installProgress.Value = pct;
                 };
             }
             _qsProgressTimer.Start();
         }
 
-        /// <summary>Останавливает таймер прогресса Quick Start.</summary>
+        /// <summary>Останавливает общий таймер прогресса.</summary>
         private void StopQsProgressTimer() => _qsProgressTimer?.Stop();
 
         /// <summary>Прошедшее время установки в формате м:сс.</summary>
@@ -851,10 +849,8 @@ namespace OpenCodeJesk
             if (checkVersionsButton != null) checkVersionsButton.IsEnabled = !busy;
             if (installSiteLink != null) installSiteLink.IsEnabled = !busy;
             if (installDocsLink != null) installDocsLink.IsEnabled = !busy;
-            if (installProgress != null)
-                installProgress.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
-            if (installCancelButton != null)
-                installCancelButton.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
+            if (installProgressPanel != null)
+                installProgressPanel.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
 
             // Блок прогресса Quick Start: показывается только на время установки.
             if (qsProgressPanel != null)
@@ -864,12 +860,14 @@ namespace OpenCodeJesk
                     qsProgressPanel.Visibility = Visibility.Visible;
                     qsProgress.Value = 0;
                     qsProgressLog.Text = string.Empty;
+                    if (installProgress != null) installProgress.Value = 0;
                     StartQsProgressTimer();
                 }
                 else
                 {
                     StopQsProgressTimer();
                     qsProgress.Value = 100;
+                    if (installProgress != null) installProgress.Value = 100;
                 }
             }
         }
