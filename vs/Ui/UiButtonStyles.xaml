@@ -45,7 +45,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="b" Property="Background" Value="#1e3a6b" />
-                            <Setter TargetName="b" Property="BorderBrush" Value="#5EACFC" />
+                            <Setter TargetName="b" Property="BorderBrush" Value="#2A78FC" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="b" Property="Opacity" Value="0.45" />

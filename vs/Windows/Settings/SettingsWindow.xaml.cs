@@ -809,6 +809,13 @@ namespace OpenCodeJesk
             if (installProgress != null) installProgress.Value = pct;
         }
 
+        /// <summary>Скругляет клип контейнера полосы по радиусу полосы (8), чтобы «зайчик» не выходил за углы.</summary>
+        private void OnShimmerClipSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (sender is Grid grid && grid.ActualWidth > 0 && grid.ActualHeight > 0)
+                grid.Clip = new RectangleGeometry(new Rect(0, 0, grid.ActualWidth, grid.ActualHeight), 8, 8);
+        }
+
         /// <summary>Запускает «зайчик» на обеих полосах прогресса.</summary>
         private void StartShimmer()
         {
