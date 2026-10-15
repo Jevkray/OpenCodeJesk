@@ -1,10 +1,10 @@
-<div align="center">
+﻿<div align="center">
 
 <img src="https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/vs/Resources/PreviewImageJesk.png" width="240" alt="OpenCode Jesk" />
 
-# 🔵 OpenCode Jesk
+# рџ”µ OpenCode Jesk
 
-**The OpenCode AI coding agent — natively inside Visual Studio.**
+**The OpenCode AI coding agent вЂ” natively inside Visual Studio.**
 
 *Formerly OpenCode Studio. A fast, self-contained tool window with a settings/import wizard and shared chat history.*
 
@@ -15,30 +15,24 @@
 ![License](https://img.shields.io/badge/license-MIT-2A78FC)
 ![.NET](https://img.shields.io/badge/.NET%20Framework-4.7.2-2A78FC)
 
-**[English](README.md) · [Русский](README.ru.md)**
+**[English](README.md) В· [Р СѓСЃСЃРєРёР№](README.ru.md)**
 
 </div>
 
 ---
 
 > [!IMPORTANT]
-> **Renamed: OpenCode Studio → OpenCode Jesk.** This is the same extension under a new name, and it stays fully compatible — your settings, providers, credentials and chat history are kept. **OpenCode Studio support ends on 20.10.2026.** Please switch to the new [OpenCode Jesk on the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk).
+> **Renamed: OpenCode Studio в†’ OpenCode Jesk.** This is the same extension under a new name, and it stays fully compatible вЂ” your settings, providers, credentials and chat history are kept. **OpenCode Studio support ends on 20.10.2026.** Please switch to the new [OpenCode Jesk on the Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk).
 
 > [!TIP]
-> **One environment, everywhere.** OpenCode Jesk shares the same data as the OpenCode CLI and desktop app — your providers, settings, credentials and **every chat** are already there. No setup, no duplication.
+> **One environment, everywhere.** OpenCode Jesk shares the same data as the OpenCode CLI and desktop app вЂ” your providers, settings, credentials and **every chat** are already there. No setup, no duplication.
 
-## 📸 Preview
+## рџ“ё Preview
 
-![OpenCode Jesk — all panel versions](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/preview-collage.png)
-*OpenCode Jesk — all panel versions.*
+![OpenCode Jesk вЂ” all panel versions](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/preview-collage.png)
+*OpenCode Jesk вЂ” all panel versions.*
 
-![OpenCode Jesk — Desktop (Web) panel](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png)
-*The panel in **Desktop (Web)** mode — the full OpenCode web UI inside the tool window.*
-
-![OpenCode Jesk — CLI (terminal) panel](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-cli.png)
-*The panel in **CLI (terminal)** mode — a plain terminal with OpenCode already running.*
-
-## 🆕 What's new
+## рџ†• What's new
 
 - **1.2.0** - **Desktop (Web)** and **CLI (terminal)** interface modes in the same panel; shared chat between modes; a dedicated **Settings** window (General, Terminal, Server, Updates, Import); auto-open on solution open; **web zoom**; terminal font, size, cursor and scrollback; server port/arguments/idle stop; marketplace update checks; **v1 / v2 preview** support; safe import with backups; and the rename to **OpenCode Jesk**.
 - **1.1.5.1** (minor hotfix) - More reliable **Open Extension Manager** action (opens the Visual Studio extension manager, Updates page first); the update window now hides until the next Visual Studio restart on any action, and explains how to turn the notifications off in settings.
@@ -50,48 +44,48 @@
   - The first-run wizard is now a **Settings** window with **Import** and **Settings** tabs; the button is **Save selected** and applies both imports and settings.
 - **1.1.0** - Statistics button in the OpenCode panel: open your profile and check real usage without leaving Visual Studio.
 
-## ✨ Why OpenCode Jesk?
+## вњЁ Why OpenCode Jesk?
 
 | | |
 |---|---|
-| 🧠 | **Real OpenCode, not a clone** — the complete official web UI, rendered directly in Visual Studio. |
-| 🔄 | **Shared history** — the same chats as the CLI and desktop app, across every Visual Studio window. |
-| 🗂️ | **Current project by default** — new-chat view selects the open Visual Studio solution/repository; other projects and chats remain accessible. |
-| ⌨️ | **Desktop / CLI** — the Web panel, or a plain terminal with OpenCode already running inside the same panel, for both v1 and v2 preview. |
-| 📈 | **Profile & usage in one click** — the statistics button opens your OpenCode console inside the panel, so you can check real spend and limits without switching to a browser. |
-| 📥 | **Settings & import wizard** — import settings, themes, credentials and history in one click. |
-| 🔁 | **Auto-reconnect** — recovers the session by itself if the server drops. |
-| 🔒 | **Local-first** — loopback only, zero telemetry. |
-| 🪶 | **Lightweight** — one VSIX for Visual Studio 2022 and 2026. |
+| рџ§  | **Real OpenCode, not a clone** вЂ” the complete official web UI, rendered directly in Visual Studio. |
+| рџ”„ | **Shared history** вЂ” the same chats as the CLI and desktop app, across every Visual Studio window. |
+| рџ—‚пёЏ | **Current project by default** вЂ” new-chat view selects the open Visual Studio solution/repository; other projects and chats remain accessible. |
+| вЊЁпёЏ | **Desktop / CLI** вЂ” the Web panel, or a plain terminal with OpenCode already running inside the same panel, for both v1 and v2 preview. |
+| рџ“€ | **Profile & usage in one click** вЂ” the statistics button opens your OpenCode console inside the panel, so you can check real spend and limits without switching to a browser. |
+| рџ“Ґ | **Settings & import wizard** вЂ” import settings, themes, credentials and history in one click. |
+| рџ”Ѓ | **Auto-reconnect** вЂ” recovers the session by itself if the server drops. |
+| рџ”’ | **Local-first** вЂ” loopback only, zero telemetry. |
+| рџЄ¶ | **Lightweight** вЂ” one VSIX for Visual Studio 2022 and 2026. |
 
-- ⚙️ **Update check toggle** - turn update notifications on or off in settings.
+- вљ™пёЏ **Update check toggle** - turn update notifications on or off in settings.
 
-## ⌨️ Web and CLI
+## вЊЁпёЏ Web and CLI
 
-Choose **Desktop (Web)** or **CLI** in **Settings → Settings → Interface**. The mode selector is only in settings, not in the panel. The **Use OpenCode v2.x (preview)** option is independent and applies to both modes.
+Choose **Desktop (Web)** or **CLI** in **Settings в†’ Settings в†’ Interface**. The mode selector is only in settings, not in the panel. The **Use OpenCode v2.x (preview)** option is independent and applies to both modes.
 
-Desktop keeps the existing WebView2 integration. CLI shows a plain terminal with OpenCode already running — no Visual Studio terminal chrome, no extra UI, just the terminal and the agent. It lives in the same OpenCode Jesk panel, so Visual Studio keeps its docked position and size, and it starts automatically in the project directory.
+Desktop keeps the existing WebView2 integration. CLI shows a plain terminal with OpenCode already running вЂ” no Visual Studio terminal chrome, no extra UI, just the terminal and the agent. It lives in the same OpenCode Jesk panel, so Visual Studio keeps its docked position and size, and it starts automatically in the project directory.
 
-Both modes connect to the same server. Switching from Web to CLI can continue the selected chat. History remains within the selected OpenCode version — v1/v2 database formats are not converted automatically. Opening Jesk defaults the new-chat view to the solution's Git root, or the solution directory if there is no repository.
+Both modes connect to the same server. Switching from Web to CLI can continue the selected chat. History remains within the selected OpenCode version вЂ” v1/v2 database formats are not converted automatically. Opening Jesk defaults the new-chat view to the solution's Git root, or the solution directory if there is no repository.
 
 Verification: build Release, then run `tests\Run-TerminalSmoke.ps1`. The check uses isolated test data and covers the terminal (ConPTY), v1/v2 shared sessions, and terminal rendering in WebView2.
 
-## 🚀 Quick start
+## рџљЂ Quick start
 
 ```text
-  View   →  Other Windows  →  OpenCode Jesk          🔹 the agent
-  Tools  →  OpenCode Jesk Settings                   📥 setup wizard
+  View   в†’  Other Windows  в†’  OpenCode Jesk          рџ”№ the agent
+  Tools  в†’  OpenCode Jesk Settings                   рџ“Ґ setup wizard
 ```
 
 > [!NOTE]
 > **Requirement:** the [OpenCode CLI](https://opencode.ai) must be installed and available on your `PATH`.
 
 <details>
-<summary><b>📦 Installation</b></summary>
+<summary><b>рџ“¦ Installation</b></summary>
 
 **From the Visual Studio Marketplace (recommended)**
 
-1. In Visual Studio open **Extensions → Manage Extensions**.
+1. In Visual Studio open **Extensions в†’ Manage Extensions**.
 2. Search for **OpenCode Jesk** and install it.
 3. Restart Visual Studio.
 
@@ -102,62 +96,62 @@ Verification: build Release, then run `tests\Run-TerminalSmoke.ps1`. The check u
 
 </details>
 
-## 🔗 Syncing chat history
+## рџ”— Syncing chat history
 
-OpenCode stores every session **against the project directory it was created in**. Because OpenCode Jesk shares the same data as the CLI and desktop app, all chats are already available — but grouped by project path.
+OpenCode stores every session **against the project directory it was created in**. Because OpenCode Jesk shares the same data as the CLI and desktop app, all chats are already available вЂ” but grouped by project path.
 
 > [!IMPORTANT]
 > If a project lives at a **different absolute path** than when its chats were created (another drive, another user name, a moved or renamed folder), those sessions stay under the original path. **Line up the project paths and everything synchronizes.**
 
-1. Open each project at the **same absolute path** it originally used — e.g. `C:\Users\<you>\source\repos\MyApp`.
-2. If the path changed, move the project back, or import the old data via **Tools → OpenCode Jesk Settings** pointing at the folder with the original `opencode.db`.
-3. Reopen the tool window — the sessions appear under the matching project.
+1. Open each project at the **same absolute path** it originally used вЂ” e.g. `C:\Users\<you>\source\repos\MyApp`.
+2. If the path changed, move the project back, or import the old data via **Tools в†’ OpenCode Jesk Settings** pointing at the folder with the original `opencode.db`.
+3. Reopen the tool window вЂ” the sessions appear under the matching project.
 
-Once the paths match, **all chats sync** between the CLI, the desktop app and every Visual Studio window. 🎉
+Once the paths match, **all chats sync** between the CLI, the desktop app and every Visual Studio window. рџЋ‰
 
 ## Usage statistics
 
 Statistics are not part of this release yet. Use the statistics button in the OpenCode panel to open the OpenCode Console (usage and limits) directly.
 
-## 🧱 Architecture
+## рџ§± Architecture
 
 OpenCode Jesk keeps a deliberately small, decoupled core.
 
 ```text
- ┌──────────────────────────────────────────────────────────────┐
- │  OpenCodeJeskPackage            VS package & commands      │
- ├──────────────────────────────────────────────────────────────┤
- │  ServerController                server + session lifecycle  │
- │    ├── OpenCodeServerService      launches `opencode serve`  │
- │    ├── OpenCodeSessionService     /session, /project API     │
- │    ├── ConnectionMonitor          periodic health checks     │
- │    └── ProcessBinding             dies with Visual Studio    │
- ├──────────────────────────────────────────────────────────────┤
- │  OpenCodeToolWindowControl        WebView2 host              │
- │    └── opens http://127.0.0.1:<port>/ (the web UI home)      │
- ├──────────────────────────────────────────────────────────────┤
- │  SettingsWindow / ImportService   settings & import wizard   │
- │    └── OpenCodeEnvironment / Log                             │
- └──────────────────────────────────────────────────────────────┘
+ в”Њв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”ђ
+ в”‚  OpenCodeJeskPackage            VS package & commands      в”‚
+ в”њв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”¤
+ в”‚  ServerController                server + session lifecycle  в”‚
+ в”‚    в”њв”Ђв”Ђ OpenCodeServerService      launches `opencode serve`  в”‚
+ в”‚    в”њв”Ђв”Ђ OpenCodeSessionService     /session, /project API     в”‚
+ в”‚    в”њв”Ђв”Ђ ConnectionMonitor          periodic health checks     в”‚
+ в”‚    в””в”Ђв”Ђ ProcessBinding             dies with Visual Studio    в”‚
+ в”њв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”¤
+ в”‚  OpenCodeToolWindowControl        WebView2 host              в”‚
+ в”‚    в””в”Ђв”Ђ opens http://127.0.0.1:<port>/ (the web UI home)      в”‚
+ в”њв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”¤
+ в”‚  SettingsWindow / ImportService   settings & import wizard   в”‚
+ в”‚    в””в”Ђв”Ђ OpenCodeEnvironment / Log                             в”‚
+ в””в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”
 ```
 
 > [!TIP]
 > **Design principles**
-> - **No proxy layer** — WebView2 talks to the real server origin, so the UI is authentic and update-proof.
-> - **Shared data** — runs in your default environment, in sync with the CLI and desktop app.
-> - **One server per machine** — every Visual Studio window reuses the same OpenCode server.
-> - **Local by default** — loopback only, no outbound calls except your providers.
+> - **No proxy layer** вЂ” WebView2 talks to the real server origin, so the UI is authentic and update-proof.
+> - **Shared data** вЂ” runs in your default environment, in sync with the CLI and desktop app.
+> - **One server per machine** вЂ” every Visual Studio window reuses the same OpenCode server.
+> - **Local by default** вЂ” loopback only, no outbound calls except your providers.
 
-## 🧩 Requirements
+## рџ§© Requirements
 
 | Component | Version |
 |---|---|
-| 🖥️ Visual Studio | 2022 and 2026 |
-| ⚡ OpenCode CLI | v1 and v2 (beta), installed and on `PATH` |
-| 🛠️ .NET SDK *(build from source)* | .NET 10 |
-| 🌐 WebView2 Runtime | bundled with Windows 10/11 and VS |
+| рџ–ҐпёЏ Visual Studio | 2022 and 2026 |
+| вљЎ OpenCode CLI | v1 and v2 (beta), installed and on `PATH` |
+| рџ› пёЏ .NET SDK *(build from source)* | .NET 10 |
+| рџЊђ WebView2 Runtime | bundled with Windows 10/11 and VS |
 
-## 🔨 Building from source
+## рџ”Ё Building from source
 
 ```bash
 git clone https://github.com/Jevkray/OpenCodeStudio.git
@@ -165,21 +159,21 @@ cd OpenCodeStudio
 dotnet build vs/OpenCodeJesk.csproj -c Release
 ```
 
-The VSIX is produced at `vs/bin/Release/net472/OpenCodeJesk.vsix`. To build the release VSIX and copy it to the repository root and Desktop, run `build.ps1`. For a debug run, open `OpenCodeJesk.sln` and press **F5** to launch the experimental instance. 🧪
+The VSIX is produced at `vs/bin/Release/net472/OpenCodeJesk.vsix`. To build the release VSIX and copy it to the repository root and Desktop, run `build.ps1`. For a debug run, open `OpenCodeJesk.sln` and press **F5** to launch the experimental instance. рџ§Є
 
-## ⚙️ Settings
+## вљ™пёЏ Settings
 
-![OpenCode Jesk — Settings: all tabs](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/settings-collage.png)
+![OpenCode Jesk вЂ” Settings: all tabs](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/settings-collage.png)
 *Settings: all tabs.*
 
-## 🛡️ Privacy
+## рџ›ЎпёЏ Privacy
 
-- 🖧 the server binds to `127.0.0.1` only
-- 🔑 credentials are stored by OpenCode itself in your own environment
-- 🚫 no telemetry, no analytics
-- 📈 the usage overlay signs in to the OpenCode Console and reads your usage and limits from `opencode.ai` using your own session cookie (stored encrypted with DPAPI) — no other data leaves your machine.
+- рџ–§ the server binds to `127.0.0.1` only
+- рџ”‘ credentials are stored by OpenCode itself in your own environment
+- рџљ« no telemetry, no analytics
+- рџ“€ the usage overlay signs in to the OpenCode Console and reads your usage and limits from `opencode.ai` using your own session cookie (stored encrypted with DPAPI) вЂ” no other data leaves your machine.
 
-## 💬 Contacts & Support
+## рџ’¬ Contacts & Support
 
 <div align="center">
 
@@ -190,8 +184,8 @@ The VSIX is produced at `vs/bin/Release/net472/OpenCodeJesk.vsix`. To build the 
 
 </div>
 
-## 📜 License
+## рџ“њ License
 
 Released under the [MIT License](LICENSE).
 
-<div align="center"><sub>Built for the OpenCode community · Not affiliated with OpenCode or Microsoft.</sub></div>
+<div align="center"><sub>Built for the OpenCode community В· Not affiliated with OpenCode or Microsoft.</sub></div>
