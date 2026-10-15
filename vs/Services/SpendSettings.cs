@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using Microsoft.VisualStudio.Shell;
 
 namespace OpenCodeStudio.Services
 {
     /// <summary>
-    /// Настройки OpenCode Studio. Читаются кастомным окном Settings и сервисами
+    /// Настройки OpenCode Jesk. Читаются кастомным окном Settings и сервисами
     /// через статический <see cref="Current"/>.
     /// </summary>
     public class SpendSettings : DialogPage

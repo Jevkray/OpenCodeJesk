@@ -28,16 +28,8 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
-  <!-- Бренд Jesk: -p:Brand=Jesk включает отдельные GUID/строки (см. Brand.cs). -->
-  <PropertyGroup Condition="'$(Brand)'=='Jesk'">
-    <DefineConstants>$(DefineConstants);JESK</DefineConstants>
-    <VsctFile>Package\OpenCodeStudioPackage.jesk.vsct</VsctFile>
-  </PropertyGroup>
-  <ItemGroup Condition="'$(Brand)'=='Jesk'">
-    <Page Remove="Windows\Dialogs\RenameNoticeWindow.xaml" />
-    <Compile Remove="Windows\Dialogs\RenameNoticeWindow.xaml.cs" />
-  </ItemGroup>
-  <PropertyGroup Condition="'$(Brand)'!='Jesk'">
+  <!-- Единый бренд OpenCode Jesk: VSCT-файл задан безусловно. -->
+  <PropertyGroup>
     <VsctFile>Package\OpenCodeStudioPackage.vsct</VsctFile>
   </PropertyGroup>
 

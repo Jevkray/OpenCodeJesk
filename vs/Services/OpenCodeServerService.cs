@@ -221,7 +221,7 @@ namespace OpenCodeStudio.Services
         }
 
         /// <summary>
-        /// Tries to reuse a server recorded by another OpenCode Studio instance
+        /// Tries to reuse a server recorded by another OpenCode Jesk instance
         /// (other Visual Studio windows). Returns true when a healthy server was
         /// found and adopted.
         /// </summary>

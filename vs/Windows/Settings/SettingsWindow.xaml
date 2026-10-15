@@ -1,4 +1,4 @@
-<Window x:Class="OpenCodeStudio.SettingsWindow"
+﻿<Window x:Class="OpenCodeStudio.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="OpenCode Settings"
@@ -815,7 +815,7 @@
                                 <Expander Uid="server.path.details" Header="Details"
                                           Style="{StaticResource MoreExpander}">
                                     <TextBlock Uid="server.path.desc" Style="{StaticResource MoreText}"
-                                               Text="Full path to the opencode executable. Leave it empty and OpenCode Studio finds opencode/opencode2 on PATH automatically. Set it when you use a custom build or a non-standard install. Example: C:\tools\opencode\opencode.exe." />
+                                               Text="Full path to the opencode executable. Leave it empty and OpenCode Jesk finds opencode/opencode2 on PATH automatically. Set it when you use a custom build or a non-standard install. Example: C:\tools\opencode\opencode.exe." />
                                 </Expander>
                             </StackPanel>
                         </Border>
@@ -878,11 +878,11 @@
                                           Style="{StaticResource ToggleCheckBox}"
                                           Content="Check for new versions" />
                                 <TextBlock Uid="updates.check.hint" Style="{StaticResource CardHint}"
-                                           Text="Looks for a newer OpenCode Studio version on the Marketplace and shows a notification." />
+                                           Text="Looks for a newer OpenCode Jesk version on the Marketplace and shows a notification." />
                                 <Expander Uid="updates.check.details" Header="Details"
                                            Style="{StaticResource MoreExpander}">
                                     <TextBlock Uid="updates.check.desc" Style="{StaticResource MoreText}"
-                                               Text="When on, OpenCode Studio periodically checks the Marketplace for a newer version and shows a notification. Example: keep it on to learn about updates; turn it off on offline machines." />
+                                               Text="When on, OpenCode Jesk periodically checks the Marketplace for a newer version and shows a notification. Example: keep it on to learn about updates; turn it off on offline machines." />
                                 </Expander>
                                 <TextBlock Uid="updates.minutes" Text="Check every (minutes)"
                                            Style="{StaticResource FieldLabel}" />

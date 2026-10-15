@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +16,7 @@ namespace OpenCodeStudio.Services
     }
 
     /// <summary>
-    /// Проверяет последнюю версию OpenCode Studio на Visual Studio Marketplace
+    /// Проверяет последнюю версию OpenCode Jesk на Visual Studio Marketplace
     /// и подтягивает release notes из GitHub. Все ошибки проглатываются.
     /// </summary>
     public sealed class ExtensionUpdateService
@@ -57,7 +57,7 @@ namespace OpenCodeStudio.Services
                         "Accept", "application/json;api-version=7.2-preview.1");
 
                     var body = new StringContent(
-                        "{\"filters\":[{\"criteria\":[{\"filterType\":7,\"value\":\"jevkray.OpenCodeStudio\"}]}],\"flags\":914}",
+                        "{\"filters\":[{\"criteria\":[{\"filterType\":7,\"value\":\"jevkray.OpenCodeJesk\"}]}],\"flags\":914}",
                         Encoding.UTF8, "application/json");
 
                     var response = await client.PostAsync(MarketplaceQueryUrl, body);

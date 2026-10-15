@@ -52,7 +52,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 - Version bumped to **1.2.0**.
-- One codebase now builds **two brands** (OpenCode Studio and OpenCode Jesk) via `build-both.ps1`.
+- One codebase now builds a single brand, **OpenCode Jesk**, via `build.ps1`.
 
 ## [1.1.5.1] - 2026-10-01
 

@@ -162,7 +162,7 @@ cd OpenCodeStudio
 dotnet build vs/OpenCodeStudio.csproj -c Release
 ```
 
-The VSIX is produced at `vs/bin/Release/net472/OpenCodeStudio.vsix`. To build both brands (Studio and Jesk) at once, run `build-both.ps1`. For a debug run, open `OpenCodeStudio.sln` and press **F5** to launch the experimental instance. 🧪
+The VSIX is produced at `vs/bin/Release/net472/OpenCodeStudio.vsix`. To build the release VSIX and copy it to the repository root and Desktop, run `build.ps1`. For a debug run, open `OpenCodeStudio.sln` and press **F5** to launch the experimental instance. 🧪
 
 ## ⚙️ Settings
 

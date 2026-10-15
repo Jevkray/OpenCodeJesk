@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.IO;
 
 namespace OpenCodeStudio.Services
 {
     /// <summary>
-    /// Minimal, dependency-free file logger for OpenCode Studio. Writes to
+    /// Minimal, dependency-free file logger for OpenCode Jesk. Writes to
     /// %LOCALAPPDATA%\OpenCodeStudio\logs\opencode-studio.log so users can
     /// diagnose connection issues without a debugger attached.
     /// </summary>

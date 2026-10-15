@@ -152,47 +152,8 @@ namespace OpenCodeStudio
                 Services.Log.Error("InitializeAsync step 6 failed", ex);
             }
 
-#if !JESK
-            try
-            {
-                ShowRenameNotice();
-                Services.Log.Info("InitializeAsync step 7: rename notice scheduled");
-            }
-            catch (Exception ex)
-            {
-                Services.Log.Error("InitializeAsync step 7 failed", ex);
-            }
-#endif
             Services.Log.Info("InitializeAsync completed");
         }
-
-#if !JESK
-        /// <summary>
-        /// Уведомление о переименовании в OpenCode Jesk. Показывается при запуске
-        /// Visual Studio, пока пользователь не отметит «не показывать снова».
-        /// </summary>
-        private void ShowRenameNotice()
-        {
-            var marker = System.IO.Path.Combine(Services.OpenCodeEnvironment.StudioDir, "rename-notice.done");
-            try { if (System.IO.File.Exists(marker)) return; } catch { }
-
-            _ = JoinableTaskFactory.RunAsync(async () =>
-            {
-                try
-                {
-                    await Task.Delay(6000);
-                    await JoinableTaskFactory.SwitchToMainThreadAsync();
-                    var window = new RenameNoticeWindow();
-                    window.Show();
-                    Services.Log.Info("Rename notice shown");
-                }
-                catch (Exception ex)
-                {
-                    Services.Log.Error("Rename notice failed", ex);
-                }
-            });
-        }
-#endif
 
         /// <summary>
         /// Фоновая проверка новой версии самого opencode: первая через ~30 c,

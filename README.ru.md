@@ -162,7 +162,7 @@ cd OpenCodeStudio
 dotnet build vs/OpenCodeStudio.csproj -c Release
 ```
 
-VSIX появится в `vs/bin/Release/net472/OpenCodeStudio.vsix`. Для сборки обоих брендов сразу (Studio и Jesk) запустите `build-both.ps1`. Для отладки откройте `OpenCodeStudio.sln` и нажмите **F5** (экспериментальный экземпляр). 🧪
+VSIX появится в `vs/bin/Release/net472/OpenCodeStudio.vsix`. Для сборки релизного VSIX с копированием в корень репозитория и на Рабочий стол запустите `build.ps1`. Для отладки откройте `OpenCodeStudio.sln` и нажмите **F5** (экспериментальный экземпляр). 🧪
 
 ## ⚙️ Настройки
 

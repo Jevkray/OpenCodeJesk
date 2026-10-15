@@ -23,8 +23,8 @@
         <Parent guid="guidOpenCodeCmdSet" id="grpOpenCodeWindow" />
         <Icon guid="guidImages" id="bmpCommand" />
         <Strings>
-          <ButtonText>OpenCode Studio</ButtonText>
-          <CommandName>OpenCode Studio</CommandName>
+          <ButtonText>OpenCode Jesk</ButtonText>
+          <CommandName>OpenCode Jesk</CommandName>
         </Strings>
       </Button>
       <Button guid="guidOpenCodeCmdSet" id="cmdidShowImport"
@@ -32,8 +32,8 @@
         <Parent guid="guidOpenCodeCmdSet" id="grpOpenCodeWindow" />
         <Icon guid="guidImages" id="bmpCommand" />
         <Strings>
-          <ButtonText>OpenCode Studio Settings</ButtonText>
-          <CommandName>OpenCode Studio Settings</CommandName>
+          <ButtonText>OpenCode Jesk Settings</ButtonText>
+          <CommandName>OpenCode Jesk Settings</CommandName>
         </Strings>
       </Button>
     </Buttons>
@@ -58,9 +58,9 @@
       <IDSymbol name="bmpCommand" value="1" />
     </GuidSymbol>
 
-    <GuidSymbol name="guidOpenCodeStudioPackage" value="{7E4A9C31-2B6D-4F58-9A10-3C8E7B5D1F20}" />
+    <GuidSymbol name="guidOpenCodeStudioPackage" value="{2C99A37C-11F8-4F9F-9A77-D6347B8D3461}" />
 
-    <GuidSymbol name="guidOpenCodeCmdSet" value="{D91F3A72-6C40-4E8B-B25D-8A47F0C63E15}">
+    <GuidSymbol name="guidOpenCodeCmdSet" value="{0B7E5D4C-2A19-4F83-9E61-7C3A5B8D24F0}">
       <IDSymbol name="grpOpenCodeWindow" value="0x1000" />
       <IDSymbol name="cmdidShowOpenCodeWindow" value="0x0100" />
       <IDSymbol name="cmdidShowImport" value="0x0102" />

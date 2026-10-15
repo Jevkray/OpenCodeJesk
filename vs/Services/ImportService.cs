@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -54,7 +54,7 @@ namespace OpenCodeStudio.Services
 
         public ImportService(OpenCodeEnvironment env = null)
         {
-            // OpenCode Studio now shares the user's default OpenCode
+            // OpenCode Jesk now shares the user's default OpenCode
             // environment with the CLI and the desktop app, so history and
             // settings stay in sync everywhere. The wizard therefore targets the
             // shared (global) environment; custom folders can still be imported.
