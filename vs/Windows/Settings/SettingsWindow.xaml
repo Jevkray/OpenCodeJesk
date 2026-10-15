@@ -606,6 +606,41 @@
                                 </StackPanel>
                                 <TextBlock x:Name="qsInstallResult" Style="{StaticResource CardHint}"
                                            Margin="0,10,0,0" TextWrapping="Wrap" />
+                                <!-- Блок прогресса: появляется только после кнопки установки. -->
+                                <StackPanel x:Name="qsProgressPanel" Visibility="Collapsed" Margin="0,14,0,0">
+                                    <Border CornerRadius="8" Padding="12" BorderThickness="1">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#101a30" Offset="0" />
+                                                <GradientStop Color="#151515" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <Border.BorderBrush>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                <GradientStop Color="#2A78FC" Offset="0" />
+                                                <GradientStop Color="#243a6b" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Border.BorderBrush>
+                                        <Grid Height="34">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <ProgressBar x:Name="qsProgress" Grid.Column="0"
+                                                         Minimum="0" Maximum="100"
+                                                         Height="8" VerticalAlignment="Center"
+                                                         Foreground="#2A78FC" Background="#20242e"
+                                                         BorderThickness="0" />
+                                            <Button x:Name="qsCancelButton" Grid.Column="1" Uid="install.cancel"
+                                                    Content="Cancel" Margin="12,0,0,0"
+                                                    VerticalAlignment="Center"
+                                                    Style="{StaticResource GhostButton}"
+                                                    Click="OnInstallCancelClick" />
+                                        </Grid>
+                                    </Border>
+                                    <TextBlock x:Name="qsProgressLog" FontFamily="Consolas" FontSize="12"
+                                               Foreground="#9a9a9a" TextWrapping="Wrap" Margin="0,8,0,0" />
+                                </StackPanel>
                             </StackPanel>
                         </Border>
 

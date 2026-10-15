@@ -30,6 +30,8 @@ namespace OpenCodeJesk
         private DispatcherTimer _installTimer;
         private DateTime _installStartedAt;
         private string _lastNpmLine;
+        private DispatcherTimer _qsProgressTimer;
+        private double _qsProgressTarget;
         private readonly CliInstallService _cliInstall = new CliInstallService();
         private readonly CliVersionStatusService _versionStatus = new CliVersionStatusService();
         private readonly Action _onOpenPanel;
@@ -618,6 +620,7 @@ namespace OpenCodeJesk
                 Dispatcher.Invoke(() =>
                 {
                     _lastNpmLine = line;
+                    if (qsProgressLog != null) qsProgressLog.Text = line;
                     UpdateInstallStatus();
                 });
             }, _installCts.Token);
@@ -771,6 +774,27 @@ namespace OpenCodeJesk
         /// <summary>Останавливает таймер по завершении/ошибке/отмене.</summary>
         private void StopInstallTimer() => _installTimer?.Stop();
 
+        /// <summary>Запускает таймер прогресса Quick Start: рост асимптотически к потолку ~95%.</summary>
+        private void StartQsProgressTimer()
+        {
+            _qsProgressTarget = 0;
+            if (_qsProgressTimer == null)
+            {
+                _qsProgressTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(120) };
+                _qsProgressTimer.Tick += (_, __) =>
+                {
+                    // Потолок медленно растёт до 95: до фактического завершения 100 не достигается.
+                    _qsProgressTarget = Math.Min(95, _qsProgressTarget + 0.4);
+                    // Чем ближе к потолку, тем медленнее рост (асимптота).
+                    qsProgress.Value += (_qsProgressTarget - qsProgress.Value) * 0.05;
+                };
+            }
+            _qsProgressTimer.Start();
+        }
+
+        /// <summary>Останавливает таймер прогресса Quick Start.</summary>
+        private void StopQsProgressTimer() => _qsProgressTimer?.Stop();
+
         /// <summary>Показывает прошедшее время хода установки и последнюю строку npm.</summary>
         private void UpdateInstallStatus()
         {
@@ -793,6 +817,8 @@ namespace OpenCodeJesk
         private void OnInstallCancelClick(object sender, RoutedEventArgs e)
         {
             StopInstallTimer();
+            StopQsProgressTimer();
+            if (qsProgressLog != null) qsProgressLog.Text = Loc("install.cancelled");
             SetInstallResult(Loc("install.cancelled"));
             _installCts?.Cancel();
         }
@@ -810,6 +836,23 @@ namespace OpenCodeJesk
                 installProgress.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
             if (installCancelButton != null)
                 installCancelButton.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
+
+            // Блок прогресса Quick Start: показывается только на время установки.
+            if (qsProgressPanel != null)
+            {
+                if (busy)
+                {
+                    qsProgressPanel.Visibility = Visibility.Visible;
+                    qsProgress.Value = 0;
+                    qsProgressLog.Text = string.Empty;
+                    StartQsProgressTimer();
+                }
+                else
+                {
+                    StopQsProgressTimer();
+                    qsProgress.Value = 100;
+                }
+            }
         }
 
         // ---- Import ------------------------------------------------------
