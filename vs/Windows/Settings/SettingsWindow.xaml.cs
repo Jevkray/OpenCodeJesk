@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using OpenCodeJesk.Services;
 
@@ -31,6 +32,11 @@ namespace OpenCodeJesk
         private DateTime _installStartedAt;
         private string _lastNpmLine;
         private DispatcherTimer _qsProgressTimer;
+        private int _installLogLines;
+        private readonly SolidColorBrush _mutedFg = new SolidColorBrush(Color.FromRgb(0x9a, 0x9a, 0x9a));
+        private readonly SolidColorBrush _successFg = new SolidColorBrush(Color.FromRgb(0x8C, 0xE9, 0x9A));
+        private readonly SolidColorBrush _warnFg = new SolidColorBrush(Color.FromRgb(0xE9, 0xA5, 0x8C));
+        private enum StatusTone { Muted, Success, Warn }
         private readonly CliInstallService _cliInstall = new CliInstallService();
         private readonly CliVersionStatusService _versionStatus = new CliVersionStatusService();
         private readonly Action _onOpenPanel;
@@ -615,11 +621,12 @@ namespace OpenCodeJesk
             var ok = await _cliInstall.InstallAsync(packageSpec, line =>
             {
                 lock (log) { log.Add(line); if (log.Count > 200) log.RemoveAt(0); }
-                // Живой вывод: последняя строка npm на UI-потоке.
+                // Живой вывод: считаем строки npm и обновляем прогресс/статус на UI-потоке.
                 Dispatcher.Invoke(() =>
                 {
+                    _installLogLines++;
                     _lastNpmLine = line;
-                    if (qsProgressLog != null) qsProgressLog.Text = line;
+                    UpdateProgressBars();
                     UpdateInstallStatus();
                 });
             }, _installCts.Token);
@@ -643,7 +650,7 @@ namespace OpenCodeJesk
                 if (_installCts.IsCancellationRequested)
                 {
                     Log.Info("OpenCode install (" + packageSpec + ") cancelled");
-                    SetInstallFinal(Loc("install.cancelled"));
+                    SetInstallFinal(Loc("install.cancelled"), warn: true);
                     return;
                 }
 
@@ -651,14 +658,14 @@ namespace OpenCodeJesk
                 await RefreshInstallStatusAsync(info);
                 Log.Info("OpenCode install (" + packageSpec + ") " + (ok ? "succeeded" : "failed"));
                 SetInstallFinal(ok
-                    ? Loc("install.done")
+                    ? Loc("install.done") + "\n" + Loc("install.completed")
                     : Loc("install.failed") + "\n" + string.Join("\n",
-                        log.Skip(Math.Max(0, log.Count - 10))));
+                        log.Skip(Math.Max(0, log.Count - 10))), success: ok, warn: !ok);
             }
             catch (Exception ex)
             {
                 Log.Error("OpenCode install (" + packageSpec + ") failed", ex);
-                SetInstallFinal(Loc("install.failed") + " " + ex.Message);
+                SetInstallFinal(Loc("install.failed") + " " + ex.Message, warn: true);
             }
             finally
             {
@@ -687,7 +694,7 @@ namespace OpenCodeJesk
                 if (_installCts.IsCancellationRequested)
                 {
                     Log.Info("OpenCode install all cancelled after v2");
-                    SetInstallFinal(Loc("install.cancelled"));
+                    SetInstallFinal(Loc("install.cancelled"), warn: true);
                     return;
                 }
 
@@ -696,7 +703,7 @@ namespace OpenCodeJesk
                 if (_installCts.IsCancellationRequested)
                 {
                     Log.Info("OpenCode install all cancelled after v1");
-                    SetInstallFinal(Loc("install.cancelled"));
+                    SetInstallFinal(Loc("install.cancelled"), warn: true);
                     return;
                 }
 
@@ -706,19 +713,19 @@ namespace OpenCodeJesk
                 Log.Info("OpenCode install all " + (ok ? "succeeded" : "failed"));
                 if (ok)
                 {
-                    SetInstallFinal(Loc("install.done"));
+                    SetInstallFinal(Loc("install.done") + "\n" + Loc("install.completed"), success: true);
                 }
                 else
                 {
                     var tail = logV2.Skip(Math.Max(0, logV2.Count - 5))
                         .Concat(logV1.Skip(Math.Max(0, logV1.Count - 5)));
-                    SetInstallFinal(Loc("install.failed") + "\n" + string.Join("\n", tail));
+                    SetInstallFinal(Loc("install.failed") + "\n" + string.Join("\n", tail), warn: true);
                 }
             }
             catch (Exception ex)
             {
                 Log.Error("OpenCode install all failed", ex);
-                SetInstallFinal(Loc("install.failed") + " " + ex.Message);
+                SetInstallFinal(Loc("install.failed") + " " + ex.Message, warn: true);
             }
             finally
             {
@@ -733,13 +740,6 @@ namespace OpenCodeJesk
         private async Task CheckVersionsAsync()
         {
             if (installResult == null && qsProgressLog == null) return;
-            // В Quick Start блок показывается как результат проверки: полоса видна, Cancel скрыт.
-            if (qsProgressPanel != null)
-            {
-                qsProgressPanel.Visibility = Visibility.Visible;
-                qsProgress.Value = 0;
-            }
-            if (qsCancelButton != null) qsCancelButton.Visibility = Visibility.Collapsed;
             SetInstallResult(Loc("install.status.checking"));
             try
             {
@@ -780,18 +780,16 @@ namespace OpenCodeJesk
         /// <summary>Останавливает таймер по завершении/ошибке/отмене.</summary>
         private void StopInstallTimer() => _installTimer?.Stop();
 
-        /// <summary>Запускает общий таймер прогресса: обе полосы линейно идут к 95% за ~15 c.</summary>
+        /// <summary>Запускает лёгкий таймер обновления полос (~500 мс) для плавности.</summary>
         private void StartQsProgressTimer()
         {
             if (_qsProgressTimer == null)
             {
-                _qsProgressTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(120) };
+                _qsProgressTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };
                 _qsProgressTimer.Tick += (_, __) =>
                 {
-                    // 95% примерно за 15 секунд; 100% — только по факту завершения.
-                    var pct = Math.Min(95, (DateTime.Now - _installStartedAt).TotalSeconds / 15.0 * 95.0);
-                    if (qsProgress != null) qsProgress.Value = pct;
-                    if (installProgress != null) installProgress.Value = pct;
+                    UpdateProgressBars();
+                    UpdateInstallStatus();
                 };
             }
             _qsProgressTimer.Start();
@@ -800,6 +798,34 @@ namespace OpenCodeJesk
         /// <summary>Останавливает общий таймер прогресса.</summary>
         private void StopQsProgressTimer() => _qsProgressTimer?.Stop();
 
+        /// <summary>
+        /// Нелинейный прогресс по числу строк npm: быстро растёт на первых строках,
+        /// затем замедляется; потолок 95%, 100% — только по факту завершения.
+        /// </summary>
+        private double ProgressPercent() => 95.0 * (1.0 - Math.Exp(-_installLogLines / 40.0));
+
+        /// <summary>Обновляет обе полосы вычисленным нелинейным прогрессом.</summary>
+        private void UpdateProgressBars()
+        {
+            var pct = ProgressPercent();
+            if (qsProgress != null) qsProgress.Value = pct;
+            if (installProgress != null) installProgress.Value = pct;
+        }
+
+        /// <summary>Запускает «зайчик» на обеих полосах прогресса.</summary>
+        private void StartShimmer()
+        {
+            (FindResource("qsShimmerStory") as Storyboard)?.Begin(this, true);
+            (FindResource("installShimmerStory") as Storyboard)?.Begin(this, true);
+        }
+
+        /// <summary>Останавливает «зайчик» на обеих полосах.</summary>
+        private void StopShimmer()
+        {
+            (FindResource("qsShimmerStory") as Storyboard)?.Stop(this);
+            (FindResource("installShimmerStory") as Storyboard)?.Stop(this);
+        }
+
         /// <summary>Прошедшее время установки в формате м:сс.</summary>
         private string ElapsedText()
         {
@@ -807,36 +833,53 @@ namespace OpenCodeJesk
             return (int)elapsed.TotalMinutes + ":" + elapsed.Seconds.ToString("00");
         }
 
-        /// <summary>Показывает прошедшее время хода установки и последнюю строку npm.</summary>
+        /// <summary>Показывает процент, прошедшее время и последнюю строку npm.</summary>
         private void UpdateInstallStatus()
         {
             if (installResult == null && qsProgressLog == null) return;
-            var text = Loc("install.running") + " " + ElapsedText();
+            var pct = (int)Math.Round(ProgressPercent());
+            var text = Loc("install.running") + " " + pct + "% · " + ElapsedText();
             if (!string.IsNullOrEmpty(_lastNpmLine)) text += "\n" + "npm: " + _lastNpmLine;
             SetInstallResult(text);
         }
 
-        /// <summary>Пишет статус установки и на вкладку Install, и в Quick Start (под полосой).</summary>
+        /// <summary>Пишет ход установки и на вкладку Install, и в Quick Start (под блоком).</summary>
         private void SetInstallResult(string text)
         {
+            SetStatusTone(StatusTone.Muted);
             if (installResult != null) installResult.Text = text;
             if (qsProgressLog != null) qsProgressLog.Text = text;
         }
 
-        /// <summary>Итог установки: в Install-вкладке — только итог, в Quick Start — время + итог.</summary>
-        private void SetInstallFinal(string summary)
+        /// <summary>Применяет цвет статус-текста: приглушённый / успех / предупреждение.</summary>
+        private void SetStatusTone(StatusTone tone)
         {
+            var brush = tone == StatusTone.Success ? _successFg
+                : tone == StatusTone.Warn ? _warnFg : _mutedFg;
+            if (installResult != null) installResult.Foreground = brush;
+            if (qsProgressLog != null) qsProgressLog.Foreground = brush;
+        }
+
+        /// <summary>
+        /// Итог установки: пишет статус под блоком, красит его и скрывает блок
+        /// прогресса (полоса + Cancel), останавливая «зайчик» и таймеры.
+        /// </summary>
+        private void SetInstallFinal(string summary, bool success = false, bool warn = false)
+        {
+            SetStatusTone(success ? StatusTone.Success : warn ? StatusTone.Warn : StatusTone.Muted);
             if (installResult != null) installResult.Text = summary;
-            if (qsProgressLog != null)
-                qsProgressLog.Text = Loc("install.running") + " " + ElapsedText() + "\n" + summary;
+            if (qsProgressLog != null) qsProgressLog.Text = summary;
+            if (qsProgressPanel != null) qsProgressPanel.Visibility = Visibility.Collapsed;
+            if (installProgressPanel != null) installProgressPanel.Visibility = Visibility.Collapsed;
+            StopShimmer();
+            StopQsProgressTimer();
+            StopInstallTimer();
         }
 
         /// <summary>Кнопка Cancel: отменяет текущую установку и убивает дерево процессов.</summary>
         private void OnInstallCancelClick(object sender, RoutedEventArgs e)
         {
-            StopInstallTimer();
-            StopQsProgressTimer();
-            SetInstallFinal(Loc("install.cancelled"));
+            SetInstallFinal(Loc("install.cancelled"), warn: true);
             _installCts?.Cancel();
         }
 
@@ -851,24 +894,27 @@ namespace OpenCodeJesk
             if (installDocsLink != null) installDocsLink.IsEnabled = !busy;
             if (installProgressPanel != null)
                 installProgressPanel.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
-
-            // Блок прогресса Quick Start: показывается только на время установки.
             if (qsProgressPanel != null)
+                qsProgressPanel.Visibility = busy ? Visibility.Visible : Visibility.Collapsed;
+
+            if (busy)
             {
-                if (busy)
-                {
-                    qsProgressPanel.Visibility = Visibility.Visible;
-                    qsProgress.Value = 0;
-                    qsProgressLog.Text = string.Empty;
-                    if (installProgress != null) installProgress.Value = 0;
-                    StartQsProgressTimer();
-                }
-                else
-                {
-                    StopQsProgressTimer();
-                    qsProgress.Value = 100;
-                    if (installProgress != null) installProgress.Value = 100;
-                }
+                // Новый проход: счётчик строк и полосы с нуля, запускаем «зайчик» и таймер.
+                _installLogLines = 0;
+                if (qsProgress != null) qsProgress.Value = 0;
+                if (installProgress != null) installProgress.Value = 0;
+                if (qsProgressLog != null) qsProgressLog.Text = string.Empty;
+                SetStatusTone(StatusTone.Muted);
+                StartShimmer();
+                StartQsProgressTimer();
+            }
+            else
+            {
+                // 100% — только по факту завершения.
+                StopShimmer();
+                StopQsProgressTimer();
+                if (qsProgress != null) qsProgress.Value = 100;
+                if (installProgress != null) installProgress.Value = 100;
             }
         }
 

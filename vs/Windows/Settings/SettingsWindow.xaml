@@ -9,6 +9,18 @@
         UseLayoutRounding="True" SnapsToDevicePixels="True">
     <Window.Resources>
 
+        <!-- Бегущая световая подсветка («зайчик») поверх полос прогресса. -->
+        <Storyboard x:Key="qsShimmerStory" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="qsShimmerTransform"
+                             Storyboard.TargetProperty="X"
+                             From="-70" To="800" Duration="0:0:1.6" />
+        </Storyboard>
+        <Storyboard x:Key="installShimmerStory" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="installShimmerTransform"
+                             Storyboard.TargetProperty="X"
+                             From="-70" To="800" Duration="0:0:1.6" />
+        </Storyboard>
+
         <!-- Карточка раздела -->
         <Style x:Key="Card" TargetType="Border">
             <Setter Property="Background" Value="#252526" />
@@ -622,7 +634,7 @@
                                             Style="{StaticResource GhostButton}"
                                             Tag="1" Click="OnQuickStartGoClick" />
                                 </StackPanel>
-                                <!-- Блок прогресса: появляется только после кнопки установки. -->
+                                <!-- Блок прогресса: появляется только на время установки. -->
                                 <StackPanel x:Name="qsProgressPanel" Visibility="Collapsed" Margin="0,14,0,0">
                                     <Border CornerRadius="8" Padding="12" BorderThickness="1">
                                         <Border.Background>
@@ -642,10 +654,26 @@
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
-                                            <ProgressBar x:Name="qsProgress" Grid.Column="0"
-                                                         Minimum="0" Maximum="100"
-                                                         Height="14" VerticalAlignment="Center"
-                                                         Style="{StaticResource RoundedProgress}" />
+                                            <!-- Полоса + бегущая подсветка поверх неё. -->
+                                            <Grid Grid.Column="0" Height="14" VerticalAlignment="Center"
+                                                  ClipToBounds="True">
+                                                <ProgressBar x:Name="qsProgress" Minimum="0" Maximum="100"
+                                                             Height="14"
+                                                             Style="{StaticResource RoundedProgress}" />
+                                                <Border x:Name="qsShimmer" Width="60" HorizontalAlignment="Left"
+                                                        IsHitTestVisible="False" Opacity="0.5">
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                            <GradientStop Color="#00FFFFFF" Offset="0" />
+                                                            <GradientStop Color="#5EACFC" Offset="0.5" />
+                                                            <GradientStop Color="#00FFFFFF" Offset="1" />
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                    <Border.RenderTransform>
+                                                        <TranslateTransform x:Name="qsShimmerTransform" X="-70" />
+                                                    </Border.RenderTransform>
+                                                </Border>
+                                            </Grid>
                                             <Button x:Name="qsCancelButton" Grid.Column="1" Uid="install.cancel"
                                                     Content="Cancel" Margin="12,0,0,0"
                                                     VerticalAlignment="Center"
@@ -653,9 +681,10 @@
                                                     Click="OnInstallCancelClick" />
                                         </Grid>
                                     </Border>
-                                    <TextBlock x:Name="qsProgressLog" FontFamily="Consolas" FontSize="12"
-                                               Foreground="#9a9a9a" TextWrapping="Wrap" Margin="0,8,0,0" />
                                 </StackPanel>
+                                <!-- Статус установки Quick Start: вне скрываемого блока, виден после завершения. -->
+                                <TextBlock x:Name="qsProgressLog" FontFamily="Consolas" FontSize="12"
+                                           Foreground="#9a9a9a" TextWrapping="Wrap" Margin="0,8,0,0" />
                             </StackPanel>
                         </Border>
 
@@ -832,11 +861,27 @@
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <ProgressBar x:Name="installProgress" Grid.Column="0"
-                                                     Minimum="0" Maximum="100"
-                                                     Height="14" VerticalAlignment="Center"
-                                                     IsIndeterminate="False"
-                                                     Style="{StaticResource RoundedProgress}" />
+                                        <!-- Полоса + бегущая подсветка поверх неё. -->
+                                        <Grid Grid.Column="0" Height="14" VerticalAlignment="Center"
+                                              ClipToBounds="True">
+                                            <ProgressBar x:Name="installProgress" Minimum="0" Maximum="100"
+                                                         Height="14"
+                                                         IsIndeterminate="False"
+                                                         Style="{StaticResource RoundedProgress}" />
+                                            <Border x:Name="installShimmer" Width="60" HorizontalAlignment="Left"
+                                                    IsHitTestVisible="False" Opacity="0.5">
+                                                <Border.Background>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                        <GradientStop Color="#00FFFFFF" Offset="0" />
+                                                        <GradientStop Color="#5EACFC" Offset="0.5" />
+                                                        <GradientStop Color="#00FFFFFF" Offset="1" />
+                                                    </LinearGradientBrush>
+                                                </Border.Background>
+                                                <Border.RenderTransform>
+                                                    <TranslateTransform x:Name="installShimmerTransform" X="-70" />
+                                                </Border.RenderTransform>
+                                            </Border>
+                                        </Grid>
                                         <Button x:Name="installCancelButton" Grid.Column="1" Uid="install.cancel"
                                                 Content="Cancel" Margin="12,0,0,0"
                                                 VerticalAlignment="Center"
