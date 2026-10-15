@@ -311,7 +311,49 @@ namespace OpenCodeStudio
             panelServer.Visibility = index == 3 ? Visibility.Visible : Visibility.Collapsed;
             panelUpdates.Visibility = index == 4 ? Visibility.Visible : Visibility.Collapsed;
             panelImport.Visibility = index == 5 ? Visibility.Visible : Visibility.Collapsed;
+            panelSponsor.Visibility = Visibility.Collapsed;
+            HighlightSponsor(false);
             if (index == 4) RenderChangelog();
+        }
+
+        /// <summary>Пункт сайдбара «Sponsorship»: показывает вкладку контактов и снимает выделение меню.</summary>
+        private void OnSponsorClick(object sender, RoutedEventArgs e)
+        {
+            if (panelGeneral == null) return;
+            // Снятие выделения вызывает OnMenuChanged (скрывает все панели),
+            // поэтому показываем панель уже после него.
+            menuList.SelectedItem = null;
+
+            panelInstall.Visibility = Visibility.Collapsed;
+            panelGeneral.Visibility = Visibility.Collapsed;
+            panelTerminal.Visibility = Visibility.Collapsed;
+            panelServer.Visibility = Visibility.Collapsed;
+            panelUpdates.Visibility = Visibility.Collapsed;
+            panelImport.Visibility = Visibility.Collapsed;
+            panelSponsor.Visibility = Visibility.Visible;
+            HighlightSponsor(true);
+        }
+
+        /// <summary>Подсветка пункта Sponsorship — в тон выделенному пункту меню.</summary>
+        private void HighlightSponsor(bool on)
+        {
+            if (sponsorNavButton == null) return;
+            sponsorNavButton.Background = on ? Brush(0x25, 0x25, 0x26) : Brushes.Transparent;
+            sponsorNavButton.Foreground = on ? Brush(0xf1, 0xf1, 0xf1) : Brush(0xc9, 0xc9, 0xc9);
+        }
+
+        /// <summary>Копирует адрес кошелька в буфер и на секунду меняет текст кнопки.</summary>
+        private void OnCopyWalletClick(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is Button btn) || !(btn.Tag is string address)) return;
+            try { Clipboard.SetText(address); }
+            catch (Exception ex) { Log.Error("Copy wallet address failed", ex); }
+
+            var label = btn.Content;
+            btn.Content = Loc("sponsor.copied");
+            var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            timer.Tick += (_, __) => { timer.Stop(); btn.Content = label; };
+            timer.Start();
         }
 
         /// <summary>Кнопка «Оставить отзыв»: открывает форму отзыва в браузере.</summary>

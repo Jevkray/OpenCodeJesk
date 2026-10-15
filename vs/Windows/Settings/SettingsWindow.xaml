@@ -400,6 +400,19 @@
                     <TextBlock Uid="menu.title" Text="Settings" FontSize="18"
                                FontWeight="SemiBold" Foreground="#f1f1f1" VerticalAlignment="Center" />
                 </StackPanel>
+                <!-- Внизу сайдбара: пункт поддержки/контактов (как пункт меню).
+                     Объявлен перед menuList, т.к. последний ребёнок DockPanel при
+                     LastChildFill заполняет остаток, а эта кнопка должна прижиматься к низу. -->
+                <Button x:Name="sponsorNavButton" DockPanel.Dock="Bottom"
+                        Margin="0" HorizontalContentAlignment="Left"
+                        Padding="24,12" Background="Transparent" BorderThickness="0"
+                        Foreground="#c9c9c9" Cursor="Hand" Click="OnSponsorClick">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xEB51;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                   VerticalAlignment="Center" Margin="0,0,12,0" />
+                        <TextBlock Uid="menu.sponsor" Text="Sponsorship" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
                 <ListBox x:Name="menuList" Background="Transparent" BorderThickness="0"
                          ItemContainerStyle="{StaticResource MenuListBoxItem}"
                          SelectionChanged="OnMenuChanged">
@@ -906,6 +919,91 @@
                                 </StackPanel>
                                 <TextBlock x:Name="statusText" Margin="0,10,0,0" FontSize="12"
                                            Foreground="#9a9a9a" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Sponsorship / Contacts -->
+                    <StackPanel x:Name="panelSponsor" Visibility="Collapsed">
+                        <!-- Контакты -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="sponsor.contacts.title" Text="Contacts"
+                                           Style="{StaticResource CardTitle}" />
+                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                    <TextBlock Uid="sponsor.contact.telegram" Text="Telegram:"
+                                               Foreground="#cfcfcf" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                    <TextBlock><Hyperlink NavigateUri="https://t.me/eugenekray"
+                                               RequestNavigate="OnHyperlink"><Run Text="@eugenekray" /></Hyperlink></TextBlock>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                    <TextBlock Uid="sponsor.contact.email" Text="Email:"
+                                               Foreground="#cfcfcf" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                    <TextBlock><Hyperlink NavigateUri="mailto:krasovskyworks@gmail.com"
+                                               RequestNavigate="OnHyperlink"><Run Text="krasovskyworks@gmail.com" /></Hyperlink></TextBlock>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                    <TextBlock Uid="sponsor.contact.boosty" Text="Boosty (support):"
+                                               Foreground="#cfcfcf" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                    <TextBlock><Hyperlink NavigateUri="https://boosty.to/jevkray"
+                                               RequestNavigate="OnHyperlink"><Run Text="boosty.to/jevkray" /></Hyperlink></TextBlock>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                    <TextBlock Uid="sponsor.contact.github" Text="GitHub / Issues:"
+                                               Foreground="#cfcfcf" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                    <TextBlock><Hyperlink NavigateUri="https://github.com/Jevkray/OpenCodeStudio"
+                                               RequestNavigate="OnHyperlink"><Run Text="github.com/Jevkray/OpenCodeStudio" /></Hyperlink></TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Благодарность -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="sponsor.thanks.title" Text="Thank you for your support"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="sponsor.thanks.body" Style="{StaticResource CardHint}"
+                                           Text="Thank you for using OpenCode Jesk! This project lives thanks to people like you. If the extension helps, I would be very grateful for your support: a Marketplace review, a GitHub star, or any contribution. Thank you for being here!" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Спонсорство (крипта) -->
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="sponsor.wallets.title" Text="Sponsorship"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="sponsor.wallets.hint" Style="{StaticResource CardHint}"
+                                           Text="Support development with crypto" />
+
+                                <TextBlock Text="TON" Style="{StaticResource FieldLabel}" />
+                                <TextBox IsReadOnly="True" FontFamily="Consolas" FontSize="12"
+                                         Background="#2d2d30" Foreground="#f1f1f1" BorderBrush="#3a3a3a"
+                                         BorderThickness="1" Padding="8,6" TextWrapping="Wrap"
+                                         Text="UQAKj2KDbscIi-6yAzjB3XQYJfyOzOp4iyYewAJjCney1bEG" />
+                                <Button Uid="sponsor.copy" Content="Copy" Margin="0,8,0,0"
+                                        HorizontalAlignment="Left" Style="{StaticResource GhostButton}"
+                                        Tag="UQAKj2KDbscIi-6yAzjB3XQYJfyOzOp4iyYewAJjCney1bEG"
+                                        Click="OnCopyWalletClick" />
+
+                                <TextBlock Text="BTC" Style="{StaticResource FieldLabel}" />
+                                <TextBox IsReadOnly="True" FontFamily="Consolas" FontSize="12"
+                                         Background="#2d2d30" Foreground="#f1f1f1" BorderBrush="#3a3a3a"
+                                         BorderThickness="1" Padding="8,6" TextWrapping="Wrap"
+                                         Text="bc1pneulxe7cqkeukhyh3ezhvv4qjp6lna0zdgwhwc90kqxzqwytarcsvh4ftx" />
+                                <Button Uid="sponsor.copy" Content="Copy" Margin="0,8,0,0"
+                                        HorizontalAlignment="Left" Style="{StaticResource GhostButton}"
+                                        Tag="bc1pneulxe7cqkeukhyh3ezhvv4qjp6lna0zdgwhwc90kqxzqwytarcsvh4ftx"
+                                        Click="OnCopyWalletClick" />
+
+                                <TextBlock Text="ETH" Style="{StaticResource FieldLabel}" />
+                                <TextBox IsReadOnly="True" FontFamily="Consolas" FontSize="12"
+                                         Background="#2d2d30" Foreground="#f1f1f1" BorderBrush="#3a3a3a"
+                                         BorderThickness="1" Padding="8,6" TextWrapping="Wrap"
+                                         Text="0x51Ee466d1Ee641960B716646BB9f001b34744450" />
+                                <Button Uid="sponsor.copy" Content="Copy" Margin="0,8,0,0"
+                                        HorizontalAlignment="Left" Style="{StaticResource GhostButton}"
+                                        Tag="0x51Ee466d1Ee641960B716646BB9f001b34744450"
+                                        Click="OnCopyWalletClick" />
                             </StackPanel>
                         </Border>
                     </StackPanel>
