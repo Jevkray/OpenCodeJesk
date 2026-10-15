@@ -446,6 +446,13 @@
                          SelectionChanged="OnMenuChanged">
                     <ListBoxItem>
                         <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE7B5;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                       VerticalAlignment="Center" Margin="0,0,12,0" />
+                            <TextBlock Uid="menu.quickstart" Text="Quick Start" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" FontSize="16"
                                        VerticalAlignment="Center" Margin="0,0,12,0" />
                             <TextBlock Uid="menu.install" Text="Install" VerticalAlignment="Center" />
@@ -499,6 +506,127 @@
 
             <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Padding="24,24,24,0">
                 <Grid>
+                    <!-- Quick Start -->
+                    <StackPanel x:Name="panelQuickStart" Visibility="Collapsed">
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="quickstart.title" Text="Quick Start"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="quickstart.welcome" Style="{StaticResource CardHint}"
+                                           Text="Welcome to OpenCode Jesk — the OpenCode panel right inside Visual Studio." />
+                                <Image Margin="0,14,0,0" Stretch="Uniform" HorizontalAlignment="Center"
+                                       Source="/OpenCodeJesk;component/Resources/quickstart/hero.png" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="quickstart.step1.title" Text="Step 1. Install OpenCode"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="quickstart.step1.body" Style="{StaticResource CardHint}"
+                                           Text="OpenCode Jesk uses the official opencode CLI." />
+                                <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                                    <Button Uid="quickstart.installall" Content="Install All" Margin="0,0,10,0"
+                                            Style="{StaticResource AccentButton}" Click="OnInstallAllClick" />
+                                    <Button Uid="quickstart.check" Content="Check versions" Margin="0,0,10,0"
+                                            Style="{StaticResource GhostButton}" Click="OnCheckVersionsClick" />
+                                    <Button Uid="quickstart.gotoinstall" Content="More — Install tab"
+                                            Style="{StaticResource GhostButton}"
+                                            Tag="1" Click="OnQuickStartGoClick" />
+                                </StackPanel>
+                                <TextBlock x:Name="qsInstallResult" Style="{StaticResource CardHint}"
+                                           Margin="0,10,0,0" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="quickstart.step2.title" Text="Step 2. Choose the version"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="quickstart.step2.body" Style="{StaticResource CardHint}"
+                                           Text="v1 (stable) or v2 (preview)." />
+                                <TextBlock Uid="quickstart.step2.label" Text="OpenCode version"
+                                           Style="{StaticResource FieldLabel}" />
+                                <ComboBox x:Name="qsVersionCombo" Style="{StaticResource DarkCombo}"
+                                          Width="260" HorizontalAlignment="Left"
+                                          SelectionChanged="OnQsVersionChanged">
+                                    <ComboBoxItem Content="v1 (stable)" />
+                                    <ComboBoxItem Content="v2 (preview)" />
+                                </ComboBox>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="quickstart.step3.title" Text="Step 3. Open the panel"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="quickstart.step3.body" Style="{StaticResource CardHint}"
+                                           Text="Desktop (Web) or CLI." />
+                                <TextBlock Uid="quickstart.step3.label" Text="Interface mode"
+                                           Style="{StaticResource FieldLabel}" />
+                                <ComboBox x:Name="qsInterfaceCombo" Style="{StaticResource DarkCombo}"
+                                          Width="260" HorizontalAlignment="Left"
+                                          SelectionChanged="OnQsInterfaceChanged">
+                                    <ComboBoxItem Content="Desktop (Web)" />
+                                    <ComboBoxItem Content="CLI (terminal)" />
+                                </ComboBox>
+                                <Button Uid="quickstart.step3.openpanel" Content="Open OpenCode panel"
+                                        Margin="0,16,0,0" HorizontalAlignment="Left"
+                                        Style="{StaticResource AccentButton}" Click="OnQsOpenPanelClick" />
+                                <Image Margin="0,14,0,0" Stretch="Uniform" HorizontalAlignment="Center"
+                                       Source="/OpenCodeJesk;component/Resources/quickstart/panel.png" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="quickstart.step4.title" Text="Step 4. Overview — what lives where"
+                                           Style="{StaticResource CardTitle}" />
+                                <TextBlock Uid="quickstart.step4.body" Style="{StaticResource CardHint}"
+                                           Text="The tool window talks to a local OpenCode server." />
+                                <!-- Мини-схема средствами XAML: панель ⇄ сервер ⇄ клиенты. -->
+                                <StackPanel Orientation="Horizontal" Margin="0,14,0,0" HorizontalAlignment="Left">
+                                    <Border Background="#2d2d30" BorderBrush="#3a3a3a" BorderThickness="1"
+                                            CornerRadius="6" Padding="12,8">
+                                        <TextBlock Uid="quickstart.schema.panel" Text="OpenCode panel"
+                                                   Foreground="#f1f1f1" VerticalAlignment="Center" />
+                                    </Border>
+                                    <TextBlock Text="&#x21C4;" Foreground="#2A78FC" FontSize="16"
+                                               VerticalAlignment="Center" Margin="10,0" />
+                                    <Border Background="#2d2d30" BorderBrush="#3a3a3a" BorderThickness="1"
+                                            CornerRadius="6" Padding="12,8">
+                                        <TextBlock Uid="quickstart.schema.server" Text="OpenCode server"
+                                                   Foreground="#f1f1f1" VerticalAlignment="Center" />
+                                    </Border>
+                                    <TextBlock Text="&#x21C4;" Foreground="#2A78FC" FontSize="16"
+                                               VerticalAlignment="Center" Margin="10,0" />
+                                    <Border Background="#2d2d30" BorderBrush="#3a3a3a" BorderThickness="1"
+                                            CornerRadius="6" Padding="12,8">
+                                        <TextBlock Uid="quickstart.schema.clients" Text="CLI / Web / Desktop"
+                                                   Foreground="#f1f1f1" VerticalAlignment="Center" />
+                                    </Border>
+                                </StackPanel>
+                                <TextBlock Uid="quickstart.step4.tabs" Style="{StaticResource CardHint}"
+                                           Margin="0,14,0,0" Text="Settings tabs." />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Uid="quickstart.links.title" Text="Useful links"
+                                           Style="{StaticResource CardTitle}" />
+                                <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                                    <Button Uid="quickstart.links.updates" Content="What's new — Updates tab"
+                                            Margin="0,0,10,0" Style="{StaticResource GhostButton}"
+                                            Tag="5" Click="OnQuickStartGoClick" />
+                                    <Button Uid="quickstart.links.sponsor" Content="Sponsorship &amp; contacts"
+                                            Style="{StaticResource GhostButton}"
+                                            Tag="sponsor" Click="OnQuickStartGoClick" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
                     <!-- Install -->
                     <StackPanel x:Name="panelInstall" Visibility="Collapsed">
                         <Border Style="{StaticResource Card}">
@@ -629,7 +757,8 @@
                                 <TextBlock Uid="general.version" Text="OpenCode version"
                                            Style="{StaticResource FieldLabel}" />
                                 <ComboBox x:Name="versionCombo" Style="{StaticResource DarkCombo}"
-                                          Width="260" HorizontalAlignment="Left">
+                                          Width="260" HorizontalAlignment="Left"
+                                          SelectionChanged="OnVersionChanged">
                                     <ComboBoxItem Content="v1 (stable)" />
                                     <ComboBoxItem Content="v2 (preview)" />
                                 </ComboBox>

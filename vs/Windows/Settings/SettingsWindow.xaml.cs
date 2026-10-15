@@ -32,18 +32,22 @@ namespace OpenCodeJesk
         private string _lastNpmLine;
         private readonly CliInstallService _cliInstall = new CliInstallService();
         private readonly CliVersionStatusService _versionStatus = new CliVersionStatusService();
+        private readonly Action _onOpenPanel;
+        private bool _syncingQuickStart;
 
         private static SolidColorBrush Brush(byte r, byte g, byte b)
             => new SolidColorBrush(Color.FromRgb(r, g, b));
 
         public SettingsWindow(ImportService service, string solutionDir,
-            Services.SpendSettings settings = null, Action onFinished = null, int initialTab = 1)
+            Services.SpendSettings settings = null, Action onFinished = null, int initialTab = 1,
+            Action onOpenPanel = null)
         {
             InitializeComponent();
             _service = service ?? new ImportService();
             _solutionDir = solutionDir;
             _settings = settings;
             _onFinished = onFinished;
+            _onOpenPanel = onOpenPanel;
             _import = new ImportPresenter(_service, sourcesPanel, statusText, importButton, importWarning, _solutionDir);
             if (_settings != null) Services.SpendSettings.Current = _settings;
 
@@ -52,7 +56,10 @@ namespace OpenCodeJesk
             languageCombo.SelectedIndex = Services.Localization.IsRussian ? 1 : 0;
             SetVersionText();
             ApplyLanguage();
+            // Первый запуск после установки/обновления — открываем на Quick Start (индекс 0).
+            if (Onboarding.ShouldShow()) initialTab = 0;
             menuList.SelectedIndex = Math.Max(0, Math.Min(menuList.Items.Count - 1, initialTab));
+            SyncQuickStartCombos();
             RenderChangelog();
             Loaded += (_, __) => _import.Rebuild();
 
@@ -78,6 +85,8 @@ namespace OpenCodeJesk
             Localize(this);
             SetItems(interfaceCombo, Loc("combo.interface.0"), Loc("combo.interface.1"));
             SetVersionItems();
+            SetItems(qsInterfaceCombo, Loc("combo.interface.0"), Loc("combo.interface.1"));
+            SetItems(qsVersionCombo, Loc("combo.version.0"), Loc("combo.version.1"));
             SetItems(startDirCombo, Loc("combo.startdir.0"), Loc("combo.startdir.1"),
                 Loc("combo.startdir.2"), Loc("combo.startdir.3"));
             SetItems(channelCombo, Loc("combo.channel.0"), Loc("combo.channel.1"));
@@ -305,15 +314,16 @@ namespace OpenCodeJesk
         {
             if (panelGeneral == null) return; // до полной инициализации
             int index = menuList.SelectedIndex;
-            panelInstall.Visibility = index == 0 ? Visibility.Visible : Visibility.Collapsed;
-            panelGeneral.Visibility = index == 1 ? Visibility.Visible : Visibility.Collapsed;
-            panelTerminal.Visibility = index == 2 ? Visibility.Visible : Visibility.Collapsed;
-            panelServer.Visibility = index == 3 ? Visibility.Visible : Visibility.Collapsed;
-            panelUpdates.Visibility = index == 4 ? Visibility.Visible : Visibility.Collapsed;
-            panelImport.Visibility = index == 5 ? Visibility.Visible : Visibility.Collapsed;
+            panelQuickStart.Visibility = index == 0 ? Visibility.Visible : Visibility.Collapsed;
+            panelInstall.Visibility = index == 1 ? Visibility.Visible : Visibility.Collapsed;
+            panelGeneral.Visibility = index == 2 ? Visibility.Visible : Visibility.Collapsed;
+            panelTerminal.Visibility = index == 3 ? Visibility.Visible : Visibility.Collapsed;
+            panelServer.Visibility = index == 4 ? Visibility.Visible : Visibility.Collapsed;
+            panelUpdates.Visibility = index == 5 ? Visibility.Visible : Visibility.Collapsed;
+            panelImport.Visibility = index == 6 ? Visibility.Visible : Visibility.Collapsed;
             panelSponsor.Visibility = Visibility.Collapsed;
             HighlightSponsor(false);
-            if (index == 4) RenderChangelog();
+            if (index == 5) RenderChangelog();
         }
 
         /// <summary>Пункт сайдбара «Sponsorship»: показывает вкладку контактов и снимает выделение меню.</summary>
@@ -324,6 +334,7 @@ namespace OpenCodeJesk
             // поэтому показываем панель уже после него.
             menuList.SelectedItem = null;
 
+            panelQuickStart.Visibility = Visibility.Collapsed;
             panelInstall.Visibility = Visibility.Collapsed;
             panelGeneral.Visibility = Visibility.Collapsed;
             panelTerminal.Visibility = Visibility.Collapsed;
@@ -445,7 +456,69 @@ namespace OpenCodeJesk
 
         private void OnFontChanged(object sender, RoutedEventArgs e) { }
 
-        private void OnInterfaceChanged(object sender, SelectionChangedEventArgs e) => ApplyVersionLock();
+        private void OnInterfaceChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ApplyVersionLock();
+            if (_syncingQuickStart || qsInterfaceCombo == null) return;
+            _syncingQuickStart = true;
+            try { qsInterfaceCombo.SelectedIndex = interfaceCombo.SelectedIndex; }
+            finally { _syncingQuickStart = false; }
+        }
+
+        /// <summary>Quick Start → Основные: выбор режима интерфейса.</summary>
+        private void OnQsInterfaceChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_syncingQuickStart || interfaceCombo == null) return;
+            _syncingQuickStart = true;
+            try { interfaceCombo.SelectedIndex = qsInterfaceCombo.SelectedIndex; }
+            finally { _syncingQuickStart = false; }
+        }
+
+        /// <summary>Основные → Quick Start: выбор версии.</summary>
+        private void OnVersionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_syncingQuickStart || qsVersionCombo == null) return;
+            _syncingQuickStart = true;
+            try { qsVersionCombo.SelectedIndex = versionCombo.SelectedIndex; }
+            finally { _syncingQuickStart = false; }
+        }
+
+        /// <summary>Quick Start → Основные: выбор версии.</summary>
+        private void OnQsVersionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_syncingQuickStart || versionCombo == null) return;
+            _syncingQuickStart = true;
+            try { versionCombo.SelectedIndex = qsVersionCombo.SelectedIndex; }
+            finally { _syncingQuickStart = false; }
+        }
+
+        /// <summary>Синхронизирует комбо Quick Start с комбо вкладки «Основные» при открытии окна.</summary>
+        private void SyncQuickStartCombos()
+        {
+            if (qsInterfaceCombo == null || qsVersionCombo == null) return;
+            _syncingQuickStart = true;
+            try
+            {
+                if (interfaceCombo != null) qsInterfaceCombo.SelectedIndex = interfaceCombo.SelectedIndex;
+                if (versionCombo != null) qsVersionCombo.SelectedIndex = versionCombo.SelectedIndex;
+            }
+            finally { _syncingQuickStart = false; }
+        }
+
+        /// <summary>Переходы из Quick Start: индекс вкладки в Tag либо "sponsor".</summary>
+        private void OnQuickStartGoClick(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is Button btn) || !(btn.Tag is string tag)) return;
+            if (tag == "sponsor") { OnSponsorClick(sender, e); return; }
+            if (int.TryParse(tag, out var index)) menuList.SelectedIndex = index;
+        }
+
+        /// <summary>Открывает панель OpenCode из Quick Start.</summary>
+        private void OnQsOpenPanelClick(object sender, RoutedEventArgs e)
+        {
+            try { _onOpenPanel?.Invoke(); }
+            catch (Exception ex) { Log.Error("Open panel from Quick Start failed", ex); }
+        }
 
         /// <summary>
         /// Доступность выбора версии зависит только от установленных версий;
@@ -568,23 +641,22 @@ namespace OpenCodeJesk
                 if (_installCts.IsCancellationRequested)
                 {
                     Log.Info("OpenCode install (" + packageSpec + ") cancelled");
-                    if (installResult != null) installResult.Text = Loc("install.cancelled");
+                    SetInstallResult(Loc("install.cancelled"));
                     return;
                 }
 
                 var info = await DetectInstalledVersionsAsync();
                 await RefreshInstallStatusAsync(info);
                 Log.Info("OpenCode install (" + packageSpec + ") " + (ok ? "succeeded" : "failed"));
-                if (installResult != null)
-                    installResult.Text = ok
-                        ? Loc("install.done")
-                        : Loc("install.failed") + "\n" + string.Join("\n",
-                            log.Skip(Math.Max(0, log.Count - 10)));
+                SetInstallResult(ok
+                    ? Loc("install.done")
+                    : Loc("install.failed") + "\n" + string.Join("\n",
+                        log.Skip(Math.Max(0, log.Count - 10))));
             }
             catch (Exception ex)
             {
                 Log.Error("OpenCode install (" + packageSpec + ") failed", ex);
-                if (installResult != null) installResult.Text = Loc("install.failed") + " " + ex.Message;
+                SetInstallResult(Loc("install.failed") + " " + ex.Message);
             }
             finally
             {
@@ -613,7 +685,7 @@ namespace OpenCodeJesk
                 if (_installCts.IsCancellationRequested)
                 {
                     Log.Info("OpenCode install all cancelled after v2");
-                    if (installResult != null) installResult.Text = Loc("install.cancelled");
+                    SetInstallResult(Loc("install.cancelled"));
                     return;
                 }
 
@@ -622,7 +694,7 @@ namespace OpenCodeJesk
                 if (_installCts.IsCancellationRequested)
                 {
                     Log.Info("OpenCode install all cancelled after v1");
-                    if (installResult != null) installResult.Text = Loc("install.cancelled");
+                    SetInstallResult(Loc("install.cancelled"));
                     return;
                 }
 
@@ -630,24 +702,21 @@ namespace OpenCodeJesk
                 await RefreshInstallStatusAsync(info);
                 var ok = okV1 && okV2;
                 Log.Info("OpenCode install all " + (ok ? "succeeded" : "failed"));
-                if (installResult != null)
+                if (ok)
                 {
-                    if (ok)
-                    {
-                        installResult.Text = Loc("install.done");
-                    }
-                    else
-                    {
-                        var tail = logV2.Skip(Math.Max(0, logV2.Count - 5))
-                            .Concat(logV1.Skip(Math.Max(0, logV1.Count - 5)));
-                        installResult.Text = Loc("install.failed") + "\n" + string.Join("\n", tail);
-                    }
+                    SetInstallResult(Loc("install.done"));
+                }
+                else
+                {
+                    var tail = logV2.Skip(Math.Max(0, logV2.Count - 5))
+                        .Concat(logV1.Skip(Math.Max(0, logV1.Count - 5)));
+                    SetInstallResult(Loc("install.failed") + "\n" + string.Join("\n", tail));
                 }
             }
             catch (Exception ex)
             {
                 Log.Error("OpenCode install all failed", ex);
-                if (installResult != null) installResult.Text = Loc("install.failed") + " " + ex.Message;
+                SetInstallResult(Loc("install.failed") + " " + ex.Message);
             }
             finally
             {
@@ -661,19 +730,19 @@ namespace OpenCodeJesk
         /// <summary>Проверяет фактические версии найденных v1/v2 и выводит их в статус.</summary>
         private async Task CheckVersionsAsync()
         {
-            if (installResult == null) return;
-            installResult.Text = Loc("install.status.checking");
+            if (installResult == null && qsInstallResult == null) return;
+            SetInstallResult(Loc("install.status.checking"));
             try
             {
                 var info = await _versionStatus.DetectAsync();
                 var v1 = await DescribeVersionAsync("v1", info.V1Path);
                 var v2 = await DescribeVersionAsync("v2", info.V2Path);
-                installResult.Text = v1 + "\n" + v2;
+                SetInstallResult(v1 + "\n" + v2);
             }
             catch (Exception ex)
             {
                 Log.Error("Version check failed", ex);
-                installResult.Text = Loc("install.failed") + " " + ex.Message;
+                SetInstallResult(Loc("install.failed") + " " + ex.Message);
             }
         }
 
@@ -705,19 +774,26 @@ namespace OpenCodeJesk
         /// <summary>Показывает прошедшее время хода установки и последнюю строку npm.</summary>
         private void UpdateInstallStatus()
         {
-            if (installResult == null) return;
+            if (installResult == null && qsInstallResult == null) return;
             var elapsed = DateTime.Now - _installStartedAt;
             var time = (int)elapsed.TotalMinutes + ":" + elapsed.Seconds.ToString("00");
             var text = Loc("install.running") + " " + time;
             if (!string.IsNullOrEmpty(_lastNpmLine)) text += "\n" + "npm: " + _lastNpmLine;
-            installResult.Text = text;
+            SetInstallResult(text);
+        }
+
+        /// <summary>Пишет статус установки и на вкладку Install, и в Quick Start (если она есть).</summary>
+        private void SetInstallResult(string text)
+        {
+            if (installResult != null) installResult.Text = text;
+            if (qsInstallResult != null) qsInstallResult.Text = text;
         }
 
         /// <summary>Кнопка Cancel: отменяет текущую установку и убивает дерево процессов.</summary>
         private void OnInstallCancelClick(object sender, RoutedEventArgs e)
         {
             StopInstallTimer();
-            if (installResult != null) installResult.Text = Loc("install.cancelled");
+            SetInstallResult(Loc("install.cancelled"));
             _installCts?.Cancel();
         }
 

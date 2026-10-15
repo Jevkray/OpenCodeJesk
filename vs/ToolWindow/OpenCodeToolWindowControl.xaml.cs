@@ -534,7 +534,7 @@ namespace OpenCodeJesk
                     try
                     {
                         if (_serviceProvider is OpenCodeJeskPackage pkg)
-                            await pkg.ShowSettingsWindowAsync(0);
+                            await pkg.ShowSettingsWindowAsync(1);
                     }
                     catch (Exception ex) { Services.Log.Error("Open settings from page failed", ex); }
                 });

@@ -119,12 +119,8 @@ namespace OpenCodeJesk
                             // Let the shell finish initializing before showing a window.
                             await Task.Delay(2500);
                             await JoinableTaskFactory.SwitchToMainThreadAsync();
-                            // Если opencode не найден — открываем окно на вкладке Install.
-                            // Проверка версий — в фоне, не на UI-потоке.
-                            var notInstalled = await Task.Run(() =>
-                                !CliBinaryLocator.IsV1Available()
-                                && !CliBinaryLocator.IsV2Available());
-                            await ShowSettingsWindowAsync(notInstalled ? 0 : 1);
+                            // Первый запуск — открываем окно на вкладке Quick Start (индекс 0).
+                            await ShowSettingsWindowAsync(0);
                         }
                         catch (Exception ex)
                         {
@@ -601,7 +597,7 @@ namespace OpenCodeJesk
         /// Единственный экземпляр окна Settings. Повторные вызовы активируют уже
         /// открытое окно вместо создания нового.
         /// </summary>
-        internal async Task<SettingsWindow> ShowSettingsWindowAsync(int initialTab = 1)
+        internal async Task<SettingsWindow> ShowSettingsWindowAsync(int initialTab = 2, Action onOpenPanel = null)
         {
             await JoinableTaskFactory.SwitchToMainThreadAsync();
             if (_settingsWindow != null)
@@ -610,8 +606,10 @@ namespace OpenCodeJesk
                 return _settingsWindow;
             }
 
+            // Панель OpenCode открывается из Quick Start этим же методом пакета.
+            onOpenPanel = onOpenPanel ?? (() => { _ = ShowOpenCodeWindowAsync(); });
             var window = new SettingsWindow(new ImportService(), GetSolutionDir(),
-                GetSpendSettings(), null, initialTab);
+                GetSpendSettings(), null, initialTab, onOpenPanel);
             window.Closed += (_, __) => _settingsWindow = null;
             _settingsWindow = window;
             window.Show();
