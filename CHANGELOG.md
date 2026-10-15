@@ -11,7 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 A step-by-step guide on a single page, so a new user can go from zero to a running agent without leaving the Settings window:
 
-1. **Install** — a single **Install All** button installs **v2 first, then v1**, so both versions of the OpenCode CLI are available side by side (`opencode` = v1, `opencode2` = v2) and either can be used. The install streams a **live npm log**; a **non-linear progress bar** driven by the real output shows the current **percentage** and **elapsed time**, with a sweeping **shimmer** highlight and rounded corners. A **Cancel** button aborts a running install, and the bar turns **green** with *Download complete* on success.
+1. **Install** — a single **Install All** button installs **v2 first, then v1**, so both versions of the OpenCode CLI are available side by side (`opencode` = v1, `opencode2` = v2) and either can be used.
+   - A **live npm log** streams the raw installer output while the install runs.
+   - A **non-linear progress bar** driven by the real output shows the current **percentage** and the **elapsed time**.
+   - A sweeping **shimmer** highlight runs across the bar, with rounded corners.
+   - A **Cancel** button aborts a running install.
+   - On success the bar turns **green** with the label *Download complete*.
 2. **Version** — choose the CLI version to use: **v1** (stable) or **v2** (preview).
 3. **Interface** — pick the mode, **Desktop (Web)** or **CLI**, and open the panel with a single button.
 4. **Overview** — an at-a-glance map of where the extension, the data directory, the server and the logs live.
@@ -19,13 +24,23 @@ A step-by-step guide on a single page, so a new user can go from zero to a runni
 #### Sponsorship / Contacts
 
 - A thank-you letter for supporting the project.
-- Contacts: **Telegram, Email, Boosty and GitHub**.
-- Crypto wallets for **TON, BTC and ETH**, each with a **QR code**, switched through **sub-tabs**, with an address field and a **Copy** button.
+- Contacts:
+  - **Telegram**
+  - **Email**
+  - **Boosty**
+  - **GitHub**
+- Crypto wallets for **TON, BTC and ETH**:
+  - Each wallet shows a **QR code**.
+  - Wallets are switched through **sub-tabs**.
+  - Each has an address field and a **Copy** button.
 
 #### Updates
 
 - A **leave-a-review** card linking to the Marketplace review page.
-- A **rating popup** shown **once per session**, after roughly **two hours** of use, with a toggle in Settings to turn it off.
+- A **rating popup**:
+  - Shown **once per session**.
+  - Appears after roughly **two hours** of use.
+  - Can be turned off with a toggle in Settings.
 - A detailed **"What's new" changelog** (the bundled `CHANGELOG.md`, parsed and rendered) **instead of the raw installation log**.
 
 #### UI and brand
@@ -36,9 +51,20 @@ A step-by-step guide on a single page, so a new user can go from zero to a runni
 
 ### Changed
 
-- **Full rebrand to OpenCode Jesk.** The product is a single brand; the old **OpenCode Studio** name has been **removed entirely**. Renamed: the **namespace**, the **assembly**, the package **class**, the **VSCT** command tables and the **icons**. The data directory is now `%LOCALAPPDATA%\OpenCodeJesk` (with **migration** from the old `%LOCALAPPDATA%\OpenCodeStudio`), the environment variable is `OPENCODEJESK_OPENCODE_BIN`, and the pack URIs use the new name. the project builds the single Jesk brand.
+- **Full rebrand to OpenCode Jesk.** The product is a single brand; the old **OpenCode Studio** name has been **removed entirely**. Renamed:
+  - the **namespace**,
+  - the **assembly**,
+  - the package **class**,
+  - the **VSCT** command tables,
+  - the **icons**.
+  - The data directory is now `%LOCALAPPDATA%\OpenCodeJesk` (with **migration** from the old `%LOCALAPPDATA%\OpenCodeStudio`).
+  - The environment variable is `OPENCODEJESK_OPENCODE_BIN`.
+  - The pack URIs use the new name.
+  - The project builds the single Jesk brand.
 - **Version bumped to 2.0.0.0.**
-- **Internal refactor** — the "god" classes were split into focused services: `CliInstallService`, `Localization`, `CliVersionStatusService`, `CliBinaryLocator`, `ServerPortResolver`, `SharedServerRegistry`, `WebPageRenderer`, `SessionUrlParser`, `ConsoleCoordinator`, `ReconnectCoordinator`, `CliModeCoordinator`, `SettingsEditor`, `ImportPresenter`, `InstallStatusRenderer` and `UiPalette`. Dead code was removed, comments were translated to Russian, and the sources were organized into folders.
+- **Internal refactor** — the "god" classes were split into focused services:
+  - `CliInstallService`, `Localization`, `CliVersionStatusService`, `CliBinaryLocator`, `ServerPortResolver`, `SharedServerRegistry`, `WebPageRenderer`, `SessionUrlParser`, `ConsoleCoordinator`, `ReconnectCoordinator`, `CliModeCoordinator`, `SettingsEditor`, `ImportPresenter`, `InstallStatusRenderer` and `UiPalette`.
+  - Dead code was removed, comments were translated to Russian, and the sources were organized into folders.
 
 ### Fixed
 
@@ -51,7 +77,9 @@ A step-by-step guide on a single page, so a new user can go from zero to a runni
 
 ### Docs
 
-- Updated **README (EN/RU)** and the **Marketplace description** with the **blue** style and new **collages** (a preview of all panel versions and a collage of all Settings tabs).
+- Updated **README (EN/RU)** and the **Marketplace description** with the **blue** style and new **collages**:
+  - a preview of all panel versions,
+  - a collage of all Settings tabs.
 - Reworked the README structure.
 
 ## [1.2.0.32] - 2026-10-15

@@ -34,16 +34,25 @@
 
 ## 🆕 What's new
 
-- **2.0.0.0** - **Quick Start** tab (opens on first run): a one-page guide — **Install All** (installs v2 then v1) with a live npm log, a non-linear progress bar (percentage + elapsed time, shimmer, rounded corners), Cancel and a green *Download complete*; a **v1 / v2** version choice; a **Desktop (Web) / CLI** mode picker with an open-panel button; and an overview map. **Sponsorship / Contacts** tab — thank-you note, Telegram/Email/Boosty/GitHub and **TON/BTC/ETH** crypto wallets with **QR codes**, sub-tabs, an address field and Copy. **Updates** tab — a review card, a one-time rating popup (~2 h, toggle in Settings) and a detailed **"What's new"** changelog instead of the install log. **Blue palette** matched to the icon (gradients, soft glows), the extension icon in the menu and the Settings title, always-dark windows. **Full rebrand to OpenCode Jesk** (single brand; namespace/assembly/package class/VSCT/icons renamed; data dir `%LOCALAPPDATA%\OpenCodeJesk` with migration; env `OPENCODEJESK_OPENCODE_BIN`; pack URIs; a single-brand build) and an internal service-extraction refactor. **Fixed:** v1↔v2 web switching (WebView2 cache), start-time version selection, CLI crash on version switch ("Session not found"), npm install (`--force`), bunny rounding and hover styles. **Docs:** README (EN/RU) and the Marketplace description in the **blue** style with new preview and settings collages.
+- **2.0.0.0** - The big one: **Quick Start**, **Sponsorship**, **Updates**, a full rebrand and a deep refactor.
+  - **Quick Start** tab (opens on first run) — a one-page guide, zero to a running agent:
+    - **Install All** installs **v2 then v1** (both CLIs side by side) with a **live npm log**.
+    - A **non-linear progress bar** (real **percentage** + **elapsed time**, sweeping **shimmer**, rounded corners).
+    - **Cancel** aborts a running install; on success the bar turns **green** with *Download complete*.
+    - **Version** choice (**v1** stable / **v2** preview), a **Desktop (Web) / CLI** mode picker with an open-panel button, and an **Overview** map (extension, data dir, server, logs).
+  - **Sponsorship / Contacts** tab — a thank-you note, contacts (**Telegram / Email / Boosty / GitHub**) and **TON / BTC / ETH** crypto wallets with **QR codes**, **sub-tabs**, an address field and a **Copy** button.
+  - **Updates** tab — a **leave-a-review** card, a one-time **rating popup** (once per session, ~2 h, toggle in Settings) and a detailed **"What's new"** changelog instead of the raw install log.
+  - **UI and brand** — a **blue palette** matched to the icon (gradients, soft glows), the extension icon in the menu and the Settings title, and **always-dark windows**.
+  - **Full rebrand to OpenCode Jesk** — single brand, old name removed entirely: namespace, assembly, package class, VSCT tables and icons renamed; data dir `%LOCALAPPDATA%\OpenCodeJesk` (with migration), env `OPENCODEJESK_OPENCODE_BIN`, new pack URIs.
+  - **Internal refactor** — "god" classes split into focused services; dead code removed; sources organized into folders.
+  - **Fixed** — v1↔v2 web switching (WebView2 cache), start-time version selection, CLI crash on version switch ("Session not found"), npm install (`--force`), bunny rounding and hover styles.
+  - **Docs** — README (EN/RU) and the Marketplace description in the **blue** style with new preview and settings collages.
 - **1.2.0** - **Desktop (Web)** and **CLI (terminal)** interface modes in the same panel; shared chat between modes; a dedicated **Settings** window (General, Terminal, Server, Updates, Import); auto-open on solution open; **web zoom**; terminal font, size, cursor and scrollback; server port/arguments/idle stop; marketplace update checks; **v1 / v2 preview** support; safe import with backups; and the rename to **OpenCode Jesk**.
 - **1.1.5.1** (minor hotfix) - More reliable **Open Extension Manager** action (opens the Visual Studio extension manager, Updates page first); the update window now hides until the next Visual Studio restart on any action, and explains how to turn the notifications off in settings.
 - **1.1.5** - Fixed: closing the update window hides it until the next restart; "Open Extension Manager" opens the Visual Studio extension manager.
 - **1.1.4** - Background update checks (once a minute). For **OpenCode Jesk itself**: a compact dark-themed window shows the new version and its release notes with **Open Extension Manager** / **Marketplace page** / **Not now** buttons (Visual Studio already installs extension updates in the background). For **OpenCode CLI**: the window offers to update it right from the extension (`npm i -g opencode-ai@latest`) or shows the manual command; the panel picks up the new version on restart. New setting **Check for new versions** turns extension update notifications off.
-- **1.1.3** - The Settings window shows the installed and the latest available OpenCode version, with an **Update** button when a newer release exists. A new OpenCode version is now picked up automatically.
-- **1.1.2**
-  - Always uses the **latest installed opencode**: on start the server re-checks the binary (path + modification time) and restarts if it changed; `server.json` now records the real server process PID.
-  - The first-run wizard is now a **Settings** window with **Import** and **Settings** tabs; the button is **Save selected** and applies both imports and settings.
-- **1.1.0** - Statistics button in the OpenCode panel: open your profile and check real usage without leaving Visual Studio.
+
+**Full changelog:** [UPDATES.md](UPDATES.md)
 
 ## ✨ Why OpenCode Jesk?
 
@@ -184,6 +193,8 @@ The VSIX is produced at `vs/bin/Release/net472/OpenCodeJesk.vsix`. For a debug r
 [![Issues](https://img.shields.io/badge/Issues-GitHub-181717?logo=github&logoColor=white)](https://github.com/Jevkray/OpenCodeJesk/issues)
 
 </div>
+
+**Full changelog:** [UPDATES.md](UPDATES.md)
 
 ## 📜 License
 
