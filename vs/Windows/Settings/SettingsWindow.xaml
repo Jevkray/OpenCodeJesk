@@ -109,6 +109,34 @@
             </Setter>
         </Style>
 
+        <!-- Таб-пилюля выбора кошелька -->
+        <Style x:Key="WalletTab" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="#cfcfcf" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="b" Background="#232323" BorderBrush="#3a3a3a"
+                                BorderThickness="1" CornerRadius="6"
+                                Padding="14,6" Margin="0,0,8,0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="BorderBrush" Value="#2A78FC" />
+                                <Setter Property="Foreground" Value="#f1f1f1" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="#2A78FC" />
+                                <Setter TargetName="b" Property="BorderBrush" Value="#2A78FC" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Тумблер для CheckBox -->
         <Style x:Key="ToggleCheckBox" TargetType="CheckBox">
             <Setter Property="Foreground" Value="#f1f1f1" />
@@ -975,44 +1003,60 @@
                                 <TextBlock Uid="sponsor.wallets.hint" Style="{StaticResource CardHint}"
                                            Text="Support development with crypto" />
 
-                                <TextBlock Text="TON" Style="{StaticResource FieldLabel}" />
-                                <Image Width="140" Height="140" HorizontalAlignment="Left"
-                                       Margin="0,4,0,6" RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                       Source="/OpenCodeStudio;component/Resources/qr/ton.png" />
-                                <TextBox IsReadOnly="True" FontFamily="Consolas" FontSize="12"
-                                         Background="#2d2d30" Foreground="#f1f1f1" BorderBrush="#3a3a3a"
-                                         BorderThickness="1" Padding="8,6" TextWrapping="Wrap"
-                                         Text="UQAKj2KDbscIi-6yAzjB3XQYJfyOzOp4iyYewAJjCney1bEG" />
-                                <Button Uid="sponsor.copy" Content="Copy" Margin="0,8,0,0"
-                                        HorizontalAlignment="Left" Style="{StaticResource GhostButton}"
-                                        Tag="UQAKj2KDbscIi-6yAzjB3XQYJfyOzOp4iyYewAJjCney1bEG"
-                                        Click="OnCopyWalletClick" />
+                                <!-- Подвкладки валют -->
+                                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                    <RadioButton x:Name="walletTonTab" Content="TON" GroupName="walletTabs"
+                                                 Style="{StaticResource WalletTab}" IsChecked="True"
+                                                 Checked="OnWalletTabChanged" />
+                                    <RadioButton x:Name="walletBtcTab" Content="BTC" GroupName="walletTabs"
+                                                 Style="{StaticResource WalletTab}"
+                                                 Checked="OnWalletTabChanged" />
+                                    <RadioButton x:Name="walletEthTab" Content="ETH" GroupName="walletTabs"
+                                                 Style="{StaticResource WalletTab}"
+                                                 Checked="OnWalletTabChanged" />
+                                </StackPanel>
 
-                                <TextBlock Text="BTC" Style="{StaticResource FieldLabel}" />
-                                <Image Width="140" Height="140" HorizontalAlignment="Left"
-                                       Margin="0,4,0,6" RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                       Source="/OpenCodeStudio;component/Resources/qr/btc.png" />
-                                <TextBox IsReadOnly="True" FontFamily="Consolas" FontSize="12"
-                                         Background="#2d2d30" Foreground="#f1f1f1" BorderBrush="#3a3a3a"
-                                         BorderThickness="1" Padding="8,6" TextWrapping="Wrap"
-                                         Text="bc1pneulxe7cqkeukhyh3ezhvv4qjp6lna0zdgwhwc90kqxzqwytarcsvh4ftx" />
-                                <Button Uid="sponsor.copy" Content="Copy" Margin="0,8,0,0"
-                                        HorizontalAlignment="Left" Style="{StaticResource GhostButton}"
-                                        Tag="bc1pneulxe7cqkeukhyh3ezhvv4qjp6lna0zdgwhwc90kqxzqwytarcsvh4ftx"
-                                        Click="OnCopyWalletClick" />
+                                <!-- TON -->
+                                <StackPanel x:Name="walletTonPanel" Margin="0,12,0,0" Visibility="Visible">
+                                    <Image Width="180" Height="180" HorizontalAlignment="Left"
+                                           RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                           Source="/OpenCodeStudio;component/Resources/qr/ton.png" />
+                                    <TextBox IsReadOnly="True" Style="{StaticResource FieldTextBox}"
+                                             FontFamily="Consolas" Margin="0,10,0,0"
+                                             Text="UQAKj2KDbscIi-6yAzjB3XQYJfyOzOp4iyYewAJjCney1bEG" />
+                                    <Button Uid="sponsor.copy" Content="Copy" Margin="0,8,0,0"
+                                            HorizontalAlignment="Left" Style="{StaticResource GhostButton}"
+                                            Tag="UQAKj2KDbscIi-6yAzjB3XQYJfyOzOp4iyYewAJjCney1bEG"
+                                            Click="OnCopyWalletClick" />
+                                </StackPanel>
 
-                                <TextBlock Text="ETH" Style="{StaticResource FieldLabel}" />
-                                <Image Width="140" Height="140" HorizontalAlignment="Left"
-                                       Margin="0,4,0,6" RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                       Source="/OpenCodeStudio;component/Resources/qr/eth.png" />
-                                <TextBox IsReadOnly="True" FontFamily="Consolas" FontSize="12"
-                                         Background="#2d2d30" Foreground="#f1f1f1" BorderBrush="#3a3a3a"
-                                         BorderThickness="1" Padding="8,6" TextWrapping="Wrap"
-                                         Text="0x51Ee466d1Ee641960B716646BB9f001b34744450" />
-                                <Button Uid="sponsor.copy" Content="Copy" Margin="0,8,0,0"
-                                        HorizontalAlignment="Left" Style="{StaticResource GhostButton}"
-                                        Tag="0x51Ee466d1Ee641960B716646BB9f001b34744450"
-                                        Click="OnCopyWalletClick" />
+                                <!-- BTC -->
+                                <StackPanel x:Name="walletBtcPanel" Margin="0,12,0,0" Visibility="Collapsed">
+                                    <Image Width="180" Height="180" HorizontalAlignment="Left"
+                                           RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                           Source="/OpenCodeStudio;component/Resources/qr/btc.png" />
+                                    <TextBox IsReadOnly="True" Style="{StaticResource FieldTextBox}"
+                                             FontFamily="Consolas" Margin="0,10,0,0"
+                                             Text="bc1pneulxe7cqkeukhyh3ezhvv4qjp6lna0zdgwhwc90kqxzqwytarcsvh4ftx" />
+                                    <Button Uid="sponsor.copy" Content="Copy" Margin="0,8,0,0"
+                                            HorizontalAlignment="Left" Style="{StaticResource GhostButton}"
+                                            Tag="bc1pneulxe7cqkeukhyh3ezhvv4qjp6lna0zdgwhwc90kqxzqwytarcsvh4ftx"
+                                            Click="OnCopyWalletClick" />
+                                </StackPanel>
+
+                                <!-- ETH -->
+                                <StackPanel x:Name="walletEthPanel" Margin="0,12,0,0" Visibility="Collapsed">
+                                    <Image Width="180" Height="180" HorizontalAlignment="Left"
+                                           RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                           Source="/OpenCodeStudio;component/Resources/qr/eth.png" />
+                                    <TextBox IsReadOnly="True" Style="{StaticResource FieldTextBox}"
+                                             FontFamily="Consolas" Margin="0,10,0,0"
+                                             Text="0x51Ee466d1Ee641960B716646BB9f001b34744450" />
+                                    <Button Uid="sponsor.copy" Content="Copy" Margin="0,8,0,0"
+                                            HorizontalAlignment="Left" Style="{StaticResource GhostButton}"
+                                            Tag="0x51Ee466d1Ee641960B716646BB9f001b34744450"
+                                            Click="OnCopyWalletClick" />
+                                </StackPanel>
                             </StackPanel>
                         </Border>
                     </StackPanel>

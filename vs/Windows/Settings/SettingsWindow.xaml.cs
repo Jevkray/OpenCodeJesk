@@ -342,6 +342,17 @@ namespace OpenCodeStudio
             sponsorNavButton.Foreground = on ? Brush(0xf1, 0xf1, 0xf1) : Brush(0xc9, 0xc9, 0xc9);
         }
 
+        /// <summary>Подвкладки валют: показывает панель выбранного кошелька, остальные прячет.</summary>
+        private void OnWalletTabChanged(object sender, RoutedEventArgs e)
+        {
+            if (walletTonPanel == null || walletBtcPanel == null || walletEthPanel == null) return;
+            bool ton = sender == walletTonTab;
+            bool btc = sender == walletBtcTab;
+            walletTonPanel.Visibility = ton ? Visibility.Visible : Visibility.Collapsed;
+            walletBtcPanel.Visibility = btc ? Visibility.Visible : Visibility.Collapsed;
+            walletEthPanel.Visibility = (!ton && !btc) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
         /// <summary>Копирует адрес кошелька в буфер и на секунду меняет текст кнопки.</summary>
         private void OnCopyWalletClick(object sender, RoutedEventArgs e)
         {

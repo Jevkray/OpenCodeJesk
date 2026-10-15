@@ -1,5 +1,5 @@
-# Собирает оба бренда из одной кодовой базы: OpenCode Studio (без флага) и
-# OpenCode Jesk (-p:Brand=Jesk). В рабочем дереве остаётся Jesk-манифест.
+# пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ: OpenCode Studio (пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ) пїЅ
+# OpenCode Jesk (-p:Brand=Jesk). пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ Jesk-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 $ErrorActionPreference = 'Stop'
 
 $root      = $PSScriptRoot
@@ -9,13 +9,13 @@ $studio    = Join-Path $vsDir 'source.studio.extension.vsixmanifest'
 $jesk      = Join-Path $vsDir 'source.jesk.extension.vsixmanifest'
 $project   = Join-Path $vsDir 'OpenCodeStudio.csproj'
 $outDir    = Join-Path $vsDir 'bin\Release\net472'
-$targetDir = 'C:\Users\semmi\Desktop\Текущие проекты (сборки)\OpenCodeStudio'
+$targetDir = 'C:\Users\semmi\Desktop\пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ)\OpenCodeStudio'
 $desktop   = [Environment]::GetFolderPath('Desktop')
 
-# 1. Сохранить текущий (Jesk) манифест, если копии ещё нет.
+# 1. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (Jesk) пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ.
 if (-not (Test-Path -LiteralPath $jesk)) {
     Copy-Item -LiteralPath $manifest -Destination $jesk
-    Write-Host "Создан Jesk-манифест: $jesk"
+    Write-Host "пїЅпїЅпїЅпїЅпїЅпїЅ Jesk-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: $jesk"
 }
 
 function Build-Brand([string]$brand, [string]$manifestSource, [string]$destName) {
@@ -25,30 +25,30 @@ function Build-Brand([string]$brand, [string]$manifestSource, [string]$destName)
     } else {
         dotnet build $project -c Release -t:Rebuild | Out-Host
     }
-    if ($LASTEXITCODE -ne 0) { throw "Сборка ($brand) не удалась (код $LASTEXITCODE)" }
+    if ($LASTEXITCODE -ne 0) { throw "пїЅпїЅпїЅпїЅпїЅпїЅ ($brand) пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅ $LASTEXITCODE)" }
 
     $vsix = Join-Path $outDir 'OpenCodeStudio.vsix'
-    if (-not (Test-Path -LiteralPath $vsix)) { throw "VSIX не найден: $vsix" }
+    if (-not (Test-Path -LiteralPath $vsix)) { throw "VSIX пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: $vsix" }
     $dest = Join-Path $root $destName
     Copy-Item -LiteralPath $vsix -Destination $dest -Force
-    Write-Host "Готово: $dest ($([math]::Round((Get-Item -LiteralPath $dest).Length/1MB,2)) MB)"
+    Write-Host "пїЅпїЅпїЅпїЅпїЅпїЅ: $dest ($([math]::Round((Get-Item -LiteralPath $dest).Length/1MB,2)) MB)"
     return $dest
 }
 
 # 2. Studio
-$studioVsix = Build-Brand '' $studio 'OpenCodeStudio-1.2.0.36.vsix'
+$studioVsix = Build-Brand '' $studio 'OpenCodeStudio-1.2.0.37.vsix'
 # 3. Jesk
-$jeskVsix = Build-Brand 'Jesk' $jesk 'OpenCodeJesk-1.2.0.36.vsix'
-# 4. В дереве остаётся Jesk-манифест (после шага 3 он уже Jesk).
+$jeskVsix = Build-Brand 'Jesk' $jesk 'OpenCodeJesk-1.2.0.37.vsix'
+# 4. пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ Jesk-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 3 пїЅпїЅ пїЅпїЅпїЅ Jesk).
 
-# 5. Разложить и почистить прошлую версию.
+# 5. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.
 foreach ($dir in @($root, $targetDir, $desktop)) {
     if (-not (Test-Path -LiteralPath $dir)) { New-Item -ItemType Directory -Path $dir | Out-Null }
-    # Studio кладём только в папку сборок; в корень и на рабочий стол — только Jesk.
+    # Studio пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ; пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ Jesk.
     if (-not [string]::Equals($dir, $root, [System.StringComparison]::OrdinalIgnoreCase)) {
         if ([string]::Equals($dir, $targetDir, [System.StringComparison]::OrdinalIgnoreCase)) { Copy-Item -LiteralPath $studioVsix -Destination $dir -Force }
         Copy-Item -LiteralPath $jeskVsix   -Destination $dir -Force
     }
-    Get-ChildItem -LiteralPath $dir -Filter 'OpenCode*-1.2.0.35.vsix' | Remove-Item -Force
+    Get-ChildItem -LiteralPath $dir -Filter 'OpenCode*-1.2.0.36.vsix' | Remove-Item -Force
 }
-Write-Host "VSIX разложены: $targetDir (Studio + Jesk), рабочий стол (Jesk)"
+Write-Host "VSIX пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: $targetDir (Studio + Jesk), пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ (Jesk)"
