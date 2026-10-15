@@ -1,4 +1,4 @@
-﻿<Window x:Class="OpenCodeJesk.SettingsWindow"
+<Window x:Class="OpenCodeJesk.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="OpenCode Settings"
@@ -1345,8 +1345,8 @@
                                 <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
                                     <TextBlock Uid="sponsor.contact.github" Text="GitHub / Issues:"
                                                Foreground="#cfcfcf" VerticalAlignment="Center" Margin="0,0,6,0" />
-                                    <TextBlock><Hyperlink NavigateUri="https://github.com/Jevkray/OpenCodeStudio"
-                                               RequestNavigate="OnHyperlink"><Run Text="github.com/Jevkray/OpenCodeStudio" /></Hyperlink></TextBlock>
+                                    <TextBlock><Hyperlink NavigateUri="https://github.com/Jevkray/OpenCodeJesk"
+                                               RequestNavigate="OnHyperlink"><Run Text="github.com/Jevkray/OpenCodeJesk" /></Hyperlink></TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </Border>

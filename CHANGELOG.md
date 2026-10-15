@@ -228,20 +228,20 @@ A step-by-step guide on a single page, so a new user can go from zero to a runni
 ### Added
 - Initial public release: OpenCode web UI embedded in a Visual Studio tool window.
 
-[2.0.0.0]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v2.0.0.0
-[1.2.0.32]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.2.0.32
-[1.2.0]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.2.0
-[1.1.5.1]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.1.5.1
-[1.1.5]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.1.5
-[1.1.5]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.1.5
-[1.1.4]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.1.4
-[1.1.3]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.1.3
-[1.1.2]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.1.2
-[1.1.1]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.1.1
-[1.1.0]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.1.0
-[1.0.10]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.0.10
-[1.0.9]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.0.9
-[1.0.8]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.0.8
-[1.0.7]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.0.7
-[1.0.6]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.0.6
-[1.0.0]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.0.0
+[2.0.0.0]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v2.0.0.0
+[1.2.0.32]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.2.0.32
+[1.2.0]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.2.0
+[1.1.5.1]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.1.5.1
+[1.1.5]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.1.5
+[1.1.5]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.1.5
+[1.1.4]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.1.4
+[1.1.3]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.1.3
+[1.1.2]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.1.2
+[1.1.1]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.1.1
+[1.1.0]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.1.0
+[1.0.10]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.0.10
+[1.0.9]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.0.9
+[1.0.8]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.0.8
+[1.0.7]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.0.7
+[1.0.6]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.0.6
+[1.0.0]: https://github.com/Jevkray/OpenCodeJesk/releases/tag/v1.0.0

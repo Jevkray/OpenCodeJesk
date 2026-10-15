@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +24,7 @@ namespace OpenCodeJesk.Services
         private const string MarketplaceQueryUrl =
             "https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery";
         private const string GitHubLatestReleaseUrl =
-            "https://api.github.com/repos/Jevkray/OpenCodeStudio/releases/latest";
+            "https://api.github.com/repos/Jevkray/OpenCodeJesk/releases/latest";
         private const int ReleaseNotesLimit = 1500;
 
         /// <summary>Проверка версии; null при любой ошибке.</summary>

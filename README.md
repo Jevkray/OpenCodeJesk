@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/vs/Resources/PreviewImageJesk.png" width="240" alt="OpenCode Jesk" />
+<img src="https://raw.githubusercontent.com/Jevkray/OpenCodeJesk/main/vs/Resources/PreviewImageJesk.png" width="240" alt="OpenCode Jesk" />
 
 # 🔵 OpenCode Jesk
 
@@ -29,7 +29,7 @@
 
 ## 📸 Preview
 
-![OpenCode Jesk — all panel versions](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/preview-collage.png)
+![OpenCode Jesk — all panel versions](https://raw.githubusercontent.com/Jevkray/OpenCodeJesk/main/docs/images/preview-collage.png)
 *OpenCode Jesk — all panel versions.*
 
 ## 🆕 What's new
@@ -92,7 +92,7 @@ Verification: build Release, then run `tests\Run-TerminalSmoke.ps1`. The check u
 
 **From a VSIX**
 
-1. Download the latest `OpenCodeJesk-x.y.z.vsix` from [Releases](https://github.com/Jevkray/OpenCodeStudio/releases).
+1. Download the latest `OpenCodeJesk-x.y.z.vsix` from [Releases](https://github.com/Jevkray/OpenCodeJesk/releases).
 2. Close all Visual Studio instances and double-click the file.
 
 </details>
@@ -155,7 +155,7 @@ OpenCode Jesk keeps a deliberately small, decoupled core.
 ## 🔨 Building from source
 
 ```bash
-git clone https://github.com/Jevkray/OpenCodeStudio.git
+git clone https://github.com/Jevkray/OpenCodeJesk.git
 cd OpenCodeStudio
 dotnet build vs/OpenCodeJesk.csproj -c Release
 ```
@@ -164,7 +164,7 @@ The VSIX is produced at `vs/bin/Release/net472/OpenCodeJesk.vsix`. To build the 
 
 ## ⚙️ Settings
 
-![OpenCode Jesk — Settings: all tabs](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/settings-collage.png)
+![OpenCode Jesk — Settings: all tabs](https://raw.githubusercontent.com/Jevkray/OpenCodeJesk/main/docs/images/settings-collage.png)
 *Settings: all tabs.*
 
 ## 🛡️ Privacy
@@ -181,7 +181,7 @@ The VSIX is produced at `vs/bin/Release/net472/OpenCodeJesk.vsix`. To build the 
 [![Telegram](https://img.shields.io/badge/Telegram-@eugenekray-2CA5E0?logo=telegram&logoColor=white)](https://t.me/eugenekray)
 [![Email](https://img.shields.io/badge/Email-krasovskyworks@gmail.com-EA4335?logo=gmail&logoColor=white)](mailto:krasovskyworks@gmail.com)
 [![Boosty](https://img.shields.io/badge/Support-Boosty-FF6A00?logo=boosty&logoColor=white)](https://boosty.to/jevkray)
-[![Issues](https://img.shields.io/badge/Issues-GitHub-181717?logo=github&logoColor=white)](https://github.com/Jevkray/OpenCodeStudio/issues)
+[![Issues](https://img.shields.io/badge/Issues-GitHub-181717?logo=github&logoColor=white)](https://github.com/Jevkray/OpenCodeJesk/issues)
 
 </div>
 

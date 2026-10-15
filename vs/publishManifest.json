@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://json.schemastore.org/vsix-publish",
   "categories": [
     "coding",
@@ -13,5 +13,5 @@
   "publisher": "jevkray",
   "private": false,
   "qna": true,
-  "repo": "https://github.com/Jevkray/OpenCodeStudio"
+  "repo": "https://github.com/Jevkray/OpenCodeJesk"
 }

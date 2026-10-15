@@ -17,7 +17,7 @@
 
 ## 📸 Preview
 
-![OpenCode Jesk — all panel versions](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/preview-collage.png)
+![OpenCode Jesk — all panel versions](https://raw.githubusercontent.com/Jevkray/OpenCodeJesk/main/docs/images/preview-collage.png)
 *OpenCode Jesk — all panel versions.*
 
 ## 🆕 What's new
@@ -84,7 +84,7 @@ Statistics are not part of this release yet. Use the statistics button in the Op
 
 ## ⚙️ Settings
 
-![OpenCode Jesk — Settings: all tabs](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/settings-collage.png)
+![OpenCode Jesk — Settings: all tabs](https://raw.githubusercontent.com/Jevkray/OpenCodeJesk/main/docs/images/settings-collage.png)
 *Settings: all tabs.*
 ## 🛡️ Privacy
 
@@ -98,8 +98,8 @@ Statistics are not part of this release yet. Use the statistics button in the Op
 - 📨 Telegram: https://t.me/eugenekray
 - ✉️ Email: krasovskyworks@gmail.com
 - 💙 Support the project: https://boosty.to/jevkray
-- 🐙 Source code and issues: https://github.com/Jevkray/OpenCodeStudio
+- 🐙 Source code and issues: https://github.com/Jevkray/OpenCodeJesk
 
 ## 📜 License
 
-Released under the [MIT License](https://github.com/Jevkray/OpenCodeStudio/blob/main/LICENSE).
+Released under the [MIT License](https://github.com/Jevkray/OpenCodeJesk/blob/main/LICENSE).

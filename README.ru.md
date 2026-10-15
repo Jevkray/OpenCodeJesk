@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/vs/Resources/PreviewImageJesk.png" width="240" alt="OpenCode Jesk" />
+<img src="https://raw.githubusercontent.com/Jevkray/OpenCodeJesk/main/vs/Resources/PreviewImageJesk.png" width="240" alt="OpenCode Jesk" />
 
 # 🔵 OpenCode Jesk
 
@@ -29,7 +29,7 @@
 
 ## 📸 Превью
 
-![OpenCode Jesk — все версии панели](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/preview-collage.png)
+![OpenCode Jesk — все версии панели](https://raw.githubusercontent.com/Jevkray/OpenCodeJesk/main/docs/images/preview-collage.png)
 *OpenCode Jesk — все версии панели.*
 
 ## 🆕 Что нового
@@ -92,7 +92,7 @@ Desktop сохраняет существующую интеграцию WebView
 
 **Из VSIX-файла**
 
-1. Скачайте последний `OpenCodeJesk-x.y.z.vsix` из [Releases](https://github.com/Jevkray/OpenCodeStudio/releases).
+1. Скачайте последний `OpenCodeJesk-x.y.z.vsix` из [Releases](https://github.com/Jevkray/OpenCodeJesk/releases).
 2. Закройте все окна Visual Studio и дважды кликните по файлу.
 
 </details>
@@ -155,7 +155,7 @@ OpenCode хранит каждую сессию **в привязке к кат�
 ## 🔨 Сборка из исходников
 
 ```bash
-git clone https://github.com/Jevkray/OpenCodeStudio.git
+git clone https://github.com/Jevkray/OpenCodeJesk.git
 cd OpenCodeStudio
 dotnet build vs/OpenCodeJesk.csproj -c Release
 ```
@@ -164,7 +164,7 @@ VSIX появится в `vs/bin/Release/net472/OpenCodeJesk.vsix`. Для сб�
 
 ## ⚙️ Настройки
 
-![OpenCode Jesk — Настройки: все вкладки](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/settings-collage.png)
+![OpenCode Jesk — Настройки: все вкладки](https://raw.githubusercontent.com/Jevkray/OpenCodeJesk/main/docs/images/settings-collage.png)
 *Настройки: все вкладки.*
 
 ## 🛡️ Приватность
@@ -181,7 +181,7 @@ VSIX появится в `vs/bin/Release/net472/OpenCodeJesk.vsix`. Для сб�
 [![Telegram](https://img.shields.io/badge/Telegram-@eugenekray-2CA5E0?logo=telegram&logoColor=white)](https://t.me/eugenekray)
 [![Почта](https://img.shields.io/badge/Email-krasovskyworks@gmail.com-EA4335?logo=gmail&logoColor=white)](mailto:krasovskyworks@gmail.com)
 [![Boosty](https://img.shields.io/badge/Поддержать-Boosty-FF6A00?logo=boosty&logoColor=white)](https://boosty.to/jevkray)
-[![Issues](https://img.shields.io/badge/Issues-GitHub-181717?logo=github&logoColor=white)](https://github.com/Jevkray/OpenCodeStudio/issues)
+[![Issues](https://img.shields.io/badge/Issues-GitHub-181717?logo=github&logoColor=white)](https://github.com/Jevkray/OpenCodeJesk/issues)
 
 </div>
 

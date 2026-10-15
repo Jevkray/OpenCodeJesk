@@ -12,6 +12,6 @@ namespace OpenCodeJesk
         /// <summary>Прямая ссылка на форму отзыва текущего расширения в Marketplace.</summary>
         public const string ReviewUrl = MarketplaceUrl + "&ssr=false#review-details";
 
-        public const string ReleasesUrl = "https://github.com/Jevkray/OpenCodeStudio/releases";
+        public const string ReleasesUrl = "https://github.com/Jevkray/OpenCodeJesk/releases";
     }
 }
