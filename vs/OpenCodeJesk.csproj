@@ -84,8 +84,6 @@
     <Resource Include="Resources\qr\ton.png" />
     <Resource Include="Resources\qr\btc.png" />
     <Resource Include="Resources\qr\eth.png" />
-    <Resource Include="Resources\quickstart\hero.png" />
-    <Resource Include="Resources\quickstart\panel.png" />
   </ItemGroup>
 
   <ItemGroup>

@@ -19,6 +19,70 @@
             <Setter Property="Margin" Value="0,0,0,16" />
         </Style>
 
+        <!-- Блок Quick Start: тёмно-синяя основа с ярко-синим градиентом -->
+        <Style x:Key="GlowCard" TargetType="Border" BasedOn="{StaticResource Card}">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#0E1B3A" Offset="0" />
+                        <GradientStop Color="#131313" Offset="1" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                        <GradientStop Color="#2A78FC" Offset="0" />
+                        <GradientStop Color="#0A37B0" Offset="1" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Вложенный/второстепенный блок Quick Start: мягче -->
+        <Style x:Key="GlowCardSoft" TargetType="Border">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#101a30" Offset="0" />
+                        <GradientStop Color="#151515" Offset="1" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="#243a6b" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+        </Style>
+
+        <!-- Шапка приветствия Quick Start -->
+        <Style x:Key="AccentBanner" TargetType="Border">
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Margin" Value="0,0,0,16" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="TextElement.Foreground" Value="White" />
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#2A78FC" Offset="0" />
+                        <GradientStop Color="#0A37B0" Offset="1" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Кружок с номером шага -->
+        <Style x:Key="StepBadge" TargetType="Border">
+            <Setter Property="Width" Value="26" />
+            <Setter Property="Height" Value="26" />
+            <Setter Property="CornerRadius" Value="13" />
+            <Setter Property="Background" Value="#2A78FC" />
+            <Setter Property="TextElement.Foreground" Value="White" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
         <Style x:Key="CardTitle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="14" />
             <Setter Property="FontWeight" Value="SemiBold" />
@@ -508,21 +572,27 @@
                 <Grid>
                     <!-- Quick Start -->
                     <StackPanel x:Name="panelQuickStart" Visibility="Collapsed">
-                        <Border Style="{StaticResource Card}">
+                        <Border Style="{StaticResource AccentBanner}">
                             <StackPanel>
                                 <TextBlock Uid="quickstart.title" Text="Quick Start"
-                                           Style="{StaticResource CardTitle}" />
-                                <TextBlock Uid="quickstart.welcome" Style="{StaticResource CardHint}"
+                                           FontSize="18" FontWeight="SemiBold" Foreground="White" />
+                                <TextBlock Uid="quickstart.welcome" TextWrapping="Wrap"
+                                           FontSize="12" Foreground="#EAF1FF" Margin="0,6,0,0"
                                            Text="Welcome to OpenCode Jesk — the OpenCode panel right inside Visual Studio." />
-                                <Image Margin="0,14,0,0" Stretch="Uniform" HorizontalAlignment="Center"
-                                       Source="/OpenCodeJesk;component/Resources/quickstart/hero.png" />
                             </StackPanel>
                         </Border>
 
-                        <Border Style="{StaticResource Card}">
+                        <Border Style="{StaticResource GlowCard}">
                             <StackPanel>
-                                <TextBlock Uid="quickstart.step1.title" Text="Step 1. Install OpenCode"
-                                           Style="{StaticResource CardTitle}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Style="{StaticResource StepBadge}">
+                                        <TextBlock Text="1" FontWeight="SemiBold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <TextBlock Uid="quickstart.step1.title" Text="Install OpenCode"
+                                               Style="{StaticResource CardTitle}"
+                                               VerticalAlignment="Center" Margin="10,0,0,0" />
+                                </StackPanel>
                                 <TextBlock Uid="quickstart.step1.body" Style="{StaticResource CardHint}"
                                            Text="OpenCode Jesk uses the official opencode CLI." />
                                 <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
@@ -539,10 +609,17 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Style="{StaticResource Card}">
+                        <Border Style="{StaticResource GlowCard}">
                             <StackPanel>
-                                <TextBlock Uid="quickstart.step2.title" Text="Step 2. Choose the version"
-                                           Style="{StaticResource CardTitle}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Style="{StaticResource StepBadge}">
+                                        <TextBlock Text="2" FontWeight="SemiBold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <TextBlock Uid="quickstart.step2.title" Text="Choose the version"
+                                               Style="{StaticResource CardTitle}"
+                                               VerticalAlignment="Center" Margin="10,0,0,0" />
+                                </StackPanel>
                                 <TextBlock Uid="quickstart.step2.body" Style="{StaticResource CardHint}"
                                            Text="v1 (stable) or v2 (preview)." />
                                 <TextBlock Uid="quickstart.step2.label" Text="OpenCode version"
@@ -556,10 +633,17 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Style="{StaticResource Card}">
+                        <Border Style="{StaticResource GlowCard}">
                             <StackPanel>
-                                <TextBlock Uid="quickstart.step3.title" Text="Step 3. Open the panel"
-                                           Style="{StaticResource CardTitle}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Style="{StaticResource StepBadge}">
+                                        <TextBlock Text="3" FontWeight="SemiBold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <TextBlock Uid="quickstart.step3.title" Text="Open the panel"
+                                               Style="{StaticResource CardTitle}"
+                                               VerticalAlignment="Center" Margin="10,0,0,0" />
+                                </StackPanel>
                                 <TextBlock Uid="quickstart.step3.body" Style="{StaticResource CardHint}"
                                            Text="Desktop (Web) or CLI." />
                                 <TextBlock Uid="quickstart.step3.label" Text="Interface mode"
@@ -573,35 +657,37 @@
                                 <Button Uid="quickstart.step3.openpanel" Content="Open OpenCode panel"
                                         Margin="0,16,0,0" HorizontalAlignment="Left"
                                         Style="{StaticResource AccentButton}" Click="OnQsOpenPanelClick" />
-                                <Image Margin="0,14,0,0" Stretch="Uniform" HorizontalAlignment="Center"
-                                       Source="/OpenCodeJesk;component/Resources/quickstart/panel.png" />
                             </StackPanel>
                         </Border>
 
-                        <Border Style="{StaticResource Card}">
+                        <Border Style="{StaticResource GlowCard}">
                             <StackPanel>
-                                <TextBlock Uid="quickstart.step4.title" Text="Step 4. Overview — what lives where"
-                                           Style="{StaticResource CardTitle}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Border Style="{StaticResource StepBadge}">
+                                        <TextBlock Text="4" FontWeight="SemiBold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <TextBlock Uid="quickstart.step4.title" Text="Overview — what lives where"
+                                               Style="{StaticResource CardTitle}"
+                                               VerticalAlignment="Center" Margin="10,0,0,0" />
+                                </StackPanel>
                                 <TextBlock Uid="quickstart.step4.body" Style="{StaticResource CardHint}"
                                            Text="The tool window talks to a local OpenCode server." />
                                 <!-- Мини-схема средствами XAML: панель ⇄ сервер ⇄ клиенты. -->
                                 <StackPanel Orientation="Horizontal" Margin="0,14,0,0" HorizontalAlignment="Left">
-                                    <Border Background="#2d2d30" BorderBrush="#3a3a3a" BorderThickness="1"
-                                            CornerRadius="6" Padding="12,8">
+                                    <Border Style="{StaticResource GlowCardSoft}" Padding="12,8">
                                         <TextBlock Uid="quickstart.schema.panel" Text="OpenCode panel"
                                                    Foreground="#f1f1f1" VerticalAlignment="Center" />
                                     </Border>
                                     <TextBlock Text="&#x21C4;" Foreground="#2A78FC" FontSize="16"
                                                VerticalAlignment="Center" Margin="10,0" />
-                                    <Border Background="#2d2d30" BorderBrush="#3a3a3a" BorderThickness="1"
-                                            CornerRadius="6" Padding="12,8">
+                                    <Border Style="{StaticResource GlowCardSoft}" Padding="12,8">
                                         <TextBlock Uid="quickstart.schema.server" Text="OpenCode server"
                                                    Foreground="#f1f1f1" VerticalAlignment="Center" />
                                     </Border>
                                     <TextBlock Text="&#x21C4;" Foreground="#2A78FC" FontSize="16"
                                                VerticalAlignment="Center" Margin="10,0" />
-                                    <Border Background="#2d2d30" BorderBrush="#3a3a3a" BorderThickness="1"
-                                            CornerRadius="6" Padding="12,8">
+                                    <Border Style="{StaticResource GlowCardSoft}" Padding="12,8">
                                         <TextBlock Uid="quickstart.schema.clients" Text="CLI / Web / Desktop"
                                                    Foreground="#f1f1f1" VerticalAlignment="Center" />
                                     </Border>
@@ -611,7 +697,7 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Style="{StaticResource Card}">
+                        <Border Style="{StaticResource GlowCard}">
                             <StackPanel>
                                 <TextBlock Uid="quickstart.links.title" Text="Useful links"
                                            Style="{StaticResource CardTitle}" />
