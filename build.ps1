@@ -1,5 +1,5 @@
-п»ї# РЎР±РѕСЂРєР° РµРґРёРЅСЃС‚РІРµРЅРЅРѕРіРѕ Р±СЂРµРЅРґР° OpenCode Jesk.
-# Р РµР·СѓР»СЊС‚Р°С‚ (VSIX) РєРѕРїРёСЂСѓРµС‚СЃСЏ РІ РєРѕСЂРµРЅСЊ СЂРµРїРѕР·РёС‚РѕСЂРёСЏ Рё РЅР° Р Р°Р±РѕС‡РёР№ СЃС‚РѕР».
+# Сборка единственного бренда OpenCode Jesk.
+# Результат (VSIX) копируется в корень репозитория и на Рабочий стол.
 $ErrorActionPreference = 'Stop'
 
 $root     = $PSScriptRoot
@@ -9,27 +9,27 @@ $project  = Join-Path $vsDir 'OpenCodeJesk.csproj'
 $outDir   = Join-Path $vsDir 'bin\Release\net472'
 $desktop  = [Environment]::GetFolderPath('Desktop')
 
-# Р’РµСЂСЃРёСЏ Р±РµСЂС‘С‚СЃСЏ РёР· РјР°РЅРёС„РµСЃС‚Р°.
+# Версия берётся из манифеста.
 $version = ([xml](Get-Content -LiteralPath $manifest)).PackageManifest.Metadata.Identity.Version
-if (-not $version) { throw "РќРµ СѓРґР°Р»РѕСЃСЊ РѕРїСЂРµРґРµР»РёС‚СЊ РІРµСЂСЃРёСЋ РІ $manifest" }
+if (-not $version) { throw "Не удалось определить версию в $manifest" }
 
-# 1. Р§РёСЃС‚РёРј РїСЂРѕС€Р»С‹Рµ СЃР±РѕСЂРєРё РІ РєРѕСЂРЅРµ Рё РЅР° Р Р°Р±РѕС‡РµРј СЃС‚РѕР»Рµ.
+# 1. Чистим прошлые сборки в корне и на Рабочем столе.
 foreach ($dir in @($root, $desktop)) {
     Get-ChildItem -LiteralPath $dir -Filter 'OpenCodeJesk-*.vsix'   -File -ErrorAction SilentlyContinue | Remove-Item -Force
     Get-ChildItem -LiteralPath $dir -Filter 'OpenCodeJesk-*.vsix' -File -ErrorAction SilentlyContinue | Remove-Item -Force
 }
 
-# 2. РЎР±РѕСЂРєР° Jesk.
+# 2. Сборка Jesk.
 dotnet build $project -c Release -t:Rebuild | Out-Host
-if ($LASTEXITCODE -ne 0) { throw "РЎР±РѕСЂРєР° РЅРµ СѓРґР°Р»Р°СЃСЊ (РєРѕРґ $LASTEXITCODE)" }
+if ($LASTEXITCODE -ne 0) { throw "Сборка не удалась (код $LASTEXITCODE)" }
 
 $vsix = Join-Path $outDir 'OpenCodeJesk.vsix'
-if (-not (Test-Path -LiteralPath $vsix)) { throw "VSIX РЅРµ РЅР°Р№РґРµРЅ: $vsix" }
+if (-not (Test-Path -LiteralPath $vsix)) { throw "VSIX не найден: $vsix" }
 
-# 3. РљРѕРїРёСЂСѓРµРј РєР°Рє OpenCodeJesk-<РІРµСЂСЃРёСЏ>.vsix РІ РєРѕСЂРµРЅСЊ Рё РЅР° Р Р°Р±РѕС‡РёР№ СЃС‚РѕР».
+# 3. Копируем как OpenCodeJesk-<версия>.vsix в корень и на Рабочий стол.
 $destName = "OpenCodeJesk-$version.vsix"
 foreach ($dir in @($root, $desktop)) {
     $dest = Join-Path $dir $destName
     Copy-Item -LiteralPath $vsix -Destination $dest -Force
-    Write-Host "Р“РѕС‚РѕРІРѕ: $dest ($([math]::Round((Get-Item -LiteralPath $dest).Length / 1MB, 2)) MB)"
+    Write-Host "Готово: $dest ($([math]::Round((Get-Item -LiteralPath $dest).Length / 1MB, 2)) MB)"
 }
