@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="OpenCodeJesk.2c99a37c-11f8-4f9f-9a77-d6347b8d3461" Version="1.2.0.49" Language="en-US" Publisher="jevkray" />
+    <Identity Id="OpenCodeJesk.2c99a37c-11f8-4f9f-9a77-d6347b8d3461" Version="2.0.0.0" Language="en-US" Publisher="jevkray" />
     <DisplayName>OpenCode Jesk</DisplayName>
     <Description xml:space="preserve">OpenCode Jesk brings the OpenCode AI coding agent natively inside Visual Studio. Full OpenCode web UI in a tool window, a plain CLI terminal mode, shared chat history with the CLI and desktop app, custom Settings (interface, terminal, server, updates), a first-run import wizard, web zoom and automatic panel opening. Everything runs locally. Supports VS 2022 and VS 2026.</Description>
     <Icon>Resources\IconJesk.png</Icon>

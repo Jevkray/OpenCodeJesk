@@ -2,18 +2,18 @@
 
 <img src="https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/vs/Resources/PreviewImageJesk.png" width="240" alt="OpenCode Jesk" />
 
-# 🟣 OpenCode Jesk
+# 🔵 OpenCode Jesk
 
 **OpenCode-агент — прямо внутри Visual Studio.**
 
 *Ранее OpenCode Studio. Быстрое, самодостаточное окно-инструмент с мастером настроек/переноса и общей историей чатов.*
 
-[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/jevkray.OpenCodeJesk?label=marketplace&color=7C3AED)](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk)
-[![Установки](https://img.shields.io/visual-studio-marketplace/i/jevkray.OpenCodeJesk?color=7C3AED)](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk)
-[![Рейтинг](https://img.shields.io/visual-studio-marketplace/r/jevkray.OpenCodeJesk?color=7C3AED)](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk)
-![Visual Studio](https://img.shields.io/badge/Visual%20Studio-2022%20%7C%202026-7C3AED)
-![Лицензия](https://img.shields.io/badge/license-MIT-7C3AED)
-![.NET](https://img.shields.io/badge/.NET%20Framework-4.7.2-7C3AED)
+[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/jevkray.OpenCodeJesk?label=marketplace&color=2A78FC)](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk)
+[![Установки](https://img.shields.io/visual-studio-marketplace/i/jevkray.OpenCodeJesk?color=2A78FC)](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk)
+[![Рейтинг](https://img.shields.io/visual-studio-marketplace/r/jevkray.OpenCodeJesk?color=2A78FC)](https://marketplace.visualstudio.com/items?itemName=jevkray.OpenCodeJesk)
+![Visual Studio](https://img.shields.io/badge/Visual%20Studio-2022%20%7C%202026-2A78FC)
+![Лицензия](https://img.shields.io/badge/license-MIT-2A78FC)
+![.NET](https://img.shields.io/badge/.NET%20Framework-4.7.2-2A78FC)
 
 **[English](README.md) · [Русский](README.ru.md)**
 
@@ -27,6 +27,17 @@
 > [!TIP]
 > **Одно окружение — везде.** OpenCode Jesk использует те же данные, что OpenCode CLI и desktop-приложение — провайдеры, настройки, ключи и **все чаты** уже на месте. Никакой настройки и дублирования.
 
+## 📸 Превью
+
+![OpenCode Jesk — все версии панели](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/preview-collage.png)
+*OpenCode Jesk — все версии панели.*
+
+![OpenCode Jesk — панель Desktop (Web)](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png)
+*Панель в режиме **Desktop (Web)** — полный веб-интерфейс OpenCode в окне Visual Studio.*
+
+![OpenCode Jesk — панель CLI (терминал)](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-cli.png)
+*Панель в режиме **CLI (терминал)** — простой терминал с уже запущенным OpenCode.*
+
 ## 🆕 Что нового
 
 - **1.2.0** - Режимы интерфейса **Desktop (Web)** и **CLI (терминал)** в одной панели; общий чат между режимами; отдельное окно **Settings** (Основные, Терминал, Сервер, Обновления, Импорт); авто-открытие при открытии решения; **масштаб веб-панели**; шрифт, размер, курсор и строки истории терминала; порт/аргументы/остановка сервера по простою; проверка обновлений в Marketplace; поддержка **v1 / v2 preview**; безопасный импорт с резервными копиями; и переименование в **OpenCode Jesk**.
@@ -38,14 +49,6 @@
   - Всегда используется **последняя установленная версия opencode**: при старте сервер заново проверяет бинарь (путь + время изменения) и перезапускается, если он обновился; в `server.json` теперь пишется реальный PID серверного процесса.
   - Мастер первого запуска превращён в окно **Settings** с вкладками **Import** и **Settings**; кнопка — **Save selected** (применяет и импорт, и настройки).
 - **1.1.0** - Кнопка статистики в панели OpenCode: профиль и реальные траты, не выходя из Visual Studio.
-
-## 📸 Превью
-
-![OpenCode Jesk — панель Desktop (Web)](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png)
-*Панель в режиме **Desktop (Web)** — полный веб-интерфейс OpenCode в окне Visual Studio.*
-
-![OpenCode Jesk — панель CLI (терминал)](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-cli.png)
-*Панель в режиме **CLI (терминал)** — простой терминал с уже запущенным OpenCode.*
 
 ## ✨ Почему OpenCode Jesk?
 
@@ -166,20 +169,8 @@ VSIX появится в `vs/bin/Release/net472/OpenCodeJesk.vsix`. Для сб�
 
 ## ⚙️ Настройки
 
-![OpenCode Jesk — Настройки: Общие](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png)
-*Общие: режим интерфейса, версия OpenCode, масштаб и поведение панели.*
-
-![OpenCode Jesk — Настройки: Терминал](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png)
-*Терминал: шрифт, размер, курсор, прокрутка и аргументы CLI.*
-
-![OpenCode Jesk — Настройки: Сервер](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png)
-*Сервер: путь к opencode, порт, аргументы serve и остановка по простою.*
-
-![OpenCode Jesk — Настройки: Обновления](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png)
-*Обновления: проверка версий, интервал и канал.*
-
-![OpenCode Jesk — Настройки: Импорт](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png)
-*Импорт: найденные источники OpenCode, добавление папки и импорт с бэкапами.*
+![OpenCode Jesk — Настройки: все вкладки](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/settings-collage.png)
+*Настройки: все вкладки.*
 
 ## 🛡️ Приватность
 

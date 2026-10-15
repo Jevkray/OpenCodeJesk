@@ -1,4 +1,4 @@
-# 🟣 OpenCode Jesk
+# 🔵 OpenCode Jesk
 
 **The OpenCode AI coding agent — natively inside Visual Studio.**
 
@@ -16,6 +16,9 @@
 ---
 
 ## 📸 Preview
+
+![OpenCode Jesk — all panel versions](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/preview-collage.png)
+*OpenCode Jesk — all panel versions.*
 
 ![OpenCode Jesk — Desktop (Web) panel](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-desktop.png)
 *The panel in **Desktop (Web)** mode — the full OpenCode web UI inside the tool window.*
@@ -85,20 +88,8 @@ Statistics are not part of this release yet. Use the statistics button in the Op
 
 ## ⚙️ Settings
 
-![OpenCode Jesk — Settings: General](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-general.png)
-*Settings — General: interface mode, OpenCode version, web zoom and panel behavior.*
-
-![OpenCode Jesk — Settings: Terminal](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-terminal.png)
-*Settings — Terminal: font, size, cursor, scrollback and CLI command options.*
-
-![OpenCode Jesk — Settings: Server](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-server.png)
-*Settings — Server: opencode binary path, preferred port, serve arguments and idle stop.*
-
-![OpenCode Jesk — Settings: Updates](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-updates.png)
-*Settings — Updates: check for new versions, interval and release channel.*
-
-![OpenCode Jesk — Settings: Import](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/jesk-settings-import.png)
-*Settings — Import: detected OpenCode sources, add folder and import selected (with backups).*
+![OpenCode Jesk — Settings: all tabs](https://raw.githubusercontent.com/Jevkray/OpenCodeStudio/main/docs/images/settings-collage.png)
+*Settings: all tabs.*
 ## 🛡️ Privacy
 
 - 🖧 the server binds to `127.0.0.1` only
@@ -110,7 +101,7 @@ Statistics are not part of this release yet. Use the statistics button in the Op
 
 - 📨 Telegram: https://t.me/eugenekray
 - ✉️ Email: krasovskyworks@gmail.com
-- 💜 Support the project: https://boosty.to/jevkray
+- 💙 Support the project: https://boosty.to/jevkray
 - 🐙 Source code and issues: https://github.com/Jevkray/OpenCodeStudio
 
 ## 📜 License

@@ -3,6 +3,25 @@
 All notable changes to **OpenCode Studio** are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.0.0] - 2026-10-15
+
+### Added
+- **Quick Start tab** — a step-by-step guide shown on first run: **Install All** with live progress and log, a **v1 / v2** version choice, the **Web / CLI** interface mode and an overview. The progress bar shows the percentage, a running **bunny** and a Cancel button.
+- **Sponsorship / Contacts tab** — a thank-you note, contacts and crypto wallets with QR codes and sub-tabs.
+- **Updates tab with a "What's new" changelog**.
+
+### Changed
+- **Brand and code fully renamed to OpenCode Jesk** — a single brand, without the Studio name.
+- **Blue palette matched to the icon** (gradients and glows, always-dark windows).
+- Progress blocks reworked.
+- Documentation and previews updated (collage images).
+
+### Fixed
+- **v1 / v2 switching** — WebView2 cache and version selection.
+- **CLI crash when switching versions.**
+- **npm install** (`--force`, process stopping).
+- Rounding of the **bunny** and hover styles.
+
 ## [1.2.0.32] - 2026-10-15
 
 ### Added
@@ -177,6 +196,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 - Initial public release: OpenCode web UI embedded in a Visual Studio tool window.
 
+[2.0.0.0]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v2.0.0.0
 [1.2.0.32]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.2.0.32
 [1.2.0]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.2.0
 [1.1.5.1]: https://github.com/Jevkray/OpenCodeStudio/releases/tag/v1.1.5.1
