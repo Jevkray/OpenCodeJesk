@@ -36,7 +36,7 @@ A step-by-step guide on a single page, so a new user can go from zero to a runni
 
 ### Changed
 
-- **Full rebrand to OpenCode Jesk.** The product is a single brand; the old **OpenCode Studio** name has been **removed entirely**. Renamed: the **namespace**, the **assembly**, the package **class**, the **VSCT** command tables and the **icons**. The data directory is now `%LOCALAPPDATA%\OpenCodeJesk` (with **migration** from the old `%LOCALAPPDATA%\OpenCodeStudio`), the environment variable is `OPENCODEJESK_OPENCODE_BIN`, and the pack URIs use the new name. `build.ps1` now builds the single Jesk brand.
+- **Full rebrand to OpenCode Jesk.** The product is a single brand; the old **OpenCode Studio** name has been **removed entirely**. Renamed: the **namespace**, the **assembly**, the package **class**, the **VSCT** command tables and the **icons**. The data directory is now `%LOCALAPPDATA%\OpenCodeJesk` (with **migration** from the old `%LOCALAPPDATA%\OpenCodeStudio`), the environment variable is `OPENCODEJESK_OPENCODE_BIN`, and the pack URIs use the new name. the project builds the single Jesk brand.
 - **Version bumped to 2.0.0.0.**
 - **Internal refactor** — the "god" classes were split into focused services: `CliInstallService`, `Localization`, `CliVersionStatusService`, `CliBinaryLocator`, `ServerPortResolver`, `SharedServerRegistry`, `WebPageRenderer`, `SessionUrlParser`, `ConsoleCoordinator`, `ReconnectCoordinator`, `CliModeCoordinator`, `SettingsEditor`, `ImportPresenter`, `InstallStatusRenderer` and `UiPalette`. Dead code was removed, comments were translated to Russian, and the sources were organized into folders.
 
@@ -103,7 +103,7 @@ A step-by-step guide on a single page, so a new user can go from zero to a runni
 
 ### Changed
 - Version bumped to **1.2.0**.
-- One codebase now builds a single brand, **OpenCode Jesk**, via `build.ps1`.
+- One codebase now builds a single brand, **OpenCode Jesk**, with a single-brand build.
 
 ## [1.1.5.1] - 2026-10-01
 

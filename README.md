@@ -34,7 +34,7 @@
 
 ## 🆕 What's new
 
-- **2.0.0.0** - **Quick Start** tab (opens on first run): a one-page guide — **Install All** (installs v2 then v1) with a live npm log, a non-linear progress bar (percentage + elapsed time, shimmer, rounded corners), Cancel and a green *Download complete*; a **v1 / v2** version choice; a **Desktop (Web) / CLI** mode picker with an open-panel button; and an overview map. **Sponsorship / Contacts** tab — thank-you note, Telegram/Email/Boosty/GitHub and **TON/BTC/ETH** crypto wallets with **QR codes**, sub-tabs, an address field and Copy. **Updates** tab — a review card, a one-time rating popup (~2 h, toggle in Settings) and a detailed **"What's new"** changelog instead of the install log. **Blue palette** matched to the icon (gradients, soft glows), the extension icon in the menu and the Settings title, always-dark windows. **Full rebrand to OpenCode Jesk** (single brand; namespace/assembly/package class/VSCT/icons renamed; data dir `%LOCALAPPDATA%\OpenCodeJesk` with migration; env `OPENCODEJESK_OPENCODE_BIN`; pack URIs; one-brand `build.ps1`) and an internal service-extraction refactor. **Fixed:** v1↔v2 web switching (WebView2 cache), start-time version selection, CLI crash on version switch ("Session not found"), npm install (`--force`), bunny rounding and hover styles. **Docs:** README (EN/RU) and the Marketplace description in the **blue** style with new preview and settings collages.
+- **2.0.0.0** - **Quick Start** tab (opens on first run): a one-page guide — **Install All** (installs v2 then v1) with a live npm log, a non-linear progress bar (percentage + elapsed time, shimmer, rounded corners), Cancel and a green *Download complete*; a **v1 / v2** version choice; a **Desktop (Web) / CLI** mode picker with an open-panel button; and an overview map. **Sponsorship / Contacts** tab — thank-you note, Telegram/Email/Boosty/GitHub and **TON/BTC/ETH** crypto wallets with **QR codes**, sub-tabs, an address field and Copy. **Updates** tab — a review card, a one-time rating popup (~2 h, toggle in Settings) and a detailed **"What's new"** changelog instead of the install log. **Blue palette** matched to the icon (gradients, soft glows), the extension icon in the menu and the Settings title, always-dark windows. **Full rebrand to OpenCode Jesk** (single brand; namespace/assembly/package class/VSCT/icons renamed; data dir `%LOCALAPPDATA%\OpenCodeJesk` with migration; env `OPENCODEJESK_OPENCODE_BIN`; pack URIs; a single-brand build) and an internal service-extraction refactor. **Fixed:** v1↔v2 web switching (WebView2 cache), start-time version selection, CLI crash on version switch ("Session not found"), npm install (`--force`), bunny rounding and hover styles. **Docs:** README (EN/RU) and the Marketplace description in the **blue** style with new preview and settings collages.
 - **1.2.0** - **Desktop (Web)** and **CLI (terminal)** interface modes in the same panel; shared chat between modes; a dedicated **Settings** window (General, Terminal, Server, Updates, Import); auto-open on solution open; **web zoom**; terminal font, size, cursor and scrollback; server port/arguments/idle stop; marketplace update checks; **v1 / v2 preview** support; safe import with backups; and the rename to **OpenCode Jesk**.
 - **1.1.5.1** (minor hotfix) - More reliable **Open Extension Manager** action (opens the Visual Studio extension manager, Updates page first); the update window now hides until the next Visual Studio restart on any action, and explains how to turn the notifications off in settings.
 - **1.1.5** - Fixed: closing the update window hides it until the next restart; "Open Extension Manager" opens the Visual Studio extension manager.
@@ -156,11 +156,11 @@ OpenCode Jesk keeps a deliberately small, decoupled core.
 
 ```bash
 git clone https://github.com/Jevkray/OpenCodeJesk.git
-cd OpenCodeStudio
+cd OpenCodeJesk
 dotnet build vs/OpenCodeJesk.csproj -c Release
 ```
 
-The VSIX is produced at `vs/bin/Release/net472/OpenCodeJesk.vsix`. To build the release VSIX and copy it to the repository root and Desktop, run `build.ps1`. For a debug run, open `OpenCodeJesk.sln` and press **F5** to launch the experimental instance. 🧪
+The VSIX is produced at `vs/bin/Release/net472/OpenCodeJesk.vsix`. For a debug run, open `OpenCodeJesk.sln` and press **F5** to launch the experimental instance. 🧪
 
 ## ⚙️ Settings
 
