@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Локализация окна настроек: две таблицы строк (EN и RU) и выбор строки

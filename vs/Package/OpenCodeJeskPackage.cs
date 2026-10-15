@@ -6,10 +6,10 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using OpenCodeStudio.Commands;
-using OpenCodeStudio.Services;
+using OpenCodeJesk.Commands;
+using OpenCodeJesk.Services;
 
-namespace OpenCodeStudio
+namespace OpenCodeJesk
 {
     [Guid(Brand.PackageGuid)]
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
@@ -19,7 +19,7 @@ namespace OpenCodeStudio
     [ProvideAutoLoad(UIContextGuids80.NoSolution, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideAutoLoad(UIContextGuids80.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideOptionPage(typeof(Services.SpendSettings), Brand.Name, "Settings", 0, 0, true)]
-    public sealed class OpenCodeStudioPackage : AsyncPackage
+    public sealed class OpenCodeJeskPackage : AsyncPackage
     {
         public const string PackageGuidString = Brand.PackageGuid;
 

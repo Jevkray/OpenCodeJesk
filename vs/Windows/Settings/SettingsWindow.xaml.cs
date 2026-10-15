@@ -8,9 +8,9 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
-using OpenCodeStudio.Services;
+using OpenCodeJesk.Services;
 
-namespace OpenCodeStudio
+namespace OpenCodeJesk
 {
     /// <summary>
     /// Своё окно Settings в теме OpenCode: боковое меню разделов и карточки

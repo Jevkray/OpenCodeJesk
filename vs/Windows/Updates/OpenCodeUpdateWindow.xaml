@@ -1,4 +1,4 @@
-<Window x:Class="OpenCodeStudio.OpenCodeUpdateWindow"
+<Window x:Class="OpenCodeJesk.OpenCodeUpdateWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="OpenCode update available"
@@ -8,7 +8,7 @@
         ShowActivated="False" Topmost="False"
         Background="#1e1e1e">
     <Window.Resources>
-        <ResourceDictionary Source="/OpenCodeStudio;component/Ui/UiButtonStyles.xaml" />
+        <ResourceDictionary Source="/OpenCodeJesk;component/Ui/UiButtonStyles.xaml" />
     </Window.Resources>
     <Grid Margin="20">
         <Grid.RowDefinitions>

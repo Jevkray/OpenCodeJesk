@@ -1,4 +1,4 @@
-﻿<Window x:Class="OpenCodeStudio.SettingsWindow"
+﻿<Window x:Class="OpenCodeJesk.SettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="OpenCode Settings"
@@ -424,7 +424,7 @@
             <DockPanel>
                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="20,24,20,16">
                     <Image Width="20" Height="20" Margin="0,0,8,0"
-                           VerticalAlignment="Center" Source="/OpenCodeStudio;component/Resources/IconJesk.png" />
+                           VerticalAlignment="Center" Source="/OpenCodeJesk;component/Resources/IconJesk.png" />
                     <TextBlock Uid="menu.title" Text="Settings" FontSize="18"
                                FontWeight="SemiBold" Foreground="#f1f1f1" VerticalAlignment="Center" />
                 </StackPanel>
@@ -1020,7 +1020,7 @@
                                 <StackPanel x:Name="walletTonPanel" Margin="0,12,0,0" Visibility="Visible">
                                     <Image Width="180" Height="180" HorizontalAlignment="Left"
                                            RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                           Source="/OpenCodeStudio;component/Resources/qr/ton.png" />
+                                           Source="/OpenCodeJesk;component/Resources/qr/ton.png" />
                                     <TextBox IsReadOnly="True" Style="{StaticResource FieldTextBox}"
                                              FontFamily="Consolas" Margin="0,10,0,0"
                                              Text="UQAKj2KDbscIi-6yAzjB3XQYJfyOzOp4iyYewAJjCney1bEG" />
@@ -1034,7 +1034,7 @@
                                 <StackPanel x:Name="walletBtcPanel" Margin="0,12,0,0" Visibility="Collapsed">
                                     <Image Width="180" Height="180" HorizontalAlignment="Left"
                                            RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                           Source="/OpenCodeStudio;component/Resources/qr/btc.png" />
+                                           Source="/OpenCodeJesk;component/Resources/qr/btc.png" />
                                     <TextBox IsReadOnly="True" Style="{StaticResource FieldTextBox}"
                                              FontFamily="Consolas" Margin="0,10,0,0"
                                              Text="bc1pneulxe7cqkeukhyh3ezhvv4qjp6lna0zdgwhwc90kqxzqwytarcsvh4ftx" />
@@ -1048,7 +1048,7 @@
                                 <StackPanel x:Name="walletEthPanel" Margin="0,12,0,0" Visibility="Collapsed">
                                     <Image Width="180" Height="180" HorizontalAlignment="Left"
                                            RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                           Source="/OpenCodeStudio;component/Resources/qr/eth.png" />
+                                           Source="/OpenCodeJesk;component/Resources/qr/eth.png" />
                                     <TextBox IsReadOnly="True" Style="{StaticResource FieldTextBox}"
                                              FontFamily="Consolas" Margin="0,10,0,0"
                                              Text="0x51Ee466d1Ee641960B716646BB9f001b34744450" />

@@ -1,4 +1,4 @@
-﻿namespace OpenCodeStudio.Services
+﻿namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Resolves the project root directory from Visual Studio solution or Git repository.

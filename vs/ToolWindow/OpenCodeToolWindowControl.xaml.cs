@@ -7,12 +7,12 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using OpenCodeStudio.Commands;
-using OpenCodeStudio.Models;
-using OpenCodeStudio.Resources;
-using OpenCodeStudio.Services;
+using OpenCodeJesk.Commands;
+using OpenCodeJesk.Models;
+using OpenCodeJesk.Resources;
+using OpenCodeJesk.Services;
 
-namespace OpenCodeStudio
+namespace OpenCodeJesk
 {
     /// <summary>
     /// Hosts the OpenCode web UI inside a WebView2.
@@ -221,7 +221,7 @@ namespace OpenCodeStudio
             {
                 var userDataFolder = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "OpenCodeStudio",
+                    "OpenCodeJesk",
                     "WebView2");
 
                 Directory.CreateDirectory(userDataFolder);
@@ -533,7 +533,7 @@ namespace OpenCodeStudio
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                     try
                     {
-                        if (_serviceProvider is OpenCodeStudioPackage pkg)
+                        if (_serviceProvider is OpenCodeJeskPackage pkg)
                             await pkg.ShowSettingsWindowAsync(0);
                     }
                     catch (Exception ex) { Services.Log.Error("Open settings from page failed", ex); }
@@ -585,7 +585,7 @@ namespace OpenCodeStudio
 
             var stamp = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "OpenCodeStudio", "webview-major2.txt");
+                "OpenCodeJesk", "webview-major2.txt");
             int saved = 0;
             try
             {

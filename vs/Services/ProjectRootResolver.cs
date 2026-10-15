@@ -4,7 +4,7 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     public class ProjectRootResolver : IProjectRootResolver
     {

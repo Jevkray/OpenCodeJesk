@@ -1,6 +1,6 @@
 using System.Windows.Media;
 
-namespace OpenCodeStudio
+namespace OpenCodeJesk
 {
     /// <summary>Общие кисти и моноширинный шрифт, используемые окнами настроек.</summary>
     public static class UiPalette

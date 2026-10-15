@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Binds child processes to the VS process lifecycle via Windows Job Objects.
@@ -30,7 +30,7 @@ namespace OpenCodeStudio.Services
         {
             try
             {
-                var jobName = $"OpenCodeStudio_{System.Diagnostics.Process.GetCurrentProcess().Id}";
+                var jobName = $"OpenCodeJesk_{System.Diagnostics.Process.GetCurrentProcess().Id}";
                 var hJob = CreateJobObject(IntPtr.Zero, jobName);
                 if (hJob == IntPtr.Zero) return;
 

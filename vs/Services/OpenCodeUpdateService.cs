@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Проверяет установленную и последнюю доступную версию opencode и умеет

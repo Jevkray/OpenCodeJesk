@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Поиск и выбор бинаря opencode: каталоги установки, определение v1/v2 по
@@ -21,14 +21,16 @@ namespace OpenCodeStudio.Services
 
         /// <summary>
         /// Полный путь к бинарю или null. Учитывает явное переопределение пути
-        /// (OPENCODESTUDIO_OPENCODE_BIN), путь из настроек и автоопределение по
+        /// (OPENCODEJESK_OPENCODE_BIN), путь из настроек и автоопределение по
         /// фактической версии ("opencode --version"), а не по имени.
         /// </summary>
         public static string Resolve(bool preferV2)
         {
             // Явное переопределение пути к бинарю (например, для теста v2-беты
-            // opencode2): OPENCODESTUDIO_OPENCODE_BIN=<полный путь>.
-            var overridePath = Environment.GetEnvironmentVariable("OPENCODESTUDIO_OPENCODE_BIN");
+            // opencode2): OPENCODEJESK_OPENCODE_BIN=<полный путь>. Старое имя
+            // OPENCODESTUDIO_OPENCODE_BIN поддерживается как fallback.
+            var overridePath = Environment.GetEnvironmentVariable("OPENCODEJESK_OPENCODE_BIN")
+                ?? Environment.GetEnvironmentVariable("OPENCODESTUDIO_OPENCODE_BIN");
             if (!string.IsNullOrWhiteSpace(overridePath) && File.Exists(overridePath))
                 return overridePath;
 

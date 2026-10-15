@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 using System.Runtime.Serialization;
-using OpenCodeStudio.Services;
+using OpenCodeJesk.Services;
 
 // Проверка чистой логики сервисов расширения (без UI и без сервера).
 public static class PureLogicSmoke
@@ -74,7 +74,7 @@ public static class PureLogicSmoke
     private static void CheckSessionUrl()
     {
         // SessionUrlParser внутренний — вызываем через рефлексию.
-        var type = typeof(SettingsEditor).Assembly.GetType("OpenCodeStudio.Services.SessionUrlParser");
+        var type = typeof(SettingsEditor).Assembly.GetType("OpenCodeJesk.Services.SessionUrlParser");
         Assert(type != null, "Тип SessionUrlParser не найден");
         var method = type.GetMethod("Parse", BindingFlags.Public | BindingFlags.Static);
         Assert(method != null, "Метод SessionUrlParser.Parse не найден");

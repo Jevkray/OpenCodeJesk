@@ -7,9 +7,9 @@ using System.Windows.Controls;
 using Microsoft.Web.WebView2.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OpenCodeStudio.Services;
+using OpenCodeJesk.Services;
 
-namespace OpenCodeStudio
+namespace OpenCodeJesk
 {
     /// <summary>
     /// Простое окно с терминалом OpenCode: без хрома Visual Studio, только
@@ -58,7 +58,7 @@ namespace OpenCodeStudio
 
         private static string Resource(string name)
         {
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("OpenCodeStudio.Resources." + name))
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("OpenCodeJesk.Resources." + name))
             using (var reader = new StreamReader(stream)) return reader.ReadToEnd();
         }
 

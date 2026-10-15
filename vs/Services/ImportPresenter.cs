@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>Логика вкладки Import: карточки источников и перенос выбранных данных.</summary>
     public sealed class ImportPresenter

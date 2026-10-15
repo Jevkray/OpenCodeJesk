@@ -2,9 +2,9 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
-using OpenCodeStudio.Services;
+using OpenCodeJesk.Services;
 
-namespace OpenCodeStudio
+namespace OpenCodeJesk
 {
     /// <summary>
     /// Компактное уведомление о новой версии расширения на Marketplace.

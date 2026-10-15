@@ -5,7 +5,7 @@
   <Extern href="stdidcmd.h" />
   <Extern href="vsshlids.h" />
 
-  <Commands package="guidOpenCodeStudioPackage">
+  <Commands package="guidOpenCodeJeskPackage">
 
     <Bitmaps>
       <Bitmap guid="guidImages" href="..\Resources\CommandIcons.png" usedList="bmpCommand" />
@@ -58,7 +58,7 @@
       <IDSymbol name="bmpCommand" value="1" />
     </GuidSymbol>
 
-    <GuidSymbol name="guidOpenCodeStudioPackage" value="{2C99A37C-11F8-4F9F-9A77-D6347B8D3461}" />
+    <GuidSymbol name="guidOpenCodeJeskPackage" value="{2C99A37C-11F8-4F9F-9A77-D6347B8D3461}" />
 
     <GuidSymbol name="guidOpenCodeCmdSet" value="{0B7E5D4C-2A19-4F83-9E61-7C3A5B8D24F0}">
       <IDSymbol name="grpOpenCodeWindow" value="0x1000" />

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using OpenCodeStudio.Models;
+using OpenCodeJesk.Models;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     public static class CliCommand
     {

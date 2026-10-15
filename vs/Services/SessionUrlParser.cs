@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Разбор URL веб-панели OpenCode: извлекает активную сессию и каталог проекта.

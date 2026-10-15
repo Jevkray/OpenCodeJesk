@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Подбор порта для локального сервера opencode. Стабильный origin: сначала

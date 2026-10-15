@@ -3,16 +3,16 @@ using System.ComponentModel.Design;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Shell;
 
-namespace OpenCodeStudio.Commands
+namespace OpenCodeJesk.Commands
 {
     internal sealed class ShowOpenCodeWindowCommand
     {
         public const int CommandId = 0x0100;
         public static readonly Guid CommandSet = new Guid(Brand.CommandSetGuid);
 
-        private readonly OpenCodeStudioPackage _package;
+        private readonly OpenCodeJeskPackage _package;
 
-        private ShowOpenCodeWindowCommand(OpenCodeStudioPackage package, OleMenuCommandService commandService)
+        private ShowOpenCodeWindowCommand(OpenCodeJeskPackage package, OleMenuCommandService commandService)
         {
             _package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
@@ -29,7 +29,7 @@ namespace OpenCodeStudio.Commands
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
 
             var commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
-            Instance = new ShowOpenCodeWindowCommand((OpenCodeStudioPackage)package, commandService);
+            Instance = new ShowOpenCodeWindowCommand((OpenCodeJeskPackage)package, commandService);
         }
 
         public void RefreshWindow()

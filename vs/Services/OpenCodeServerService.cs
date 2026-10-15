@@ -5,9 +5,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using OpenCodeStudio.Models;
+using OpenCodeJesk.Models;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     public class OpenCodeServerService : IOpenCodeServerService
     {

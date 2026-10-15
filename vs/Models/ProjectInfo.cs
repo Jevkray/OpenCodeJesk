@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace OpenCodeStudio.Models
+namespace OpenCodeJesk.Models
 {
     /// <summary>
     /// Project info from GET /project or /project/current.

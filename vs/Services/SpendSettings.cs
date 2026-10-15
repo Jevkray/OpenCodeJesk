@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using Microsoft.VisualStudio.Shell;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Настройки OpenCode Jesk. Читаются кастомным окном Settings и сервисами

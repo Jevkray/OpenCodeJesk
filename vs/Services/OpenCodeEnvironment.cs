@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Represents an OpenCode data environment (config / data / state / cache).
@@ -42,9 +42,32 @@ namespace OpenCodeStudio.Services
                 Path.Combine(home, ".cache", "opencode")) { Name = "Global (CLI / Desktop)" };
         }
 
-        public static string StudioDir => Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "OpenCodeStudio");
+        public static string StudioDir
+        {
+            get
+            {
+                var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                var dir = Path.Combine(local, "OpenCodeJesk");
+                MigrateDataDir(local, dir);
+                return dir;
+            }
+        }
+
+        /// <summary>
+        /// Одноразовая миграция каталога данных при переименовании: если новый
+        /// каталог ещё не создан, а старый (%LOCALAPPDATA%\OpenCodeStudio)
+        /// существует — переносим его. При ошибке молча оставляем как есть.
+        /// </summary>
+        private static void MigrateDataDir(string local, string newDir)
+        {
+            try
+            {
+                if (Directory.Exists(newDir)) return;
+                var oldDir = Path.Combine(local, "OpenCodeStudio");
+                if (Directory.Exists(oldDir)) Directory.Move(oldDir, newDir);
+            }
+            catch { }
+        }
 
         public string ConfigFile => Path.Combine(ConfigDir, "opencode.json");
         public string TuiFile => Path.Combine(ConfigDir, "tui.json");

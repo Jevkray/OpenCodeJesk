@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Отслеживает показ окна настроек при первом запуске. Маркер хранит версию

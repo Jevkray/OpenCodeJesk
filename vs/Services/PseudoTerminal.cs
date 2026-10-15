@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32.SafeHandles;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     public sealed class PseudoTerminal : IDisposable
     {

@@ -4,9 +4,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using OpenCodeStudio.Models;
+using OpenCodeJesk.Models;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Manages OpenCode server lifecycle independently of any tool window.

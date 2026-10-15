@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 using Microsoft.Web.WebView2.Core;
 using Newtonsoft.Json;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Встраивает в веб-UI OpenCode кнопку/поповер расхода и пушит в него данные.
     /// </summary>
     internal static class UsageInjector
     {
-        private const string ResourceName = "OpenCodeStudio.Resources.UsageInjector.js";
+        private const string ResourceName = "OpenCodeJesk.Resources.UsageInjector.js";
         private static string _script;
         private static string _scriptId;
 

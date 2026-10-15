@@ -5,7 +5,7 @@ $ErrorActionPreference = 'Stop'
 $root     = $PSScriptRoot
 $vsDir    = Join-Path $root 'vs'
 $manifest = Join-Path $vsDir 'source.extension.vsixmanifest'
-$project  = Join-Path $vsDir 'OpenCodeStudio.csproj'
+$project  = Join-Path $vsDir 'OpenCodeJesk.csproj'
 $outDir   = Join-Path $vsDir 'bin\Release\net472'
 $desktop  = [Environment]::GetFolderPath('Desktop')
 
@@ -16,14 +16,14 @@ if (-not $version) { throw "Не удалось определить верси�
 # 1. Чистим прошлые сборки в корне и на Рабочем столе.
 foreach ($dir in @($root, $desktop)) {
     Get-ChildItem -LiteralPath $dir -Filter 'OpenCodeJesk-*.vsix'   -File -ErrorAction SilentlyContinue | Remove-Item -Force
-    Get-ChildItem -LiteralPath $dir -Filter 'OpenCodeStudio-*.vsix' -File -ErrorAction SilentlyContinue | Remove-Item -Force
+    Get-ChildItem -LiteralPath $dir -Filter 'OpenCodeJesk-*.vsix' -File -ErrorAction SilentlyContinue | Remove-Item -Force
 }
 
 # 2. Сборка Jesk.
 dotnet build $project -c Release -t:Rebuild | Out-Host
 if ($LASTEXITCODE -ne 0) { throw "Сборка не удалась (код $LASTEXITCODE)" }
 
-$vsix = Join-Path $outDir 'OpenCodeStudio.vsix'
+$vsix = Join-Path $outDir 'OpenCodeJesk.vsix'
 if (-not (Test-Path -LiteralPath $vsix)) { throw "VSIX не найден: $vsix" }
 
 # 3. Копируем как OpenCodeJesk-<версия>.vsix в корень и на Рабочий стол.

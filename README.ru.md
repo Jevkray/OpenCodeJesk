@@ -122,7 +122,7 @@ OpenCode хранит каждую сессию **в привязке к кат�
 
 ```text
  ┌──────────────────────────────────────────────────────────────┐
- │  OpenCodeStudioPackage            пакет VS и команды         │
+ │  OpenCodeJeskPackage            пакет VS и команды         │
  ├──────────────────────────────────────────────────────────────┤
  │  ServerController                жизненный цикл сервера      │
  │    ├── OpenCodeServerService      запускает `opencode serve` │
@@ -159,10 +159,10 @@ OpenCode хранит каждую сессию **в привязке к кат�
 ```bash
 git clone https://github.com/Jevkray/OpenCodeStudio.git
 cd OpenCodeStudio
-dotnet build vs/OpenCodeStudio.csproj -c Release
+dotnet build vs/OpenCodeJesk.csproj -c Release
 ```
 
-VSIX появится в `vs/bin/Release/net472/OpenCodeStudio.vsix`. Для сборки релизного VSIX с копированием в корень репозитория и на Рабочий стол запустите `build.ps1`. Для отладки откройте `OpenCodeStudio.sln` и нажмите **F5** (экспериментальный экземпляр). 🧪
+VSIX появится в `vs/bin/Release/net472/OpenCodeJesk.vsix`. Для сборки релизного VSIX с копированием в корень репозитория и на Рабочий стол запустите `build.ps1`. Для отладки откройте `OpenCodeJesk.sln` и нажмите **F5** (экспериментальный экземпляр). 🧪
 
 ## ⚙️ Настройки
 

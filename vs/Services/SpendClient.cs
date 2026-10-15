@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>Лимиты подписки OpenCode Go (окна 5 часов / неделя / месяц).</summary>
     public sealed class SpendLimits

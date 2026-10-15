@@ -1,4 +1,4 @@
-namespace OpenCodeStudio
+namespace OpenCodeJesk
 {
     public static class Brand
     {

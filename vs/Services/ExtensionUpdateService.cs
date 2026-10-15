@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>Информация о доступной новой версии самого расширения.</summary>
     public sealed class UpdateInfo
@@ -75,7 +75,7 @@ namespace OpenCodeStudio.Services
             {
                 using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) })
                 {
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "OpenCodeStudio");
+                    client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "OpenCodeJesk");
                     var json = await client.GetStringAsync(GitHubLatestReleaseUrl);
                     var body = ((string)JObject.Parse(json)["body"])?.Trim();
                     if (string.IsNullOrEmpty(body)) return null;

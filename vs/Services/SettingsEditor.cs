@@ -1,6 +1,6 @@
 using System;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>Сырые значения формы настроек (дно между окном и хранилищем).</summary>
     public sealed class SettingsForm

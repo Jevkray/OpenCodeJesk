@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 using Newtonsoft.Json;
-using OpenCodeStudio.Models;
+using OpenCodeJesk.Models;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Общий реестр сервера (server.json в StudioDir): позволяет нескольким

@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
 
-namespace OpenCodeStudio
+namespace OpenCodeJesk
 {
     [Guid(Brand.ToolWindowGuid)]
     public sealed class OpenCodeToolWindow : ToolWindowPane

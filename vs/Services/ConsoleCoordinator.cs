@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.Web.WebView2.Core;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Веб-часть хоста, нужная координатору консоли (без прямых ссылок на окно).

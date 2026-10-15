@@ -2,9 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Shell;
-using OpenCodeStudio.Resources;
+using OpenCodeJesk.Resources;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Часть окна, нужная координатору реконнекта (без прямых ссылок на окно).

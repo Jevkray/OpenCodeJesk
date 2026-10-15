@@ -4,9 +4,9 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using Microsoft.VisualStudio.PlatformUI;
-using OpenCodeStudio.Resources;
+using OpenCodeJesk.Resources;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Генерация служебных страниц веб-панели (загрузка и ошибка):
@@ -20,8 +20,8 @@ namespace OpenCodeStudio.Services
         static WebPageRenderer()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            ErrorPageTemplate = LoadResourceString(assembly, "OpenCodeStudio.Resources.ErrorPage.html");
-            LoadingPageTemplate = LoadResourceString(assembly, "OpenCodeStudio.Resources.LoadingPage.html");
+            ErrorPageTemplate = LoadResourceString(assembly, "OpenCodeJesk.Resources.ErrorPage.html");
+            LoadingPageTemplate = LoadResourceString(assembly, "OpenCodeJesk.Resources.LoadingPage.html");
         }
 
         private static string LoadResourceString(Assembly assembly, string name)

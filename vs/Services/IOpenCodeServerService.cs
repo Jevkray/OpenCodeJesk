@@ -1,4 +1,4 @@
-﻿namespace OpenCodeStudio.Services
+﻿namespace OpenCodeJesk.Services
 {
     public enum ConnectionState
     {

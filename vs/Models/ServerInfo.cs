@@ -1,4 +1,4 @@
-﻿namespace OpenCodeStudio.Models
+﻿namespace OpenCodeJesk.Models
 {
     /// <summary>
     /// Server connection info.

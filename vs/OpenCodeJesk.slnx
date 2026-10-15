@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="OpenCodeStudio.csproj">
+  <Project Path="OpenCodeJesk.csproj">
     <Deploy />
   </Project>
 </Solution>

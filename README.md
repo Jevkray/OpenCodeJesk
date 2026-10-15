@@ -122,7 +122,7 @@ OpenCode Jesk keeps a deliberately small, decoupled core.
 
 ```text
  ┌──────────────────────────────────────────────────────────────┐
- │  OpenCodeStudioPackage            VS package & commands      │
+ │  OpenCodeJeskPackage            VS package & commands      │
  ├──────────────────────────────────────────────────────────────┤
  │  ServerController                server + session lifecycle  │
  │    ├── OpenCodeServerService      launches `opencode serve`  │
@@ -159,10 +159,10 @@ OpenCode Jesk keeps a deliberately small, decoupled core.
 ```bash
 git clone https://github.com/Jevkray/OpenCodeStudio.git
 cd OpenCodeStudio
-dotnet build vs/OpenCodeStudio.csproj -c Release
+dotnet build vs/OpenCodeJesk.csproj -c Release
 ```
 
-The VSIX is produced at `vs/bin/Release/net472/OpenCodeStudio.vsix`. To build the release VSIX and copy it to the repository root and Desktop, run `build.ps1`. For a debug run, open `OpenCodeStudio.sln` and press **F5** to launch the experimental instance. 🧪
+The VSIX is produced at `vs/bin/Release/net472/OpenCodeJesk.vsix`. To build the release VSIX and copy it to the repository root and Desktop, run `build.ps1`. For a debug run, open `OpenCodeJesk.sln` and press **F5** to launch the experimental instance. 🧪
 
 ## ⚙️ Settings
 

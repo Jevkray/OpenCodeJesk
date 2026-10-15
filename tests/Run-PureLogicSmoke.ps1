@@ -11,7 +11,7 @@ $sdkPath = $sdk.FullName
 Copy-Item -LiteralPath $sdkPath -Destination $bin -Force
 
 $compiler = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
-& $compiler /nologo /out:"$bin\PureLogicSmoke.exe" /reference:"$bin\OpenCodeStudio.dll" /reference:"$bin\Newtonsoft.Json.dll" /reference:"$sdkPath" /reference:System.Net.Http.dll "$PSScriptRoot\PureLogicSmoke.cs"
+& $compiler /nologo /out:"$bin\PureLogicSmoke.exe" /reference:"$bin\OpenCodeJesk.dll" /reference:"$bin\Newtonsoft.Json.dll" /reference:"$sdkPath" /reference:System.Net.Http.dll "$PSScriptRoot\PureLogicSmoke.cs"
 if ($LASTEXITCODE -ne 0) { throw 'Не удалось собрать проверку чистой логики.' }
 
 & "$bin\PureLogicSmoke.exe"

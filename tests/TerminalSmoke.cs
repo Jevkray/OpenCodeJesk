@@ -9,8 +9,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using OpenCodeStudio.Models;
-using OpenCodeStudio.Services;
+using OpenCodeJesk.Models;
+using OpenCodeJesk.Services;
 
 public static class TerminalSmoke
 {

@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <RootNamespace>OpenCodeStudio</RootNamespace>
-    <AssemblyName>OpenCodeStudio</AssemblyName>
+    <RootNamespace>OpenCodeJesk</RootNamespace>
+    <AssemblyName>OpenCodeJesk</AssemblyName>
     <LangVersion>latest</LangVersion>
 
     <!-- VSIX settings -->
@@ -30,7 +30,7 @@
 
   <!-- Единый бренд OpenCode Jesk: VSCT-файл задан безусловно. -->
   <PropertyGroup>
-    <VsctFile>Package\OpenCodeStudioPackage.vsct</VsctFile>
+    <VsctFile>Package\OpenCodeJeskPackage.vsct</VsctFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -77,7 +77,7 @@
     </Content>
   </ItemGroup>
 
-  <!-- Логотип как WPF-ресурс: нужен для pack-URI /OpenCodeStudio;component/Resources/IconJesk.png в XAML
+  <!-- Логотип как WPF-ресурс: нужен для pack-URI /OpenCodeJesk;component/Resources/IconJesk.png в XAML
        (окно расширения исполняется внутри devenv.exe, файл из Content там не виден). -->
   <ItemGroup>
     <Resource Include="Resources\IconJesk.png" />

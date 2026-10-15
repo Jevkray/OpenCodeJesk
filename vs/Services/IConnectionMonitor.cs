@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Monitors the connection to the OpenCode server and fires events on state changes.

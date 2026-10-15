@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OpenCodeStudio.Models;
-using OpenCodeStudio.Resources;
+using OpenCodeJesk.Models;
+using OpenCodeJesk.Resources;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Manages OpenCode sessions via the HTTP API.

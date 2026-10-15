@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     public enum ImportKind { Settings, Commands, Theme, Auth, History, State, Desktop }
 

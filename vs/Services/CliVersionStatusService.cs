@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Снимок установленного окружения OpenCode: пути CLI v1/v2, Desktop и

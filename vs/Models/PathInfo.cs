@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace OpenCodeStudio.Models
+namespace OpenCodeJesk.Models
 {
     /// <summary>
     /// Path information returned by GET /path.

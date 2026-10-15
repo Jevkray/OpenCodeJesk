@@ -5,7 +5,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Navigation;
 
-namespace OpenCodeStudio
+namespace OpenCodeJesk
 {
     /// <summary>Строит строки статуса установки на вкладке Install.</summary>
     public static class InstallStatusRenderer

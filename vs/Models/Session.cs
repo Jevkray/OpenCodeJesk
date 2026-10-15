@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace OpenCodeStudio.Models
+namespace OpenCodeJesk.Models
 {
     /// <summary>
     /// Represents an OpenCode session.

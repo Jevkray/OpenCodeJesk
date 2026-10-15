@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Resources;
 
-namespace OpenCodeStudio.Resources
+namespace OpenCodeJesk.Resources
 {
     /// <summary>
     /// Provides localized strings from the resources assembly.
@@ -10,7 +10,7 @@ namespace OpenCodeStudio.Resources
     internal static class StringsHelper
     {
         private static readonly ResourceManager _resourceManager =
-            new ResourceManager("OpenCodeStudio.Resources.Strings", Assembly.GetExecutingAssembly());
+            new ResourceManager("OpenCodeJesk.Resources.Strings", Assembly.GetExecutingAssembly());
 
         public static string GetString(string name)
         {

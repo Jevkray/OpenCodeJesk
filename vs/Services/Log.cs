@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 
-namespace OpenCodeStudio.Services
+namespace OpenCodeJesk.Services
 {
     /// <summary>
     /// Minimal, dependency-free file logger for OpenCode Jesk. Writes to
-    /// %LOCALAPPDATA%\OpenCodeStudio\logs\opencode-studio.log so users can
+    /// %LOCALAPPDATA%\OpenCodeJesk\logs\opencode-studio.log so users can
     /// diagnose connection issues without a debugger attached.
     /// </summary>
     public static class Log
@@ -21,9 +21,7 @@ namespace OpenCodeStudio.Services
                 if (_path != null) return _path;
                 try
                 {
-                    var dir = Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                        "OpenCodeStudio", "logs");
+                    var dir = Path.Combine(OpenCodeEnvironment.StudioDir, "logs");
                     Directory.CreateDirectory(dir);
                     _path = Path.Combine(dir, "opencode-studio.log");
                 }
