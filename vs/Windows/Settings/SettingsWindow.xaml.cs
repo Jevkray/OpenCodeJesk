@@ -644,14 +644,14 @@ namespace OpenCodeJesk
                 if (_installCts.IsCancellationRequested)
                 {
                     Log.Info("OpenCode install (" + packageSpec + ") cancelled");
-                    SetInstallResult(Loc("install.cancelled"));
+                    SetInstallFinal(Loc("install.cancelled"));
                     return;
                 }
 
                 var info = await DetectInstalledVersionsAsync();
                 await RefreshInstallStatusAsync(info);
                 Log.Info("OpenCode install (" + packageSpec + ") " + (ok ? "succeeded" : "failed"));
-                SetInstallResult(ok
+                SetInstallFinal(ok
                     ? Loc("install.done")
                     : Loc("install.failed") + "\n" + string.Join("\n",
                         log.Skip(Math.Max(0, log.Count - 10))));
@@ -659,7 +659,7 @@ namespace OpenCodeJesk
             catch (Exception ex)
             {
                 Log.Error("OpenCode install (" + packageSpec + ") failed", ex);
-                SetInstallResult(Loc("install.failed") + " " + ex.Message);
+                SetInstallFinal(Loc("install.failed") + " " + ex.Message);
             }
             finally
             {
@@ -688,7 +688,7 @@ namespace OpenCodeJesk
                 if (_installCts.IsCancellationRequested)
                 {
                     Log.Info("OpenCode install all cancelled after v2");
-                    SetInstallResult(Loc("install.cancelled"));
+                    SetInstallFinal(Loc("install.cancelled"));
                     return;
                 }
 
@@ -697,7 +697,7 @@ namespace OpenCodeJesk
                 if (_installCts.IsCancellationRequested)
                 {
                     Log.Info("OpenCode install all cancelled after v1");
-                    SetInstallResult(Loc("install.cancelled"));
+                    SetInstallFinal(Loc("install.cancelled"));
                     return;
                 }
 
@@ -707,19 +707,19 @@ namespace OpenCodeJesk
                 Log.Info("OpenCode install all " + (ok ? "succeeded" : "failed"));
                 if (ok)
                 {
-                    SetInstallResult(Loc("install.done"));
+                    SetInstallFinal(Loc("install.done"));
                 }
                 else
                 {
                     var tail = logV2.Skip(Math.Max(0, logV2.Count - 5))
                         .Concat(logV1.Skip(Math.Max(0, logV1.Count - 5)));
-                    SetInstallResult(Loc("install.failed") + "\n" + string.Join("\n", tail));
+                    SetInstallFinal(Loc("install.failed") + "\n" + string.Join("\n", tail));
                 }
             }
             catch (Exception ex)
             {
                 Log.Error("OpenCode install all failed", ex);
-                SetInstallResult(Loc("install.failed") + " " + ex.Message);
+                SetInstallFinal(Loc("install.failed") + " " + ex.Message);
             }
             finally
             {
@@ -733,7 +733,14 @@ namespace OpenCodeJesk
         /// <summary>Проверяет фактические версии найденных v1/v2 и выводит их в статус.</summary>
         private async Task CheckVersionsAsync()
         {
-            if (installResult == null && qsInstallResult == null) return;
+            if (installResult == null && qsProgressLog == null) return;
+            // В Quick Start блок показывается как результат проверки: полоса видна, Cancel скрыт.
+            if (qsProgressPanel != null)
+            {
+                qsProgressPanel.Visibility = Visibility.Visible;
+                qsProgress.Value = 0;
+            }
+            if (qsCancelButton != null) qsCancelButton.Visibility = Visibility.Collapsed;
             SetInstallResult(Loc("install.status.checking"));
             try
             {
@@ -795,22 +802,35 @@ namespace OpenCodeJesk
         /// <summary>Останавливает таймер прогресса Quick Start.</summary>
         private void StopQsProgressTimer() => _qsProgressTimer?.Stop();
 
+        /// <summary>Прошедшее время установки в формате м:сс.</summary>
+        private string ElapsedText()
+        {
+            var elapsed = DateTime.Now - _installStartedAt;
+            return (int)elapsed.TotalMinutes + ":" + elapsed.Seconds.ToString("00");
+        }
+
         /// <summary>Показывает прошедшее время хода установки и последнюю строку npm.</summary>
         private void UpdateInstallStatus()
         {
-            if (installResult == null && qsInstallResult == null) return;
-            var elapsed = DateTime.Now - _installStartedAt;
-            var time = (int)elapsed.TotalMinutes + ":" + elapsed.Seconds.ToString("00");
-            var text = Loc("install.running") + " " + time;
+            if (installResult == null && qsProgressLog == null) return;
+            var text = Loc("install.running") + " " + ElapsedText();
             if (!string.IsNullOrEmpty(_lastNpmLine)) text += "\n" + "npm: " + _lastNpmLine;
             SetInstallResult(text);
         }
 
-        /// <summary>Пишет статус установки и на вкладку Install, и в Quick Start (если она есть).</summary>
+        /// <summary>Пишет статус установки и на вкладку Install, и в Quick Start (под полосой).</summary>
         private void SetInstallResult(string text)
         {
             if (installResult != null) installResult.Text = text;
-            if (qsInstallResult != null) qsInstallResult.Text = text;
+            if (qsProgressLog != null) qsProgressLog.Text = text;
+        }
+
+        /// <summary>Итог установки: в Install-вкладке — только итог, в Quick Start — время + итог.</summary>
+        private void SetInstallFinal(string summary)
+        {
+            if (installResult != null) installResult.Text = summary;
+            if (qsProgressLog != null)
+                qsProgressLog.Text = Loc("install.running") + " " + ElapsedText() + "\n" + summary;
         }
 
         /// <summary>Кнопка Cancel: отменяет текущую установку и убивает дерево процессов.</summary>
@@ -818,8 +838,7 @@ namespace OpenCodeJesk
         {
             StopInstallTimer();
             StopQsProgressTimer();
-            if (qsProgressLog != null) qsProgressLog.Text = Loc("install.cancelled");
-            SetInstallResult(Loc("install.cancelled"));
+            SetInstallFinal(Loc("install.cancelled"));
             _installCts?.Cancel();
         }
 

@@ -398,6 +398,24 @@
             </Setter>
         </Style>
 
+        <!-- Скруглённая и утолщённая полоса прогресса (части PART_Track/PART_Indicator) -->
+        <Style x:Key="RoundedProgress" TargetType="ProgressBar">
+            <Setter Property="Background" Value="#20242e" />
+            <Setter Property="Foreground" Value="#2A78FC" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid>
+                            <Border x:Name="PART_Track" CornerRadius="8" Background="#20242e" />
+                            <Border x:Name="PART_Indicator" CornerRadius="8"
+                                    HorizontalAlignment="Left" Background="#2A78FC" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Сворачиваемое описание "Подробнее": как обычный пояснительный текст -->
         <Style x:Key="MoreExpander" TargetType="Expander">
             <Setter Property="Foreground" Value="#9a9a9a" />
@@ -604,8 +622,6 @@
                                             Style="{StaticResource GhostButton}"
                                             Tag="1" Click="OnQuickStartGoClick" />
                                 </StackPanel>
-                                <TextBlock x:Name="qsInstallResult" Style="{StaticResource CardHint}"
-                                           Margin="0,10,0,0" TextWrapping="Wrap" />
                                 <!-- Блок прогресса: появляется только после кнопки установки. -->
                                 <StackPanel x:Name="qsProgressPanel" Visibility="Collapsed" Margin="0,14,0,0">
                                     <Border CornerRadius="8" Padding="12" BorderThickness="1">
@@ -628,9 +644,8 @@
                                             </Grid.ColumnDefinitions>
                                             <ProgressBar x:Name="qsProgress" Grid.Column="0"
                                                          Minimum="0" Maximum="100"
-                                                         Height="8" VerticalAlignment="Center"
-                                                         Foreground="#2A78FC" Background="#20242e"
-                                                         BorderThickness="0" />
+                                                         Height="14" VerticalAlignment="Center"
+                                                         Style="{StaticResource RoundedProgress}" />
                                             <Button x:Name="qsCancelButton" Grid.Column="1" Uid="install.cancel"
                                                     Content="Cancel" Margin="12,0,0,0"
                                                     VerticalAlignment="Center"
