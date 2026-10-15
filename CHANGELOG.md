@@ -6,21 +6,53 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [2.0.0.0] - 2026-10-15
 
 ### Added
-- **Quick Start tab** — a step-by-step guide shown on first run: **Install All** with live progress and log, a **v1 / v2** version choice, the **Web / CLI** interface mode and an overview. The progress bar shows the percentage, a running **bunny** and a Cancel button.
-- **Sponsorship / Contacts tab** — a thank-you note, contacts and crypto wallets with QR codes and sub-tabs.
-- **Updates tab with a "What's new" changelog**.
+
+#### Quick Start (first tab, opens on first run)
+
+A step-by-step guide on a single page, so a new user can go from zero to a running agent without leaving the Settings window:
+
+1. **Install** — a single **Install All** button installs **v2 first, then v1**, so both versions of the OpenCode CLI are available side by side (`opencode` = v1, `opencode2` = v2) and either can be used. The install streams a **live npm log**; a **non-linear progress bar** driven by the real output shows the current **percentage** and **elapsed time**, with a sweeping **shimmer** highlight and rounded corners. A **Cancel** button aborts a running install, and the bar turns **green** with *Download complete* on success.
+2. **Version** — choose the CLI version to use: **v1** (stable) or **v2** (preview).
+3. **Interface** — pick the mode, **Desktop (Web)** or **CLI**, and open the panel with a single button.
+4. **Overview** — an at-a-glance map of where the extension, the data directory, the server and the logs live.
+
+#### Sponsorship / Contacts
+
+- A thank-you letter for supporting the project.
+- Contacts: **Telegram, Email, Boosty and GitHub**.
+- Crypto wallets for **TON, BTC and ETH**, each with a **QR code**, switched through **sub-tabs**, with an address field and a **Copy** button.
+
+#### Updates
+
+- A **leave-a-review** card linking to the Marketplace review page.
+- A **rating popup** shown **once per session**, after roughly **two hours** of use, with a toggle in Settings to turn it off.
+- A detailed **"What's new" changelog** (the bundled `CHANGELOG.md`, parsed and rendered) **instead of the raw installation log**.
+
+#### UI and brand
+
+- A **blue palette matched to the extension icon** — gradients and soft glows, used consistently across the panel and the Settings window.
+- The **extension icon** in the Visual Studio menu and in the Settings window title.
+- **Always-dark windows**, with restyled tabs and menus.
 
 ### Changed
-- **Brand and code fully renamed to OpenCode Jesk** — a single brand, without the Studio name.
-- **Blue palette matched to the icon** (gradients and glows, always-dark windows).
-- Progress blocks reworked.
-- Documentation and previews updated (collage images).
+
+- **Full rebrand to OpenCode Jesk.** The product is a single brand; the old **OpenCode Studio** name has been **removed entirely**. Renamed: the **namespace**, the **assembly**, the package **class**, the **VSCT** command tables and the **icons**. The data directory is now `%LOCALAPPDATA%\OpenCodeJesk` (with **migration** from the old `%LOCALAPPDATA%\OpenCodeStudio`), the environment variable is `OPENCODEJESK_OPENCODE_BIN`, and the pack URIs use the new name. `build.ps1` now builds the single Jesk brand.
+- **Version bumped to 2.0.0.0.**
+- **Internal refactor** — the "god" classes were split into focused services: `CliInstallService`, `Localization`, `CliVersionStatusService`, `CliBinaryLocator`, `ServerPortResolver`, `SharedServerRegistry`, `WebPageRenderer`, `SessionUrlParser`, `ConsoleCoordinator`, `ReconnectCoordinator`, `CliModeCoordinator`, `SettingsEditor`, `ImportPresenter`, `InstallStatusRenderer` and `UiPalette`. Dead code was removed, comments were translated to Russian, and the sources were organized into folders.
 
 ### Fixed
-- **v1 / v2 switching** — WebView2 cache and version selection.
-- **CLI crash when switching versions.**
-- **npm install** (`--force`, process stopping).
-- Rounding of the **bunny** and hover styles.
+
+- **v1 ↔ v2 switching in the web panel** — the WebView2 cache is cleared whenever the version changes, so the panel no longer shows a stale page.
+- **Version selection at start** — the restart/adopt decision now compares by **major** version.
+- **CLI crash when switching versions** — "Session not found" is handled by validating the session and creating it if missing before the terminal opens.
+- **npm installation** — runs with `--force` and stops the extension's own processes first, so locked shims no longer block the install.
+- **Bunny rounding** — the running "bunny" no longer overflows the progress bar's edges.
+- **Hover styles** — the bright blue highlight was removed; the tabs and the Sponsorship item now follow the side-menu style.
+
+### Docs
+
+- Updated **README (EN/RU)** and the **Marketplace description** with the **blue** style and new **collages** (a preview of all panel versions and a collage of all Settings tabs).
+- Reworked the README structure.
 
 ## [1.2.0.32] - 2026-10-15
 
