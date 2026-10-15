@@ -507,6 +507,46 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Пункт сайдбара (Sponsorship): без системного hover-свечения, при наведении —
+             мягкий фон, активный — как пункты бокового меню (тёмный фон + синяя полоса слева). -->
+        <Style x:Key="SidebarNavButton" TargetType="Button">
+            <Setter Property="Foreground" Value="#c9c9c9" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="bg" Background="Transparent" />
+                            <Border x:Name="accent" Width="3" HorizontalAlignment="Left" Background="Transparent" />
+                            <ContentPresenter Margin="24,12,16,12" VerticalAlignment="Center" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bg" Property="Background" Value="#202020" />
+                            </Trigger>
+                            <Trigger Property="Tag" Value="active">
+                                <Setter TargetName="bg" Property="Background" Value="#252526" />
+                                <Setter TargetName="accent" Property="Background" Value="#2A78FC" />
+                                <Setter Property="Foreground" Value="#f1f1f1" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Единый спокойный стиль гиперссылок (вместо системного яркого выделения). -->
+        <Style TargetType="Hyperlink">
+            <Setter Property="Foreground" Value="#2A78FC" />
+            <Setter Property="TextDecorations" Value="{x:Null}" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="TextDecorations" Value="Underline" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
     <Grid>
@@ -528,9 +568,8 @@
                      Объявлен перед menuList, т.к. последний ребёнок DockPanel при
                      LastChildFill заполняет остаток, а эта кнопка должна прижиматься к низу. -->
                 <Button x:Name="sponsorNavButton" DockPanel.Dock="Bottom"
-                        Margin="0" HorizontalContentAlignment="Left"
-                        Padding="24,12" Background="Transparent" BorderThickness="0"
-                        Foreground="#c9c9c9" Cursor="Hand" Click="OnSponsorClick">
+                        Style="{StaticResource SidebarNavButton}"
+                        Click="OnSponsorClick">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xEB51;" FontFamily="Segoe MDL2 Assets" FontSize="16"
                                    VerticalAlignment="Center" Margin="0,0,12,0" />

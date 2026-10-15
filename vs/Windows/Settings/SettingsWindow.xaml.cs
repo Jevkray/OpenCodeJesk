@@ -355,8 +355,8 @@ namespace OpenCodeJesk
         private void HighlightSponsor(bool on)
         {
             if (sponsorNavButton == null) return;
-            sponsorNavButton.Background = on ? Brush(0x25, 0x25, 0x26) : Brushes.Transparent;
-            sponsorNavButton.Foreground = on ? Brush(0xf1, 0xf1, 0xf1) : Brush(0xc9, 0xc9, 0xc9);
+            // Активное состояние включает триггер Tag="active" в шаблоне SidebarNavButton.
+            sponsorNavButton.Tag = on ? "active" : null;
         }
 
         /// <summary>Подвкладки валют: показывает панель выбранного кошелька, остальные прячет.</summary>
